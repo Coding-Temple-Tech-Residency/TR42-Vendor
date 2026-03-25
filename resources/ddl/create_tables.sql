@@ -19,31 +19,9 @@ CREATE TABLE IF NOT EXISTS vendor_user (
     username   VARCHAR(256) NOT NULL,
     password   VARCHAR(256) NOT NULL,
     email      VARCHAR(256) NOT NULL,
-    role_id    INTEGER NOT NULL REFERENCES vendor_role(role_id)
+    role_id     INTEGER NOT NULL REFERENCES vendor_role(role_id)
 );
 
-
-
--- user table
-CREATE TABLE IF NOT EXISTS users (
-    user_id   SERIAL PRIMARY KEY,
-    username  VARCHAR(256) NOT NULL,
-    password  VARCHAR(256) NOT NULL,
-    email     VARCHAR(256) NOT NULL,
-    type      VARCHAR(64)  NOT NULL,
-    created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- sessions table
-CREATE TABLE IF NOT EXISTS sessions (
-    session_id     TEXT PRIMARY KEY,
-    user_id        INTEGER NOT NULL REFERENCES "users"(user_id),
-    created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_activity  TIMESTAMP,
-    user_agent     TEXT,
-    is_active      BOOLEAN DEFAULT TRUE
-);
 
 -- vendor table
 CREATE TABLE IF NOT EXISTS vendors (
@@ -57,8 +35,16 @@ CREATE TABLE IF NOT EXISTS vendors (
     onboarding         BOOLEAN DEFAULT FALSE,
     compliance_doc     core.compliance_status NOT NULL,
     description        TEXT,
-    created_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    address_id         TEXT NOT NULL UNIQUE
 );
 
-
+CREATE TABLE IF NOT EXISTS addresses (
+    address_id  TEXT PRIMARY KEY,
+    street      TEXT,
+    city        TEXT,
+    state       VARCHAR(20),
+    zip         VARCHAR(10),
+    country     CHAR(2)
+);
 

@@ -1,42 +1,48 @@
----------------------------------------------------------
--- CLEAN RESET (safe + idempotent)
----------------------------------------------------------
-TRUNCATE TABLE sessions RESTART IDENTITY CASCADE;
-TRUNCATE TABLE vendor_user RESTART IDENTITY CASCADE;
-TRUNCATE TABLE vendor_role RESTART IDENTITY CASCADE;
-TRUNCATE TABLE vendors RESTART IDENTITY CASCADE;
-TRUNCATE TABLE users RESTART IDENTITY CASCADE;
 
+-- CLEAN RESET (safe + idempotent)
+-- TRUNCATE clears the entire table in a single operation.
+--handles foreign keys safely(eg: If you try to delete from vendor_role first, PostgreSQL will block you.because vendor_user has a foreign key reference to it.)
 ---------------------------------------------------------
+
+TRUNCATE TABLE vendor_user RESTART IDENTITY CASCADE; -- resets auto‑increment IDs (when using RESTART IDENTITY)
+TRUNCATE TABLE vendor_role RESTART IDENTITY CASCADE;
+TRUNCATE TABLE vendors CASCADE;-- vendor_id is TEXT, so no identity reset
+TRUNCATE TABLE addresses CASCADE;
+
+-- FIX vendor FK when i changed the table name to addresses
+ALTER TABLE vendors
+DROP CONSTRAINT IF EXISTS vendors_address_id_fkey;
+
+ALTER TABLE vendors
+ADD CONSTRAINT vendors_address_id_fkey
+FOREIGN KEY (address_id) REFERENCES addresses(address_id);
+
+
 -- SEED vendor_role
----------------------------------------------------------
+
 INSERT INTO vendor_role (role_name)
 VALUES
     ('Vendor Admin'),
     ('Vendor Manager'),
     ('Vendor Worker');
 
----------------------------------------------------------
+
 -- SEED vendor_user (local vendor-only users)
----------------------------------------------------------
+
 INSERT INTO vendor_user (username, password, email, role_id)
 VALUES
     ('local_vendor_admin', 'admin123', 'local_admin@vendor.com', 1),
     ('local_vendor_manager', 'manager123', 'local_manager@vendor.com', 2),
     ('local_vendor_worker', 'worker123', 'local_worker@vendor.com', 3);
 
----------------------------------------------------------
--- SEED users (global users)
----------------------------------------------------------
-INSERT INTO users (username, password, email, type)
+-- SEED address
+INSERT INTO addresses (address_id, street, city, state, zip, country)
 VALUES
-    ('vendor_admin1', 'pass123', 'admin1@vendor.com', 'vendor'),
-    ('vendor_manager1', 'pass456', 'manager1@vendor.com', 'vendor'),
-    ('vendor_worker1', 'pass789', 'worker1@vendor.com', 'vendor');
+    ('ADDR001', '123 Main St', 'Houston', 'TX', '77001', 'US'),
+    ('ADDR002', '456 Field Rd', 'Dallas', 'TX', '75001', 'US');
 
----------------------------------------------------------
 -- SEED vendors
----------------------------------------------------------
+
 INSERT INTO vendors (
     vendor_id,
     company_name,
@@ -47,17 +53,17 @@ INSERT INTO vendors (
     vendor_code,
     onboarding,
     compliance_doc,
-    description
+    description,
+    created_at,
+    address_id
 )
 VALUES
-    ('V001', 'ABC Oil Services', 'ABC001', NOW(), NULL, 'active', 'VEND001', TRUE, 'approved', 'Primary vendor'),
-    ('V002', 'XYZ Field Ops', 'XYZ001', NOW(), NULL, 'active', 'VEND002', FALSE, 'pending', 'Secondary vendor');
+    ('V001', 'ABC Oil Services', 'ABC001', NOW(), NULL, 'active', 'VEND001', TRUE, 'approved', 'Primary vendor',NOW(),'ADDR001'),
+    ('V002', 'XYZ Field Ops', 'XYZ001', NOW(), NULL, 'active', 'VEND002', FALSE, 'pending', 'Secondary vendor',NOW(),'ADDR002');
+   
+ALTER TABLE vendors
+ADD COLUMN IF NOT EXISTS address_id TEXT;
 
----------------------------------------------------------
--- SEED sessions
----------------------------------------------------------
-INSERT INTO sessions (session_id, user_id, created_at, last_activity, user_agent, is_active)
-VALUES
-    ('sess_admin_001', 1, NOW(), NOW(), 'Mozilla/5.0', TRUE),
-    ('sess_manager_001', 2, NOW(), NOW(), 'Mozilla/5.0', TRUE),
-    ('sess_worker_001', 3, NOW(), NOW(), 'Mozilla/5.0', TRUE);
+
+ALTER TABLE address RENAME TO addresses;
+
