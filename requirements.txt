@@ -8,6 +8,9 @@ Flask==3.1.2
 Flask-Caching==2.3.1
 Flask-Limiter==4.0.0
 Flask-SQLAlchemy==3.1.1
+flask-marshmallow==0.14.0
+marshmallow==3.19.0
+marshmallow-sqlalchemy==0.28.0
 greenlet==3.3.2
 itsdangerous==2.2.0
 Jinja2==3.1.6
