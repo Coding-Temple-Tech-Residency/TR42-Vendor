@@ -67,3 +67,18 @@ ADD COLUMN IF NOT EXISTS address_id TEXT;
 
 ALTER TABLE address RENAME TO addresses;
 
+--vendor user record
+--hashed password
+--resolved role name
+--everything needed to build the JWT
+
+SELECT 
+    vu.user_id,
+    vu.username,
+    vu.password,
+    vu.email,
+    vr.role_name
+FROM public.vendor_user AS vu
+JOIN public.vendor_role AS vr 
+    ON vu.role = vr.role_id
+WHERE vu.username = :username;

@@ -1,0 +1,1 @@
+from .vendor_auth import vendor_auth_bp
