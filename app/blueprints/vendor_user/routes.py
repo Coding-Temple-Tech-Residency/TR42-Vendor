@@ -16,14 +16,7 @@ def get_vendor_users():
     users = VendorUser.query.all()
     return vendor_users_schema.jsonify(users)
 
-@vendor_user_bp.post("/")
-@vendor_required
-def create_vendor_user():
-    data = request.json
-    new_user = vendor_user_schema.load(data)
-    db.session.add(new_user)
-    db.session.commit()
-    return vendor_user_schema.jsonify(new_user), 201
+
 
 
 
