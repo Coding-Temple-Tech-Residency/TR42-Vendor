@@ -1,6 +1,6 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
+from flask import Flask # type: ignore
+from flask_sqlalchemy import SQLAlchemy # type: ignore
+from flask_marshmallow import Marshmallow # type: ignore
 from .config import Config
 
 
