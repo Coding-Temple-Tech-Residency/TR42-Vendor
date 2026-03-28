@@ -23,7 +23,7 @@ def get_vendor_users():
         logger.info(f"Retrieved {len(users)} users")
         return vendor_users_schema.jsonify(users), 200
     except Exception as e:
-        logger.error(f"GET /vendor_user/ - Error fetching users: {str(e)}")
+        logger.error(f"Error fetching users: {str(e)}")
         return {"error": "An error occurred while fetching users"}, 500
     
 
@@ -32,7 +32,7 @@ def get_vendor_users():
 Create a new vendor user.
 
 This endpoint handles POST requests to create a new vendor user with the provided data.
-The request body should contain JSON data with the vendor user information.
+The request body should contain JSON  with the vendor user information.
 
 Returns:
     tuple: A tuple containing:
