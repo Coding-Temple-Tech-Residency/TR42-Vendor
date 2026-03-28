@@ -1,0 +1,22 @@
+2026-03-28 11:53:19,336 [INFO] werkzeug - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.196:5000
+2026-03-28 11:53:19,336 [INFO] werkzeug - [33mPress CTRL+C to quit[0m
+2026-03-28 11:53:19,336 [INFO] werkzeug -  * Restarting with stat
+2026-03-28 11:53:19,507 [WARNING] werkzeug -  * Debugger is active!
+2026-03-28 11:53:19,511 [INFO] werkzeug -  * Debugger PIN: 624-740-796
+2026-03-28 11:56:47,508 [INFO] werkzeug - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.196:5000
+2026-03-28 11:56:47,508 [INFO] werkzeug - [33mPress CTRL+C to quit[0m
+2026-03-28 11:56:47,508 [INFO] werkzeug -  * Restarting with stat
+2026-03-28 11:56:47,675 [WARNING] werkzeug -  * Debugger is active!
+2026-03-28 11:56:47,680 [INFO] werkzeug -  * Debugger PIN: 624-740-796
+2026-03-28 11:57:16,023 [INFO] werkzeug - 127.0.0.1 - - [28/Mar/2026 11:57:16] "[32mGET /vendor_user HTTP/1.1[0m" 308 -
+2026-03-28 11:57:16,027 [DEBUG] app.blueprints.vendor_user.controller.routes - Fetching all vendor users
+2026-03-28 11:57:16,027 [DEBUG] app.blueprints.vendor_user.services.vendor_user_service - Retrieving all vendor users from service layer
+2026-03-28 11:57:16,027 [DEBUG] app.blueprints.vendor_user.repositories.vendor_user_repository - Fetching all vendor users from database
+2026-03-28 11:57:16,189 [INFO] app.blueprints.vendor_user.controller.routes - Retrieved 3 users
+2026-03-28 11:57:16,190 [INFO] werkzeug - 127.0.0.1 - - [28/Mar/2026 11:57:16] "GET /vendor_user/ HTTP/1.1" 200 -
