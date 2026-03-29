@@ -1,4 +1,4 @@
-from app.extensions import db
+from server.app.extensions import db
 
 class Service(db.Model):
     __tablename__ = 'service'

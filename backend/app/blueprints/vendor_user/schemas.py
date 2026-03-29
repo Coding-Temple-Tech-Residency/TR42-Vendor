@@ -1,4 +1,4 @@
-from app.extensions import ma
+from server.app.extensions import ma
 from .model import VendorUser
 
 class VendorUserSchema(ma.SQLAlchemyAutoSchema):

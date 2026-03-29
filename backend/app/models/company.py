@@ -1,4 +1,4 @@
-from app.extensions import db
+from server.app.extensions import db
 
 class Company(db.Model):
     __tablename__ = 'company'
