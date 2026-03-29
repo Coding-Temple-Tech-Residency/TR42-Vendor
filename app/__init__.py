@@ -5,7 +5,6 @@ from app.blueprints.vendor_user import vendor_user_bp
 from .logging_config import setup_logging
 
 
-
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)

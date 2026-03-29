@@ -53,6 +53,6 @@ def create_vendor_user():
         logger.info(f"Created vendor user in repo: {new_user.id}")
         return vendor_user_schema.jsonify(new_user), 201
     except Exception as e:
-        logger.error(f"POST /vendor_user/ - Error creating user: {str(e)}")
+        logger.error(f"Error creating user: {str(e)}")
         return {"error": "An error occurred while creating the user"}, 500
    

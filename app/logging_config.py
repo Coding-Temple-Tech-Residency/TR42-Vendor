@@ -2,6 +2,8 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 
+#  Set up a logger for the application(helps to print debug/info/error messages to console and log files)
+
 def setup_logging():
     if not os.path.exists("logs"):
         os.makedirs("logs")
