@@ -1,4 +1,3 @@
-
 from app import create_app
 from app.extensions import db
 
@@ -9,4 +8,3 @@ if __name__ == "__main__":
         print("Project started")
 
     app.run(host="0.0.0.0", port=5000, debug=True)
-
