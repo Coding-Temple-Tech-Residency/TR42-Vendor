@@ -11,7 +11,7 @@ class TestVendorUserService(unittest.TestCase):
     @patch('app.blueprints.vendor_user.services.vendor_user_service.uuid.uuid4')
     def test_create_user_success(self, mock_uuid, mock_repository):
         mock_uuid.return_value = uuid4()
-        mock_repository.create.return_value = MagicMock(spec=VendorUser)
+        mock_repository.create.return_value = MagicMock()
         
         data = {
             "user_id": "user123",
@@ -28,7 +28,7 @@ class TestVendorUserService(unittest.TestCase):
 
     @patch('app.blueprints.vendor_user.services.vendor_user_service.VendorUserRepository')
     def test_create_user_with_missing_fields(self, mock_repository):
-        mock_repository.create.return_value = MagicMock(spec=VendorUser)
+        mock_repository.create.return_value = MagicMock()
         
         data = {"user_id": "user123"}
         
@@ -36,10 +36,10 @@ class TestVendorUserService(unittest.TestCase):
         
         assert result is not None
         mock_repository.create.assert_called_once()
-
+    
     @patch('app.blueprints.vendor_user.services.vendor_user_service.VendorUserRepository')
     def test_create_user_repository_called_with_vendor_user(self, mock_repository):
-        mock_repository.create.return_value = MagicMock(spec=VendorUser)
+        mock_repository.create.return_value = MagicMock()
         
         data = {
             "user_id": "user123",
@@ -59,7 +59,7 @@ class TestVendorUserService(unittest.TestCase):
 
         @patch('app.blueprints.vendor_user.services.vendor_user_service.VendorUserRepository')
         def test_get_all_users_success(self, mock_repository):
-            mock_users = [MagicMock(spec=VendorUser), MagicMock(spec=VendorUser)]
+            mock_users = [MagicMock(), MagicMock()]
             mock_repository.get_all.return_value = mock_users
             
             result = VendorUserService.get_all_users()

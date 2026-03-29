@@ -48,7 +48,7 @@ class VendorUserService:
     def create_user(data):
         # Build ORM object with provided data and auto-generated fields
         try:
-            logger.debug("Creating vendor user in service layer with data: %s", data)
+            logger.info("Creating vendor user in service layer with data: %s", data)
             new_user = VendorUser(
                 id=str(uuid.uuid4()),
                 user_id=data.get("user_id"),

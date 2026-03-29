@@ -14,7 +14,6 @@ class VendorUserRepository:
             list: A list of all VendorUser objects in the database.
                   Returns an empty list if no vendor users exist.
         """
-
     @staticmethod
     def get_all():
         try:
@@ -37,7 +36,7 @@ class VendorUserRepository:
     @staticmethod
     def create(vendor_user: VendorUser):
         try:
-            logger.debug(f"Creating vendor user with ID: {vendor_user.id}")
+            logger.info(f"Creating vendor user with ID: {vendor_user.id}")
             db.session.add(vendor_user)
             db.session.commit()
             logger.info(f"Vendor user created successfully: {vendor_user.id}")

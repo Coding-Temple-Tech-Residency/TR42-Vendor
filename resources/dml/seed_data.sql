@@ -4,7 +4,7 @@
 --handles foreign keys safely(eg: If you try to delete from vendor_user first, PostgreSQL will block you.because vendor has a foreign key reference to it.)
 ---------------------------------------------------------
 
-TRUNCATE TABLE vendor_user CASCADE; -- resets auto‑increment IDs (when using RESTART IDENTITY)
+--TRUNCATE TABLE vendor_user CASCADE; -- resets auto‑increment IDs (when using RESTART IDENTITY)
 
 
 INSERT INTO vendor_user (

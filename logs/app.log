@@ -119,3 +119,53 @@
 2026-03-29 12:19:08,991 [DEBUG] app.blueprints.vendor_user.repositories.vendor_user_repository - Fetching all vendor users from database
 2026-03-29 12:19:08,992 [INFO] app.blueprints.vendor_user.controller.routes - Retrieved 6 users
 2026-03-29 12:19:08,993 [INFO] werkzeug - 127.0.0.1 - - [29/Mar/2026 12:19:08] "GET /vendor_user/ HTTP/1.1" 200 -
+2026-03-29 16:27:00,202 [INFO] werkzeug - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.196:5000
+2026-03-29 16:27:00,202 [INFO] werkzeug - [33mPress CTRL+C to quit[0m
+2026-03-29 16:27:00,203 [INFO] werkzeug -  * Restarting with stat
+2026-03-29 16:27:00,378 [WARNING] werkzeug -  * Debugger is active!
+2026-03-29 16:27:00,385 [INFO] werkzeug -  * Debugger PIN: 624-740-796
+2026-03-29 16:27:11,734 [INFO] werkzeug - 127.0.0.1 - - [29/Mar/2026 16:27:11] "[32mGET /vendor_user HTTP/1.1[0m" 308 -
+2026-03-29 16:27:11,736 [DEBUG] app.blueprints.vendor_user.controller.routes - Fetching all vendor users
+2026-03-29 16:27:11,736 [DEBUG] app.blueprints.vendor_user.services.vendor_user_service - Retrieving all vendor users from service layer
+2026-03-29 16:27:11,736 [DEBUG] app.blueprints.vendor_user.repositories.vendor_user_repository - Fetching all vendor users from database
+2026-03-29 16:27:11,864 [INFO] app.blueprints.vendor_user.controller.routes - Retrieved 6 users
+2026-03-29 16:27:11,865 [INFO] werkzeug - 127.0.0.1 - - [29/Mar/2026 16:27:11] "GET /vendor_user/ HTTP/1.1" 200 -
+2026-03-29 16:27:24,108 [INFO] werkzeug - 127.0.0.1 - - [29/Mar/2026 16:27:24] "[32mPOST /vendor_user HTTP/1.1[0m" 308 -
+2026-03-29 16:27:24,110 [DEBUG] app.blueprints.vendor_user.controller.routes - Creating a new vendor user
+2026-03-29 16:27:24,112 [INFO] app.blueprints.vendor_user.controller.routes - Received vendor user data: {'id': 'user-004-admin', 'user_id': 'user-005', 'vendor_id': 'vendor-001', 'role': 'admin', 'created_at': '2025-01-01T10:00:00Z', 'updated_at': '2025-01-01T10:00:00Z', 'created_by': 'system', 'updated_by': 'system'}
+2026-03-29 16:27:24,112 [DEBUG] app.blueprints.vendor_user.services.vendor_user_service - Creating vendor user in service layer with data: {'id': 'user-004-admin', 'user_id': 'user-005', 'vendor_id': 'vendor-001', 'role': 'admin', 'created_at': '2025-01-01T10:00:00Z', 'updated_at': '2025-01-01T10:00:00Z', 'created_by': 'system', 'updated_by': 'system'}
+2026-03-29 16:27:24,113 [INFO] app.blueprints.vendor_user.services.vendor_user_service - Vendor user object created in service layer: 9e99dd21-30ae-4e37-817e-c356eb157bcb
+2026-03-29 16:27:24,113 [DEBUG] app.blueprints.vendor_user.repositories.vendor_user_repository - Creating vendor user with ID: 9e99dd21-30ae-4e37-817e-c356eb157bcb
+2026-03-29 16:27:24,125 [INFO] app.blueprints.vendor_user.repositories.vendor_user_repository - Vendor user created successfully: 9e99dd21-30ae-4e37-817e-c356eb157bcb
+2026-03-29 16:27:24,125 [INFO] app.blueprints.vendor_user.controller.routes - Created vendor user in repo: 9e99dd21-30ae-4e37-817e-c356eb157bcb
+2026-03-29 16:27:24,126 [INFO] werkzeug - 127.0.0.1 - - [29/Mar/2026 16:27:24] "[35m[1mPOST /vendor_user/ HTTP/1.1[0m" 201 -
+2026-03-29 16:36:50,188 [INFO] werkzeug -  * Detected change in '/Users/arshabk/Documents/arsha/Workspace/FinalProject2/field-force/TR42-Vendor/app/blueprints/vendor_user/repositories/vendor_user_repository.py', reloading
+2026-03-29 16:36:50,260 [INFO] werkzeug -  * Restarting with stat
+2026-03-29 16:36:50,526 [WARNING] werkzeug -  * Debugger is active!
+2026-03-29 16:36:50,532 [INFO] werkzeug -  * Debugger PIN: 624-740-796
+2026-03-29 17:21:18,983 [INFO] werkzeug - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.196:5000
+2026-03-29 17:21:18,983 [INFO] werkzeug - [33mPress CTRL+C to quit[0m
+2026-03-29 17:21:18,983 [INFO] werkzeug -  * Restarting with stat
+2026-03-29 17:21:19,165 [WARNING] werkzeug -  * Debugger is active!
+2026-03-29 17:21:19,170 [INFO] werkzeug -  * Debugger PIN: 624-740-796
+2026-03-29 17:22:00,727 [INFO] werkzeug - 127.0.0.1 - - [29/Mar/2026 17:22:00] "[32mPOST /vendor_user HTTP/1.1[0m" 308 -
+2026-03-29 17:22:00,729 [DEBUG] app.blueprints.vendor_user.controller.routes - Creating a new vendor user
+2026-03-29 17:22:00,730 [INFO] app.blueprints.vendor_user.controller.routes - Received vendor user data: {'id': 'user-005-admin', 'user_id': 'user-006', 'vendor_id': 'vendor-001', 'role': 'admin', 'created_at': '2025-01-01T10:00:00Z', 'updated_at': '2025-01-01T10:00:00Z', 'created_by': 'system', 'updated_by': 'system'}
+2026-03-29 17:22:00,730 [INFO] app.blueprints.vendor_user.services.vendor_user_service - Creating vendor user in service layer with data: {'id': 'user-005-admin', 'user_id': 'user-006', 'vendor_id': 'vendor-001', 'role': 'admin', 'created_at': '2025-01-01T10:00:00Z', 'updated_at': '2025-01-01T10:00:00Z', 'created_by': 'system', 'updated_by': 'system'}
+2026-03-29 17:22:00,730 [INFO] app.blueprints.vendor_user.services.vendor_user_service - Vendor user object created in service layer: 5e551d87-127b-46c8-b36d-a025f0bf6d3a
+2026-03-29 17:22:00,731 [INFO] app.blueprints.vendor_user.repositories.vendor_user_repository - Creating vendor user with ID: 5e551d87-127b-46c8-b36d-a025f0bf6d3a
+2026-03-29 17:22:00,905 [INFO] app.blueprints.vendor_user.repositories.vendor_user_repository - Vendor user created successfully: 5e551d87-127b-46c8-b36d-a025f0bf6d3a
+2026-03-29 17:22:00,905 [INFO] app.blueprints.vendor_user.controller.routes - Created vendor user in repo: 5e551d87-127b-46c8-b36d-a025f0bf6d3a
+2026-03-29 17:22:00,906 [INFO] werkzeug - 127.0.0.1 - - [29/Mar/2026 17:22:00] "[35m[1mPOST /vendor_user/ HTTP/1.1[0m" 201 -
+2026-03-29 17:22:04,400 [INFO] werkzeug - 127.0.0.1 - - [29/Mar/2026 17:22:04] "[32mGET /vendor_user HTTP/1.1[0m" 308 -
+2026-03-29 17:22:04,402 [DEBUG] app.blueprints.vendor_user.controller.routes - Fetching all vendor users
+2026-03-29 17:22:04,402 [DEBUG] app.blueprints.vendor_user.services.vendor_user_service - Retrieving all vendor users from service layer
+2026-03-29 17:22:04,402 [DEBUG] app.blueprints.vendor_user.repositories.vendor_user_repository - Fetching all vendor users from database
+2026-03-29 17:22:04,404 [INFO] app.blueprints.vendor_user.controller.routes - Retrieved 8 users
+2026-03-29 17:22:04,405 [INFO] werkzeug - 127.0.0.1 - - [29/Mar/2026 17:22:04] "GET /vendor_user/ HTTP/1.1" 200 -
