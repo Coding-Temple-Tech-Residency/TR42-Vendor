@@ -1,22 +1,25 @@
-# Virtual environment
-venv/
-
-# Python cache
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
 
 # Environment variables
 .env
 
-# macOS junk
-.DS_Store
+# Logs
+*.log
 
-# IDE files
-.idea/
-.vscode/
-.env
-__pycache__/
-*.pyc
+# Node / frontend
 node_modules/
 dist/
 build/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
