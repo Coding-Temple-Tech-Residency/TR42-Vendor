@@ -1,7 +1,8 @@
 from flask import Flask
-from .extensions import db, ma
-from .config import Config
-from .logging_config import setup_logging
+from app.extensions import db, ma
+from app.config import Config
+from app.logging_config import setup_logging
+
 
 def create_app():
     app = Flask(__name__)
@@ -12,21 +13,19 @@ def create_app():
     db.init_app(app)
     ma.init_app(app)
 
-    from .routes import main
-    from . import models
-    app.register_blueprint(main)
-
     try:
-        from .blueprints.vendor_user import vendor_user_bp
-        app.register_blueprint(vendor_user_bp, url_prefix="/vendor_user")
+        from app.blueprints.vendor_users import vendor_users_bp
+
+        app.register_blueprint(vendor_users_bp, url_prefix="/vendor_user")
     except ImportError:
         pass
 
     try:
-        from .blueprints.vendor import vendor_bp
-        app.register_blueprint(vendor_bp, url_prefix="/vendor")
-    except ImportError:
-        pass
+        from app.blueprints.vendors import vendors_bp
+
+        app.register_blueprint(vendors_bp)
+    except ImportError as e:
+        print(f"Vendor blueprint import failed: {e}")
 
     with app.app_context():
         db.create_all()

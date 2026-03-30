@@ -1,10 +1,10 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from app.blueprints.vendor_user.repositories.vendor_user_repository import VendorUserRepository
+from app.blueprints.vendor_users.repositories.vendor_users_repository import VendorUserRepository
 
 @pytest.fixture
 def mock_vendor_user_query():
-    with patch('app.blueprints.vendor_user.repositories.vendor_user_repository.VendorUser') as MockVendorUser:
+    with patch('app.blueprints.vendor_users.repositories.vendor_user_repository.VendorUser') as MockVendorUser:
         yield MockVendorUser
 
 def test_get_all_returns_all_vendor_users(mock_vendor_user_query):
@@ -29,7 +29,7 @@ def test_get_all_returns_empty_list_when_no_users(mock_vendor_user_query):
     # Assert
     assert result == []
     mock_vendor_user_query.query.all.assert_called_once()
-    @patch('app.blueprints.vendor_user.repositories.vendor_user_repository.db')
+    @patch('app.blueprints.vendor_user.repositories.vendor_users_repository.db')
     def test_create_adds_and_commits_vendor_user(mock_db):
         # Arrange
         mock_vendor_user = MagicMock()
@@ -42,7 +42,7 @@ def test_get_all_returns_empty_list_when_no_users(mock_vendor_user_query):
         mock_db.session.commit.assert_called_once()
         assert result == mock_vendor_user
 
-    @patch('app.blueprints.vendor_user.repositories.vendor_user_repository.db')
+    @patch('app.blueprints.vendor_user.repositories.vendor_users_repository.db')
     def test_create_raises_exception_on_db_error(mock_db):
         # Arrange
         mock_vendor_user = MagicMock()

@@ -1,12 +1,12 @@
 from flask import Blueprint, request
-from ..schemas import vendor_user_schema, vendor_users_schema
-from ..services.vendor_user_service import VendorUserService
+from app.blueprints.vendor_users.schemas import vendor_user_schema, vendor_users_schema
+from app.blueprints.vendor_users.services.vendor_users_service import VendorUserService
 import logging
 
 
 logger = logging.getLogger(__name__)
 
-vendor_user_bp = Blueprint("vendor_user", __name__)
+vendor_users_bp = Blueprint("vendor_users_bp", __name__)
 
 """
 Handles GET requests to the root endpoint of the vendor user blueprint.
@@ -15,7 +15,9 @@ Retrieves all vendor users using the VendorUserService and returns them serializ
 Returns:
     Response: A JSON response containing a list of all vendor users.
 """
-@vendor_user_bp.get("/")
+
+
+@vendor_users_bp.get("/")
 def get_vendor_users():
     try:
         logger.debug("Fetching all vendor users")
@@ -25,7 +27,6 @@ def get_vendor_users():
     except Exception as e:
         logger.error(f"Error fetching users: {str(e)}")
         return {"error": "An error occurred while fetching users"}, 500
-    
 
 
 """
@@ -43,7 +44,9 @@ Raises:
     BadRequest: If the request body is invalid or missing required fields
     ValidationError: If the provided data fails validation
 """
-@vendor_user_bp.post("/")
+
+
+@vendor_users_bp.post("/")
 def create_vendor_user():
     try:
         logger.debug("Creating a new vendor user")
@@ -55,4 +58,3 @@ def create_vendor_user():
     except Exception as e:
         logger.error(f"POST /vendor_user/ - Error creating user: {str(e)}")
         return {"error": "An error occurred while creating the user"}, 500
-   

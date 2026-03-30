@@ -1,7 +1,9 @@
 import uuid
 from datetime import datetime
-from app.blueprints.vendor_user.model import VendorUser
-from ..repositories.vendor_user_repository import VendorUserRepository
+from app.blueprints.vendor_users.model import VendorUser
+from app.blueprints.vendor_users.repositories.vendor_users_repository import (
+    VendorUserRepository,
+)
 import logging
 
 
@@ -9,14 +11,14 @@ logger = logging.getLogger(__name__)
 
 
 class VendorUserService:
-
     """
-        Retrieve all vendor users from the database.
+    Retrieve all vendor users from the database.
 
-        Returns:
-            list: A list of all VendorUser objects stored in the repository.
-                  Returns an empty list if no users exist.
-        """
+    Returns:
+        list: A list of all VendorUser objects stored in the repository.
+              Returns an empty list if no users exist.
+    """
+
     @staticmethod
     def get_all_users():
         try:
@@ -24,7 +26,7 @@ class VendorUserService:
             return VendorUserRepository.get_all()
         except Exception:
             logger.exception("Failed to retrieve vendor users in service layer")
-            raise 
+            raise
 
     """
         Create a new vendor user record in the database.
@@ -57,11 +59,11 @@ class VendorUserService:
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow(),
                 created_by=data.get("created_by"),
-                updated_by=data.get("updated_by")
+                updated_by=data.get("updated_by"),
             )
 
             logger.info(f"Vendor user object created in service layer: {new_user.id}")
             return VendorUserRepository.create(new_user)
         except Exception:
             logger.exception("Failed to create vendor user in service layer")
-            raise 
+            raise

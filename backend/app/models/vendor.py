@@ -1,4 +1,4 @@
-from server.app.extensions import db
+from app.extensions import db
 from datetime import datetime
 
 class Vendor(db.Model):
