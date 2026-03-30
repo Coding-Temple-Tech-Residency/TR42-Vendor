@@ -1,16 +1,12 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional
 import uuid
 import enum
 
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, DateTime, Boolean, Enum
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import String, DateTime, Boolean, Enum, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.extensions import db
-
-
-def utc_now():
-    return datetime.now(timezone.utc)
+from functions import utc_now
 
 
 class ComplianceStatus(enum.Enum):
@@ -34,10 +30,10 @@ class Vendor(db.Model):
 
     primary_contact_name: Mapped[Optional[str]] = mapped_column(String)
 
-    address: Mapped[Optional[str]] = mapped_column(String)
-    city: Mapped[Optional[str]] = mapped_column(String)
-    state: Mapped[Optional[str]] = mapped_column(String)
-    zip_code: Mapped[Optional[str]] = mapped_column(String)
+    address_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("addresses.address_id")
+    )
+    address: Mapped["Address"] = relationship()
 
     service_type: Mapped[Optional[str]] = mapped_column(String(100))
     status: Mapped[ComplianceStatus] = mapped_column(
