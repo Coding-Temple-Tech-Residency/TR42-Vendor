@@ -1,15 +1,22 @@
 from datetime import datetime, timezone
 from typing import Optional
 import uuid
+import enum
 
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, DateTime, Boolean
+from sqlalchemy import String, DateTime, Boolean, Enum
 from sqlalchemy.orm import Mapped, mapped_column
 from app.extensions import db
 
 
 def utc_now():
     return datetime.now(timezone.utc)
+
+
+class ComplianceStatus(enum.Enum):
+    EXPIRED = "expired"
+    INCOMPLETE = "incomplete"
+    COMPLETE = "complete"
 
 
 class Vendor(db.Model):
@@ -33,7 +40,9 @@ class Vendor(db.Model):
     zip_code: Mapped[Optional[str]] = mapped_column(String)
 
     service_type: Mapped[Optional[str]] = mapped_column(String(100))
-
+    status: Mapped[ComplianceStatus] = mapped_column(
+        Enum(ComplianceStatus), default=ComplianceStatus.COMPLETE
+    )
     onboarding: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
     description: Mapped[Optional[str]] = mapped_column(String)
