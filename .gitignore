@@ -1,2 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
+
+# Environment variables
+.env
+
+# Logs
+*.log
+
+# Node / frontend
+node_modules/
+dist/
+build/
+
+# IDE / OS
+.vscode/
+!.vscode/settings.json
+.idea/
 .DS_Store
 .git_backup/

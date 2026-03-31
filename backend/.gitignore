@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+.venv/
+
+# Environment variables
+.env
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Pyenv (optional, usually not needed)
+# .python-version
+
+# Logs
+*.log
