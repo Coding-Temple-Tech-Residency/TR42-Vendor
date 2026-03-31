@@ -9,5 +9,5 @@ class Address(BaseModel):
     street = db.Column(db.String)
     city = db.Column(db.String)
     state = db.Column(db.String(20))
-    zip = db.Column(db.String(10))
+    zipcode = db.Column(db.String(10))
     country = db.Column(db.String(2))
