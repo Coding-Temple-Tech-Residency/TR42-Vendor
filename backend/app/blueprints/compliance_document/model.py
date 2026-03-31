@@ -32,3 +32,11 @@ class ComplianceDocument(BaseModel):
     expiration_date = db.Column(db.DateTime)
 
     vendor = db.relationship('Vendor', backref='compliance_documents')
+
+class DriversLicense(BaseModel):
+    __tablename__ = 'drivers_license'
+
+    license_id = db.Column(db.String, primary_key=True)
+
+    license_number = db.Column(db.String)
+    expiration_date = db.Column(db.DateTime)
