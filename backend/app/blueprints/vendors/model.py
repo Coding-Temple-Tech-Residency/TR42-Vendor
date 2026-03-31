@@ -1,8 +1,11 @@
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Optional
 import uuid
 import enum
 
+from app.shared_models.address import Address
 from sqlalchemy import String, DateTime, Boolean, Enum, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.extensions import db
@@ -16,7 +19,7 @@ class ComplianceStatus(enum.Enum):
 
 
 class Vendor(db.Model):
-    __tablename__ = "vendor"
+    __tablename__ = "vendors"
 
     vendor_id: Mapped[str] = mapped_column(
         String(36), primary_key=True, default=lambda: str(uuid.uuid4())
@@ -31,10 +34,14 @@ class Vendor(db.Model):
     primary_contact_name: Mapped[Optional[str]] = mapped_column(String)
 
     address_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("addresses.address_id")
+        ForeignKey("addresses.address_id"), unique=True
     )
-    address: Mapped["Address"] = relationship()
-
+    address: Mapped[Optional["Address"]] = relationship(
+        single_parent=True,
+        back_populates="vendor",
+        uselist=False,
+        cascade="all, delete-orphan",
+    )
     service_type: Mapped[Optional[str]] = mapped_column(String(100))
     status: Mapped[ComplianceStatus] = mapped_column(
         Enum(ComplianceStatus), default=ComplianceStatus.COMPLETE
