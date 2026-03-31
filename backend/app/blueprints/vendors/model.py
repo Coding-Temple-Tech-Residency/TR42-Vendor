@@ -5,7 +5,7 @@ from typing import Optional
 import uuid
 import enum
 
-from app.shared_models.address import Address
+from app.blueprints.address.model import Address
 from sqlalchemy import String, DateTime, Boolean, Enum, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.extensions import db
