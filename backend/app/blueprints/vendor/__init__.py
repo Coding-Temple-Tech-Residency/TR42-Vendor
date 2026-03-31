@@ -1,1 +1,1 @@
-from .controller.routes import vendors_bp
+from .controller.routes import vendor_bp

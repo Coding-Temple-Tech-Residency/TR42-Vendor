@@ -1,6 +1,6 @@
 import logging
 from app.extensions import db
-from app.blueprints.vendors.model import Vendor
+from app.blueprints.vendor.model import Vendor
 
 logger = logging.getLogger(__name__)
 

@@ -1,10 +1,7 @@
-from datetime import datetime, timezone
 import enum
 from app.extensions import db
-from app.models.base import BaseModel
-
-def utc_now():
-    return datetime.now(timezone.utc)
+from app.base import BaseModel
+from functions import utc_now
 
 
 class ComplianceStatus(enum.Enum):
@@ -14,7 +11,7 @@ class ComplianceStatus(enum.Enum):
 
 
 class Vendor(BaseModel):
-    __tablename__ = 'vendor'
+    __tablename__ = "vendor"
 
     vendor_id = db.Column(db.String, primary_key=True)
 
@@ -26,16 +23,15 @@ class Vendor(BaseModel):
     contact_phone = db.Column(db.String, nullable=False)
 
     status = db.Column(
-        db.Enum('active', 'inactive', name='vendor_status'),
-        nullable=False
+        db.Enum("active", "inactive", name="vendor_status"), nullable=False
     )
 
     onboarding = db.Column(db.Boolean, nullable=False)
 
     compliance_status = db.Column(
-        db.Enum('expired', 'incomplete', 'complete', name='compliance_status')
+        db.Enum("expired", "incomplete", "complete", name="compliance_status")
     )
 
-    address_id = db.Column(db.String, db.ForeignKey('address.address_id'))
+    address_id = db.Column(db.String, db.ForeignKey("address.address_id"))
 
-    address = db.relationship('Address', backref='vendors')
+    address = db.relationship("Address", backref="vendors")
