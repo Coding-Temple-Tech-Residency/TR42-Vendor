@@ -1,14 +1,25 @@
 from app.extensions import db
+from app.models.base import BaseModel
 
+class Insurance(BaseModel):
 
-class VendorUser(db.Model):
-    __tablename__ = "vendor_user"
+    __tablename__ = 'insurance'
 
-    id = db.Column(db.String, primary_key=True)
-    user_id = db.Column(db.String, nullable=False)
-    vendor_id = db.Column(db.String)
-    role = db.Column(db.String)  # or Enum if you mapped core.role_options
-    created_at = db.Column(db.DateTime)
-    updated_at = db.Column(db.DateTime)
-    created_by = db.Column(db.String, nullable=False)
-    updated_by = db.Column(db.String, nullable=False)
+    insurance_id = db.Column(db.String, primary_key=True)
+    contractor_id = db.Column(
+        db.String,
+        db.ForeignKey('contractors.contractor_id'),
+        nullable=False
+    )
+    insurance_type = db.Column(db.String, nullable=False)
+    policy_number = db.Column(db.Integer, nullable=False)
+    provider_name = db.Column(db.String, nullable=False)
+    provider_phone = db.Column(db.String, nullable=False)
+    coverage_amount = db.Column(db.Numeric)
+    deductible = db.Column(db.Numeric)
+    effective_date = db.Column(db.DateTime)
+    expiration_date = db.Column(db.DateTime)
+    insurance_document_url = db.Column(db.String(100))
+    insurance_verified = db.Column(db.Boolean, default=False)
+    additional_insurance_required = db.Column(db.Boolean)
+    additional_insured_certificate_url = db.Column(db.String(100))

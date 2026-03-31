@@ -14,3 +14,22 @@ class Service(BaseModel):
         back_populates='service',
         cascade='all, delete-orphan'
     )
+
+class VendorService(db.Model):
+    __tablename__ = 'vendor_services'
+
+    id = db.Column(db.String, primary_key=True)
+
+    vendor_id = db.Column(
+        db.String,
+        db.ForeignKey('vendor.vendor_id')
+    )
+
+    service_id = db.Column(
+        db.String,
+        db.ForeignKey('services.service_id')
+    )
+
+    # relationships
+    vendor = db.relationship('Vendor', backref='services_link')
+    service = db.relationship('Service', backref='vendor_links')
