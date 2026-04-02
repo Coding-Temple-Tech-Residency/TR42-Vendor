@@ -1,41 +1,51 @@
-from marshmallow import pre_load, validates
 from app.extensions import ma
-from .model import Vendor
-
-from app.functions import (
-    strip_input,
-    validate_name,
-    validate_address,
-    validate_email_format,
-    validate_phone_format,
-)
+from marshmallow import fields
+from app.blueprints.vendor.model import Vendor
 
 
 class VendorSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Vendor
         load_instance = True
+        include_fk = True
 
-    @pre_load
-    def preprocess(self, data, **kwargs):
-        return strip_input(data)
 
-    @validates("company_name")
-    def check_company_name(self, value, **kwargs):
-        return validate_name(value, field_name="Company name")
+    users = fields.Nested("VendorUserSchema", many=True, dump_only=True)
 
-    @validates("address")
-    def check_address(self, value, **kwargs):
-        return validate_address(value)
-
-    @validates("company_email")
-    def check_company_email(self, value, **kwargs):
-        return validate_email_format(value)
-
-    @validates("company_phone")
-    def check_company_phone(self, value, **kwargs):
-        return validate_phone_format(value)
+    # MUST be a STRING — not a class reference
+    address = fields.Nested("AddressSchema")
 
 
 vendor_schema = VendorSchema()
 vendors_schema = VendorSchema(many=True)
+
+
+# -----------------------------
+# Registration Schemas
+# -----------------------------
+class UserRegistrationSchema(ma.Schema):
+    first_name = fields.String(required=True)
+    last_name = fields.String(required=True)
+    email = fields.Email(required=True)
+    username = fields.String(required=True)
+    password = fields.String(required=True)
+
+
+class VendorRegistrationSchema(ma.Schema):
+    company_name = fields.String(required=True)
+    company_email = fields.Email(required=True)
+    company_phone = fields.String(required=True)
+    service_type = fields.String(required=True)
+
+
+class AddressRegistrationSchema(ma.Schema):
+    street = fields.String(required=True)
+    city = fields.String(required=True)
+    state = fields.String(required=True)
+    zipcode = fields.String(required=True)
+
+
+class CombinedVendorRegistrationSchema(ma.Schema):
+    user = fields.Nested(UserRegistrationSchema, required=True)
+    vendor = fields.Nested(VendorRegistrationSchema, required=True)
+    address = fields.Nested(AddressRegistrationSchema, required=True)

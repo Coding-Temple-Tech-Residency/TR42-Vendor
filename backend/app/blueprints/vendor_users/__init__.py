@@ -1,1 +1,1 @@
-from .controller.routes import vendor_users_bp
+#from .routes import vendor_user_bp

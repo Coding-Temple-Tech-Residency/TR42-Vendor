@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch, MagicMock
 from flask import Flask, jsonify
-from app.blueprints.vendor_users.controller.routes import vendor_users_bp
+from backend.app.blueprints.vendor_users.routes import vendor_users_bp
 
 
 @pytest.fixture
