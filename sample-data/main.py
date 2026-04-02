@@ -152,9 +152,9 @@ def generate_contractors(n, vendors, users, addresses, vendor_users):
             "employee_number": fake.bothify("EMP####"),
             "vendor_id": vendor["vendor_id"],
             "vendor_manager_id": random.choice(users)["user_id"],
-            "user_id": user["user_id"],  # ✅ NEW RELATIONSHIP
+            "user_id": user["user_id"],  
             "first_name": user["first_name"],  # keep consistent with user
-            "last_name": user["last_name"],
+            "last_name": user["last_name"], # keep consistent with user
             "middle_name": fake.first_name(),
             "contact_number": fake.phone_number(),
             "alternate_number": fake.phone_number(),
