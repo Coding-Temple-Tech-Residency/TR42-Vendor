@@ -14,6 +14,13 @@ def now():
     return datetime.now()
 
 USER_TYPES = ["operator", "vendor", "contractor"]
+VENDOR_STATUS = ["active", "inactive"]
+COMPLIANCE_STATUS = ["expired", "incomplete", "complete"]
+ROLE_OPTIONS = ["user", "manager", "admin"]
+CONTRACTOR_STATUS = ["active", "inactive"]
+ORDER_STATUS = ["unassigned", "assigned", "in progress", "completed"]
+PRIORITY = ["routine", "urgent", "emergency"]
+TICKET_STATUS = ["assigned", "in progress", "completed"]
 
 def generate_users(n=20):
     users = []
@@ -42,11 +49,33 @@ def generate_users(n=20):
 
     return users
 
+def generate_addresses(n=30, users=[]):
+    addresses = []
+
+    for _ in range(n):
+        creator = random.choice(users)["user_id"]
+
+        addresses.append({
+            "address_id": gen_id(),
+            "street": fake.street_address(),
+            "city": fake.city(),
+            "state": fake.state(),
+            "zip": fake.zipcode(),
+            "country": "US",
+            "created_at": now(),
+            "updated_at": now(),
+            "created_by": creator,
+            "updated_by": creator
+        })
+
+    return addresses
 
 def main():
-    users = generate_users(10)
+    users = generate_users(100)
+    addresses = generate_addresses(10, users)
     
-    print(users)
+    
+    print(addresses)
 
 if __name__ == "__main__":
     main()
