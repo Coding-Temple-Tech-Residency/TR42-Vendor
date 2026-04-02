@@ -101,12 +101,35 @@ def generate_vendors(n=10, users=[], addresses=[]):
 
     return vendors
 
+def generate_vendor_users(users, vendors, max_ratio=0.6):
+    vendor_users = []
+
+    num_vendor_users = int(len(users) * max_ratio) # limits the number of users that can be "vendor_users". 
+    selected_users = random.sample(users, num_vendor_users)
+
+    for user in selected_users:
+        creator = random.choice(users)["user_id"]
+
+        vendor_users.append({
+            "id": gen_id(),
+            "user_id": user["user_id"],
+            "vendor_id": random.choice(vendors)["vendor_id"],
+            "role": random.choices(ROLE_OPTIONS, [80, 15, 5])[0],
+            "created_at": now(),
+            "updated_at": now(),
+            "created_by": creator,
+            "updated_by": creator
+        })
+
+    return vendor_users
+
 def main():
     users = generate_users(100)
     addresses = generate_addresses(30, users)
     vendors = generate_vendors(10, users, addresses)
+    vendor_users = generate_vendor_users(users, vendors, max_ratio=0.3)
     
-    print(vendors)
+    print(vendor_users)
 
 if __name__ == "__main__":
     main()
