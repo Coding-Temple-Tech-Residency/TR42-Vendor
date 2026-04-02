@@ -252,14 +252,39 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
 
     return tickets
 
+def serialize(value):
+    if isinstance(value, datetime):
+        return value.isoformat()
+    return value
+
+
+def export_to_csv(data_dict, folder="data"):
+    os.makedirs(folder, exist_ok=True)
+
+    for table_name, records in data_dict.items():
+        if not records:
+            continue
+
+        file_path = os.path.join(folder, f"{table_name}.csv")
+        headers = records[0].keys()
+
+        with open(file_path, "w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=headers)
+            writer.writeheader()
+
+            for row in records:
+                writer.writerow({k: serialize(v) for k, v in row.items()})
+
+        print(f"✅ {table_name} exported to {file_path}")
+
 def main():
-    users = generate_users(100)
+    users = generate_users(1000)
     addresses = generate_addresses(30, users)
     vendors = generate_vendors(10, users, addresses)
     vendor_users = generate_vendor_users(users, vendors, max_ratio=0.3)
     
     contractors = generate_contractors(
-        n=20,
+        n=200,
         vendors=vendors,
         users=users,
         addresses=addresses,
@@ -268,8 +293,18 @@ def main():
     
     work_orders = generate_work_orders(50, vendors, users)
     tickets = generate_tickets(200, work_orders, contractors, vendors, users)
-    print(work_orders)
-    print(tickets)
+    
+    data = {
+        "user": users,
+        "address": addresses,
+        "vendor": vendors,
+        "vendor_user": vendor_users,
+        "contractors": contractors,
+        "work_orders": work_orders,
+        "ticket": tickets
+    }
+
+    export_to_csv(data)
 
 if __name__ == "__main__":
     main()
