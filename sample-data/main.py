@@ -70,12 +70,43 @@ def generate_addresses(n=30, users=[]):
 
     return addresses
 
+def generate_vendors(n=10, users=[], addresses=[]):
+    vendors = []
+
+    for _ in range(n):
+        creator = random.choice(users)["user_id"]
+        updater = random.choice(users)["user_id"]
+        address = random.choice(addresses)["address_id"]
+
+        vendors.append({
+            "vendor_id": gen_id(),
+            "company_name": fake.unique.company(),
+            "company_code": fake.bothify(text="??-####"),
+            "start_date": fake.date_time_between(start_date='-2y', end_date='-1y'),
+            "end_date": None,
+            "primary_contact_name": fake.name(),
+            "contact_email": fake.company_email(),
+            "contact_phone": fake.phone_number(),
+            "status": random.choice(VENDOR_STATUS),
+            "vendor_code": fake.bothify(text="VEND-####"),
+            "onboarding": random.choice([True, False]),
+            "compliance_status": random.choice(COMPLIANCE_STATUS),
+            "description": fake.text(max_nb_chars=100),
+            "created_at": now(),
+            "updated_at": now(),
+            "created_by": creator,
+            "updated_by": updater,
+            "address_id": address
+        })
+
+    return vendors
+
 def main():
     users = generate_users(100)
-    addresses = generate_addresses(10, users)
+    addresses = generate_addresses(30, users)
+    vendors = generate_vendors(10, users, addresses)
     
-    
-    print(addresses)
+    print(vendors)
 
 if __name__ == "__main__":
     main()
