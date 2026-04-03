@@ -28,6 +28,7 @@ CONTRACTOR_STATUS = ["active", "inactive"]
 ORDER_STATUS = ["unassigned", "assigned", "in progress", "completed"]
 PRIORITY = ["routine", "urgent", "emergency"]
 TICKET_STATUS = ["assigned", "in progress", "completed"]
+INVOICE_STATUS = ["draft", "submitted", "approved", "paid", "rejected"]
 
 def generate_users(n=20):
     users = []
@@ -252,6 +253,72 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
 
     return tickets
 
+def generate_invoices(n, work_orders, tickets, users):
+    invoices = []
+
+    for _ in range(n):
+        creator = random.choice(users)["user_id"]
+        updater = random.choice(users)["user_id"]
+
+        ticket = random.choice(tickets)
+
+        invoice_date = fake.date_time_between(start_date='-30d', end_date='now')
+        due_date = fake.date_time_between(start_date=invoice_date, end_date='+30d')
+
+        invoices.append({
+            "invoice_id": gen_id(),
+            "work_order_id": ticket["work_order_id"],  # ✅ consistent
+            "ticket_id": ticket["ticket_id"],          # ✅ correct FK
+            "vendor_id": ticket["vendor_id"],          # ✅ consistent
+            "invoice_date": invoice_date,
+            "due_date": due_date,
+            "period_start": fake.date_time_between(start_date='-60d', end_date=invoice_date),
+            "period_end": invoice_date,
+            "total_amount": 0,  # will update after line items
+            "invoice_status": random.choice(INVOICE_STATUS),
+            "created_at": now(),
+            "updated_at": now(),
+            "created_by": creator,
+            "updated_by": updater
+        })
+
+    return invoices
+
+def generate_line_items(invoices, users):
+    line_items = []
+
+    for invoice in invoices:
+        num_items = random.randint(1, 5)
+        total = 0
+
+        for _ in range(num_items):
+            creator = random.choice(users)["user_id"]
+            updater = random.choice(users)["user_id"]
+
+            quantity = random.randint(1, 20)
+            rate = round(random.uniform(50, 500), 2)
+            amount = round(quantity * rate, 2)
+
+            total += amount
+
+            line_items.append({
+                "line_item_id": gen_id(),
+                "invoice_id": invoice["invoice_id"],
+                "quantity": quantity,
+                "rate": rate,
+                "amount": amount,
+                "description": fake.sentence(),
+                "created_at": now(),
+                "updated_at": now(),
+                "created_by": creator,
+                "updated_by": updater
+            })
+
+        # ✅ update invoice total AFTER items are created
+        invoice["total_amount"] = round(total, 2)
+
+    return line_items
+
 def serialize(value):
     if isinstance(value, datetime):
         return value.isoformat()
@@ -294,6 +361,9 @@ def main():
     work_orders = generate_work_orders(50, vendors, users)
     tickets = generate_tickets(200, work_orders, contractors, vendors, users)
     
+    invoices = generate_invoices(30, work_orders, tickets, users)
+    line_items = generate_line_items(invoices, users)
+    
     data = {
         "user": users,
         "address": addresses,
@@ -301,7 +371,9 @@ def main():
         "vendor_user": vendor_users,
         "contractors": contractors,
         "work_orders": work_orders,
-        "ticket": tickets
+        "ticket": tickets,
+        "invoice": invoices,        # ✅ NEW
+        "line_item": line_items     # ✅ NEW
     }
 
     export_to_csv(data)
