@@ -21,8 +21,8 @@ def create_user():
     user = UserService.create(data)
     return user_schema.dump(user), 201
 
-@user_bp.get("/")
-def get_users():
-    users = UserService.get_all()
-    return users_schema.dump(users), 200
+# @user_bp.get("/")
+# def get_users():
+#     users = UserService.get_all()
+#     return users_schema.dump(users), 200
 

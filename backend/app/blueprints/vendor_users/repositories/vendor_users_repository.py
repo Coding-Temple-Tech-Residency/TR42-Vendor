@@ -1,42 +1,50 @@
 from app.extensions import db
 from ..model import VendorUser
 from uuid import uuid4
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class VendorUserRepository:
 
-    @staticmethod
-    def assign_user(data):
-        link = VendorUser(
-            id=str(uuid4()),
-            user_id=data["user_id"],
-            vendor_id=data["vendor_id"],
-            role=data["role"],
-            created_by="system",   
-            updated_by="system"    
-        )
+    """
+    Retrieve all vendor users from the database.
 
-        db.session.add(link)
-        db.session.commit()
-
-        # Reload with relationships
-        link = VendorUser.query.get(link.id)
-
-        return link
+    Returns:
+        list: A list of all VendorUser objects in the database.
+              Returns an empty list if no vendor users exist.
+    """
 
     @staticmethod
-    def get_users_for_vendor(vendor_id: str):
-        return VendorUser.query.filter_by(vendor_id=vendor_id).all()
+    def get_all():
+        try:
+            logger.debug("Fetching all vendor users from database")
+            return VendorUser.query.all()
+        except Exception:
+            logger.exception("Failed to fetch vendor users")
+            raise
 
-    @staticmethod
-    def get_vendors_for_user(user_id: str):
-        return VendorUser.query.filter_by(user_id=user_id).all()
+    """
+        Adds a new VendorUser instance to the database and commits the transaction.
 
+        Args:
+            vendor_user (VendorUser): The VendorUser object to be added to the database.
+
+        Returns:
+            VendorUser: The VendorUser object that was added to the database.
+        """
+    
     @staticmethod
-    def delete_link(link_id: str):
-        link = VendorUser.query.get(link_id)
-        if not link:
-            return None
-        db.session.delete(link)
-        db.session.commit()
-        return True
+    def create(vendor_user: VendorUser):
+        try:
+            logger.debug(f"Creating vendor user with ID: {vendor_user.id}")
+            db.session.add(vendor_user)
+            db.session.commit()
+            logger.info(f"Vendor user created successfully: {vendor_user.id}")
+            return vendor_user
+        except Exception:
+            logger.exception(f"Failed to create vendor user: {vendor_user.id}")
+            db.session.rollback()
+            raise

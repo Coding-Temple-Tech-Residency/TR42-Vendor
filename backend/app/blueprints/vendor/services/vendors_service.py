@@ -1,36 +1,36 @@
 from app.blueprints.vendor.repositories.vendors_repository import VendorRepository
-from werkzeug.exceptions import BadRequest
+from app.blueprints.vendor.model import Vendor
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class VendorService:
-   
 
     @staticmethod
-    def create(data):
+    def get_all_vendors():
         try:
-            vendor = VendorRepository.create_vendor(data)
-            return vendor
-        except Exception as e:
-            raise BadRequest(str(e))
+            logger.debug("Retrieving all vendors from service layer")
+            return VendorRepository.get_all()
+        except Exception:
+            logger.exception("Failed to retrieve vendors in service layer")
+            raise
 
     @staticmethod
-    def get_all():
-        return VendorRepository.get_all()
+    def create_vendor(vendor: Vendor):
+        try:
+            logger.info(
+                "Creating vendor in service layer with company_name: %s",
+                vendor.company_name,
+            )
 
-    @staticmethod
-    def get(vendor_id):
-        return VendorRepository.get_by_id(vendor_id)
+            existing_vendor = VendorRepository.get_by_company_name(vendor.company_name)
+            if existing_vendor:
+                raise ValueError("Vendor with this company name already exists")
 
-    @staticmethod
-    def update(vendor_id, data):
-        vendor = VendorRepository.get_by_id(vendor_id)
-        if not vendor:
-            return None
-        return VendorRepository.update(vendor, data)
+            return VendorRepository.create(vendor)
 
-    @staticmethod
-    def delete(vendor_id):
-        vendor = VendorRepository.get_by_id(vendor_id)
-        if not vendor:
-            return None
-        return VendorRepository.delete(vendor)
+        except Exception:
+            logger.exception("Failed to create vendor in service layer")
+            raise

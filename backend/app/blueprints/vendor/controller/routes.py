@@ -16,7 +16,7 @@ vendor_bp = Blueprint("vendor_bp", __name__, url_prefix="/vendors")
 def get_vendors():
     try:
         logger.debug("Fetching all vendors")
-        vendor = VendorService.get_all()
+        vendor = VendorService.get_all_vendors()
         logger.info(f"Retrieved {len(vendor)} vendors")
         return vendors_schema.jsonify(vendor), 200
     except Exception:

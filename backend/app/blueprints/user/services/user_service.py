@@ -44,13 +44,13 @@ class UserService:
         }
         logger.info("Returning login response for user: %s", username)
 
-    @staticmethod
-    def get_all():
-        return UserRepository.get_all()
+    # @staticmethod
+    # def get_all():
+    #     return UserRepository.get_all()
 
-    @staticmethod
-    def get(user_id: str):
-        return UserRepository.get_by_id(user_id)
+    # @staticmethod
+    # def get(user_id: str):
+    #     return UserRepository.get_by_id(user_id)
 
     @staticmethod
     def create(data: dict):
@@ -60,17 +60,17 @@ class UserService:
 
         return UserRepository.create(data)
 
-    @staticmethod
-    def update(user_id: str, data: dict):
-        user = UserRepository.get_by_id(user_id)
-        if not user:
-            return None
-        return UserRepository.update(user, data)
+    # @staticmethod
+    # def update(user_id: str, data: dict):
+    #     user = UserRepository.get_by_id(user_id)
+    #     if not user:
+    #         return None
+    #     return UserRepository.update(user, data)
 
-    @staticmethod
-    def delete(user_id: str):
-        user = UserRepository.get_by_id(user_id)
-        if not user:
-            return None
-        UserRepository.delete(user)
-        return True
+    # @staticmethod
+    # def delete(user_id: str):
+    #     user = UserRepository.get_by_id(user_id)
+    #     if not user:
+    #         return None
+    #     UserRepository.delete(user)
+    #     return True
