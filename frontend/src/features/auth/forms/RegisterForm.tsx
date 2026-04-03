@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import TextInput from "../components/TextInput";
 import PasswordInput from "../components/PasswordInput";
 import AuthButton from "../components/AuthButton";
+import { getPasswordChecks, validateRegisterForm } from "../utils/authValidation";
 
 function RegisterForm() {
   const navigate = useNavigate();
@@ -17,32 +18,22 @@ function RegisterForm() {
     confirmPassword: "",
   });
 
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<any>({});
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm({ ...form, [e.target.name]: e.target.value });
-setError("");
+
+    // clear error for that field
+    setErrors({ ...errors, [e.target.name]: "" });
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    // simple validation
-    if (!form.firstName || !form.lastName || !form.email || !form.username) {
-      setError("Please fill out all fields.");
-      return;
-    }
+    const validationErrors = validateRegisterForm(form);
 
-    if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-
-    // password rules
-    const passwordRules = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
-
-    if (!passwordRules.test(form.password)) {
-      setError("Password must be at least 6 characters and include a number.");
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       return;
     }
 
@@ -52,65 +43,109 @@ setError("");
     navigate("/profile-setup");
   }
 
+  // store this once
+  const checks = getPasswordChecks(form.password);
+
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
 
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-
       {/* First + Last Name */}
       <div className="grid grid-cols-2 gap-5">
-        <TextInput
-          label="First Name"
-          name="firstName"
-          value={form.firstName}
-          onChange={handleChange}
-        />
+        <div>
+          <TextInput
+            label="First Name"
+            name="firstName"
+            value={form.firstName}
+            onChange={handleChange}
+          />
+          {errors.firstName && (
+            <p className="text-red-500 text-sm">{errors.firstName}</p>
+          )}
+        </div>
 
-        <TextInput
-          label="Last Name"
-          name="lastName"
-          value={form.lastName}
-          onChange={handleChange}
-        />
+        <div>
+          <TextInput
+            label="Last Name"
+            name="lastName"
+            value={form.lastName}
+            onChange={handleChange}
+          />
+          {errors.lastName && (
+            <p className="text-red-500 text-sm">{errors.lastName}</p>
+          )}
+        </div>
       </div>
 
       {/* Email */}
-      <TextInput
-        label="Email"
-        name="email"
-        type="email"
-        value={form.email}
-        onChange={handleChange}
-      />
+      <div>
+        <TextInput
+          label="Email"
+          name="email"
+          type="email"
+          value={form.email}
+          onChange={handleChange}
+        />
+        {errors.email && (
+          <p className="text-red-500 text-sm">{errors.email}</p>
+        )}
+      </div>
 
       {/* Username */}
-      <TextInput
-        label="Username"
-        name="username"
-        value={form.username}
-        onChange={handleChange}
-      />
+      <div>
+        <TextInput
+          label="Username"
+          name="username"
+          value={form.username}
+          onChange={handleChange}
+        />
+        {errors.username && (
+          <p className="text-red-500 text-sm">{errors.username}</p>
+        )}
+      </div>
 
       {/* Password */}
-      <PasswordInput
-        label="Password"
-        name="password"
-        value={form.password}
-        onChange={handleChange}
-      />
+      <div>
+        <PasswordInput
+          label="Password"
+          name="password"
+          value={form.password}
+          onChange={handleChange}
+        />
+
+        {errors.password && (
+          <p className="text-red-500 text-sm">{errors.password}</p>
+        )}
+
+        {/* password checklist */}
+        {form.password && (
+          <div className="text-sm mt-1 space-y-1">
+            <p className={checks.length ? "text-green-600" : "text-gray-400"}>
+              {checks.length ? "✓" : "•"} At least 6 characters
+            </p>
+            <p className={checks.number ? "text-green-600" : "text-gray-400"}>
+              {checks.number ? "✓" : "•"} Includes a number
+            </p>
+          </div>
+        )}
+      </div>
 
       {/* Confirm Password */}
-      <PasswordInput
-        label="Confirm Password"
-        name="confirmPassword"
-        value={form.confirmPassword}
-        onChange={handleChange}
-      />
+      <div>
+        <PasswordInput
+          label="Confirm Password"
+          name="confirmPassword"
+          value={form.confirmPassword}
+          onChange={handleChange}
+        />
+        {errors.confirmPassword && (
+          <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
+        )}
+      </div>
 
       {/* Button */}
       <AuthButton type="submit">
-  Next
-</AuthButton>
+        Next
+      </AuthButton>
 
     </form>
   );
