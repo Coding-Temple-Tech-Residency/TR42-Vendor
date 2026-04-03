@@ -45,10 +45,14 @@
 -- where i.invoice_status = 'submitted'
 -- group by 1;
 
+select ticket_id, completed_at, assigned_at
+from ticket;
+
 select 
     v.company_name,
     avg(julianday(t.completed_at) - julianday(t.assigned_at)) as avg_ticket_completion_time
 from ticket t
 join vendor v
 using(vendor_id)
+where t.completed_at >= datetime('now', '-30 days')
 group by 1;

@@ -20,6 +20,7 @@ def gen_id():
 def now():
     return datetime.now()
 
+
 USER_TYPES = ["operator", "vendor", "contractor"]
 VENDOR_STATUS = ["active", "inactive"]
 COMPLIANCE_STATUS = ["expired", "incomplete", "complete"]
@@ -29,6 +30,8 @@ ORDER_STATUS = ["unassigned", "assigned", "in progress", "completed"]
 PRIORITY = ["routine", "urgent", "emergency"]
 TICKET_STATUS = ["assigned", "in progress", "completed"]
 INVOICE_STATUS = ["draft", "submitted", "approved", "paid", "rejected"]
+WELL_STATUS = ["active", "inactive", "plugged", "drilling"]
+WELL_TYPE = ["oil", "gas", "injection", "disposal"]
 
 def generate_users(n=20):
     users = []
@@ -182,14 +185,21 @@ def generate_contractors(n, vendors, users, addresses, vendor_users):
 
     return contractors
 
-def generate_work_orders(n, vendors, users):
+def generate_work_orders(n, vendor_wells, users, wells):
     work_orders = []
 
     for _ in range(n):
         creator = random.choice(users)["user_id"]
         updater = random.choice(users)["user_id"]
+        well = random.choice(wells)
+        valid_vendor_ids = [
+            vw["vendor_id"]
+            for vw in vendor_wells
+            if vw["well_id"] == well["well_id"]
+        ]
 
-        assigned_vendor = random.choice(vendors)["vendor_id"]
+        assigned_vendor = random.choice(valid_vendor_ids)
+        
 
         work_orders.append({
             "work_order_id": gen_id(),
@@ -204,7 +214,7 @@ def generate_work_orders(n, vendors, users):
             "estimated_cost": round(random.uniform(100, 10000), 2),
             "estimated_duration": random.randint(1, 72),  # hours
             "priority": random.choice(PRIORITY),
-            "well_id": None,  # optional for now
+            "well_id": well["well_id"],
             "created_at": now(),
             "updated_at": now(),
             "created_by": creator,
@@ -222,6 +232,9 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
 
         wo = random.choice(work_orders)
         contractor = random.choice(contractors)
+        
+        assigned_at = fake.date_time_between(start_date='-1y', end_date='now')
+        completed_at = fake.date_time_between(start_date=assigned_at, end_date='now')
 
         tickets.append({
             "ticket_id": gen_id(),
@@ -231,10 +244,10 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
             "priority": random.choice(PRIORITY),
             "status": random.choice(TICKET_STATUS),
             "vendor_id": contractor["vendor_id"],  # keep consistent
-            "start_time": fake.date_time_between(start_date='-10d', end_date='+5d'),
-            "due_date": fake.date_time_between(start_date='now', end_date='+10d'),
-            "assigned_at": fake.date_time_between(start_date='-30d', end_date='now'),
-            "completed_at": fake.date_time_between(start_date='-25d', end_date='+20d'),
+            "start_time": fake.date_time_between(start_date='-1y', end_date='now'),
+            "due_date": fake.date_time_between(start_date='-1y', end_date='+7d'),
+            "assigned_at": fake.date_time_between(start_date='-1y', end_date='now'),
+            "completed_at": fake.date_time_between(start_date='-1y', end_date='now'),
             "estimated_duration": random.randint(1, 24),
             "notes": fake.text(max_nb_chars=100),
             "contractor_start_location": f"{fake.latitude()},{fake.longitude()}",
@@ -267,9 +280,9 @@ def generate_invoices(n, work_orders, tickets, users):
 
         invoices.append({
             "invoice_id": gen_id(),
-            "work_order_id": ticket["work_order_id"],  # ✅ consistent
-            "ticket_id": ticket["ticket_id"],          # ✅ correct FK
-            "vendor_id": ticket["vendor_id"],          # ✅ consistent
+            "work_order_id": ticket["work_order_id"],  
+            "ticket_id": ticket["ticket_id"],          
+            "vendor_id": ticket["vendor_id"],          
             "invoice_date": invoice_date,
             "due_date": due_date,
             "period_start": fake.date_time_between(start_date='-60d', end_date=invoice_date),
@@ -319,6 +332,106 @@ def generate_line_items(invoices, users):
 
     return line_items
 
+
+
+def generate_wells(n, users):
+    wells = []
+
+    for _ in range(n):
+        creator = random.choice(users)["user_id"]
+        updater = random.choice(users)["user_id"]
+
+        spud_date = fake.date_time_between(start_date='-10y', end_date='-1y')
+        completion_date = fake.date_time_between(start_date=spud_date, end_date='now')
+
+        wells.append({
+            "well_id": gen_id(),
+            "api_number": fake.bothify("##-###-#####"),
+            "well_name": f"{fake.last_name()} {fake.random_letter()}-{random.randint(1, 99)}",
+            "operator": random.randint(1000, 9999),  # could later FK to company table
+            "status": random.choice(WELL_STATUS),
+            "type": random.choice(WELL_TYPE),
+            "range": fake.bothify("##"),
+            "quarter": random.choice(["NE", "NW", "SE", "SW"]),
+            "ground_elevation": random.randint(1000, 8000),
+            "total_depth": random.randint(2000, 20000),
+            "geofence_radius": random.randint(50, 500),
+            "spud_date": spud_date,
+            "completion_date": completion_date,
+            "access_instructions": fake.sentence(),
+            "safety_notes": fake.sentence(),
+            "created_at": now(),
+            "updated_at": now(),
+            "created_by": creator,
+            "updated_by": updater
+        })
+
+    return wells
+
+def generate_well_locations(wells, users):
+    locations = []
+
+    for well in wells:
+        creator = random.choice(users)["user_id"]
+        updater = random.choice(users)["user_id"]
+
+        surface_lat = float(fake.latitude())
+        surface_lon = float(fake.longitude())
+
+        # simulate slight deviation for bottom hole
+        bottom_lat = surface_lat + random.uniform(-0.01, 0.01)
+        bottom_lon = surface_lon + random.uniform(-0.01, 0.01)
+
+        locations.append({
+            "well_location_id": gen_id(),
+            "well_id": well["well_id"],
+            "surface_latitude": surface_lat,
+            "surface_longitude": surface_lon,
+            "bottom_latitude": bottom_lat,
+            "bottom_longitude": bottom_lon,
+            "county": fake.city(),
+            "state": fake.state_abbr(),
+            "field_name": fake.word().capitalize() + " Field",
+            "section": random.randint(1, 36),
+            "township": fake.bothify("##"),
+            "created_at": now(),
+            "updated_at": now(),
+            "created_by": creator,
+            "updated_by": updater
+        })
+
+    return locations
+
+def generate_vendor_wells(vendors, wells, users):
+    vendor_wells = []
+    seen = set()
+
+    for well in wells:
+        num_vendors = random.randint(1, 3)
+        selected_vendors = random.sample(vendors, num_vendors)
+
+        for vendor in selected_vendors:
+            key = (vendor["vendor_id"], well["well_id"])
+            if key in seen:
+                continue
+
+            creator = random.choice(users)["user_id"]
+            updater = random.choice(users)["user_id"]
+
+            vendor_wells.append({
+                "id": gen_id(),
+                "vendor_id": vendor["vendor_id"],
+                "well_id": well["well_id"],
+                "created_at": now(),
+                "updated_at": now(),
+                "created_by": creator,
+                "updated_by": updater
+            })
+
+            seen.add(key)
+
+    return vendor_wells
+
 def serialize(value):
     if isinstance(value, datetime):
         return value.isoformat()
@@ -358,7 +471,11 @@ def main():
         vendor_users=vendor_users 
     )
     
-    work_orders = generate_work_orders(50, vendors, users)
+    wells = generate_wells(25, users)
+    well_locations = generate_well_locations(wells, users)
+    vendor_wells = generate_vendor_wells(vendors, wells, users)
+    
+    work_orders = generate_work_orders(50, vendor_wells, users, wells)
     tickets = generate_tickets(200, work_orders, contractors, vendors, users)
     
     invoices = generate_invoices(30, work_orders, tickets, users)
@@ -370,10 +487,13 @@ def main():
         "vendor": vendors,
         "vendor_user": vendor_users,
         "contractors": contractors,
+        "well": wells,                    
+        "well_location": well_locations,   
+        "vendor_well": vendor_wells,       
         "work_orders": work_orders,
         "ticket": tickets,
-        "invoice": invoices,        # ✅ NEW
-        "line_item": line_items     # ✅ NEW
+        "invoice": invoices,
+        "line_item": line_items
     }
 
     export_to_csv(data)
