@@ -4,7 +4,7 @@ from ..schemas import user_schema, users_schema
 from flask import Blueprint, request
 
 
-user_bp = Blueprint("user", __name__)
+user_bp = Blueprint("user_bp", __name__)
 
 
 @user_bp.post("/login")

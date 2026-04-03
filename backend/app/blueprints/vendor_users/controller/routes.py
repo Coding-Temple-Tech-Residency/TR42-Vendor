@@ -17,6 +17,7 @@ Returns:
 """
 
 
+
 @vendor_user_bp.get("/")
 def get_vendor_users():
     try:

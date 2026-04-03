@@ -1,2 +1,1 @@
-
-#from .routes import user_bp
+#from .controller.routes import user_bp

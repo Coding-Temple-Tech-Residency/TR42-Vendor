@@ -7,7 +7,8 @@ from flask import Blueprint
 
 logger = logging.getLogger(__name__)
 
-address_bp = Blueprint("address", __name__)
+address_bp = Blueprint("address_bp", __name__)
+
 
 @address_bp.post("/")
 def create_address():

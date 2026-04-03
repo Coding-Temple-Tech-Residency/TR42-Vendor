@@ -21,11 +21,11 @@ def create_app():
     # 1. IMPORT ALL MODELS FIRST
     # -----------------------------
     # This ensures SQLAlchemy knows every table + FK relationship
-    with app.app_context():
-        from app.blueprints.user.model import User
-        from app.blueprints.vendor_users.model import VendorUser
-        from app.blueprints.address.model import Address
-        from app.blueprints.vendor.model import Vendor
+    from app.blueprints.vendor_users.model import VendorUser
+    from app.blueprints.user.model import User
+   
+    from app.blueprints.address.model import Address
+    from app.blueprints.vendor.model import Vendor
 
         # try:
     #     from app.blueprints.vendor_users import register_vendor_user
@@ -64,6 +64,7 @@ def create_app():
 
 
         # Create tables AFTER all models are imported
+    with app.app_context():
         db.create_all()
 
     # -----------------------------
