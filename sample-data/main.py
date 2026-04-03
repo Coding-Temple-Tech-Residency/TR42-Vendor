@@ -475,10 +475,10 @@ def main():
     well_locations = generate_well_locations(wells, users)
     vendor_wells = generate_vendor_wells(vendors, wells, users)
     
-    work_orders = generate_work_orders(50, vendor_wells, users, wells)
-    tickets = generate_tickets(200, work_orders, contractors, vendors, users)
+    work_orders = generate_work_orders(500, vendor_wells, users, wells)
+    tickets = generate_tickets(1000, work_orders, contractors, vendors, users)
     
-    invoices = generate_invoices(30, work_orders, tickets, users)
+    invoices = generate_invoices(300, work_orders, tickets, users)
     line_items = generate_line_items(invoices, users)
     
     data = {
