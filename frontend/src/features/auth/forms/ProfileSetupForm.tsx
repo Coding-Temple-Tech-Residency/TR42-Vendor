@@ -1,6 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import TextInput from "../components/TextInput";
+import AuthButton from "../components/AuthButton";
 
 function ProfileSetupForm() {
+  const navigate = useNavigate();
+
   // Load Step 1 data
   const saved = localStorage.getItem("registerData");
   const userData = saved ? JSON.parse(saved) : null;
@@ -34,76 +39,93 @@ function ProfileSetupForm() {
     // clear saved data
     localStorage.removeItem("registerData");
 
-    // go to success page
-    window.location.href = "/success";
+    navigate("/success");
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
 
-      <input
-        className="input"
-        placeholder="Company Name"
+      {/* Company Name */}
+      <TextInput
+        label="Company Name"
         name="companyName"
+        value={form.companyName}
         onChange={handleChange}
       />
 
-      <input
-        className="input"
-        placeholder="Address"
+      {/* Address */}
+      <TextInput
+        label="Address"
         name="address"
+        value={form.address}
         onChange={handleChange}
       />
 
-      <div className="grid grid-cols-3 gap-4">
-        <input
-          className="input"
-          placeholder="City"
+      {/* City / State / Zip */}
+      <div className="grid grid-cols-3 gap-5">
+        <TextInput
+          label="City"
           name="city"
+          value={form.city}
           onChange={handleChange}
         />
-        <input
-          className="input"
-          placeholder="State"
+
+        <TextInput
+          label="State"
           name="state"
+          value={form.state}
           onChange={handleChange}
         />
-        <input
-          className="input"
-          placeholder="Zip Code"
+
+        <TextInput
+          label="Zip Code"
           name="zip"
+          value={form.zip}
           onChange={handleChange}
         />
       </div>
 
-      <input
-        className="input"
-        placeholder="Company Email"
+      {/* Company Email */}
+      <TextInput
+        label="Company Email"
         name="companyEmail"
+        type="email"
+        value={form.companyEmail}
         onChange={handleChange}
       />
 
-      <input
-        className="input"
-        placeholder="Company Phone"
+      {/* Company Phone */}
+      <TextInput
+        label="Company Phone"
         name="companyPhone"
+        value={form.companyPhone}
         onChange={handleChange}
       />
 
-      <select
-        className="input"
-        name="serviceType"
-        onChange={handleChange}
-      >
-        <option value="">Service Type</option>
-        <option value="plumbing">Plumbing</option>
-        <option value="electrical">Electrical</option>
-        <option value="hvac">HVAC</option>
-      </select>
+      {/* Service Type */}
+      <div className="flex flex-col gap-1">
+        <label className="text-sm font-medium text-gray-700">
+          Service Type
+        </label>
 
-      <button className="btn-primary mt-4">
+        <select
+          name="serviceType"
+          value={form.serviceType}
+          onChange={handleChange}
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#2F3B4A] focus:border-[#2F3B4A]"
+        >
+          <option value="">Select service type</option>
+          <option value="plumbing">Plumbing</option>
+          <option value="electrical">Electrical</option>
+          <option value="hvac">HVAC</option>
+        </select>
+      </div>
+
+      {/* Button */}
+      <AuthButton type="submit">
         Create Vendor Account
-      </button>
+      </AuthButton>
+
     </form>
   );
 }

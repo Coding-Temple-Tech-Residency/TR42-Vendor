@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import TextInput from "../components/TextInput";
+import PasswordInput from "../components/PasswordInput";
+import AuthButton from "../components/AuthButton";
+
 function RegisterForm() {
   const navigate = useNavigate();
 
@@ -17,6 +21,7 @@ function RegisterForm() {
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm({ ...form, [e.target.name]: e.target.value });
+setError("");
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -34,13 +39,12 @@ function RegisterForm() {
     }
 
     // password rules
-const passwordRules = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
+    const passwordRules = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
 
-if (!passwordRules.test(form.password)) {
-  setError("Password must be at least 6 characters and include a number.");
-  return;
-}
-
+    if (!passwordRules.test(form.password)) {
+      setError("Password must be at least 6 characters and include a number.");
+      return;
+    }
 
     // save data for step 2
     localStorage.setItem("registerData", JSON.stringify(form));
@@ -53,52 +57,61 @@ if (!passwordRules.test(form.password)) {
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
+      {/* First + Last Name */}
       <div className="grid grid-cols-2 gap-5">
-        <input
-          className="input"
-          placeholder="First Name"
+        <TextInput
+          label="First Name"
           name="firstName"
+          value={form.firstName}
           onChange={handleChange}
         />
-        <input
-          className="input"
-          placeholder="Last Name"
+
+        <TextInput
+          label="Last Name"
           name="lastName"
+          value={form.lastName}
           onChange={handleChange}
         />
       </div>
 
-      <input
-        className="input"
-        placeholder="Email"
+      {/* Email */}
+      <TextInput
+        label="Email"
         name="email"
+        type="email"
+        value={form.email}
         onChange={handleChange}
       />
 
-      <input
-        className="input"
-        placeholder="Username"
+      {/* Username */}
+      <TextInput
+        label="Username"
         name="username"
+        value={form.username}
         onChange={handleChange}
       />
 
-      <input
-        className="input"
-        placeholder="Password"
+      {/* Password */}
+      <PasswordInput
+        label="Password"
         name="password"
-        type="password"
+        value={form.password}
         onChange={handleChange}
       />
 
-      <input
-        className="input"
-        placeholder="Confirm Password"
+      {/* Confirm Password */}
+      <PasswordInput
+        label="Confirm Password"
         name="confirmPassword"
-        type="password"
+        value={form.confirmPassword}
         onChange={handleChange}
       />
 
-      <button className="btn-primary mt-4">Next</button>
+      {/* Button */}
+      <AuthButton type="submit">
+  Next
+</AuthButton>
+
     </form>
   );
 }

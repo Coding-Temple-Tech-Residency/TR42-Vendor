@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./LoginPageTest";
-import RegisterPage from "./features/RegisterPage";
-import ProfileSetupPage from "./features/ProfileSetupPage";
+import RegisterPage from "./features/auth/pages/RegisterPage";
+import ProfileSetupPage from "./features/auth/pages/ProfileSetupPage";
+import SuccessPage from "./features/auth/pages/SuccessPage";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         {/* Reg Flow */}
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/profile-setup" element={<ProfileSetupPage />} />
+        <Route path="/success" element={<SuccessPage />} />
       </Routes>
     </BrowserRouter>
   );
