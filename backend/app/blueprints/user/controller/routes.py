@@ -1,6 +1,6 @@
 from flask import Blueprint, request
-from .user_service import UserService
-from .schemas import user_schema, users_schema
+from ..services.user_service import UserService
+from ..schemas import user_schema, users_schema
 from flask import Blueprint, request
 
 

@@ -1,5 +1,5 @@
 from app.extensions import db
-from .model import Address
+from ..model import Address
 import logging
 
 logger = logging.getLogger(__name__)

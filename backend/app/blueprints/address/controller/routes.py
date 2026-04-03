@@ -1,7 +1,7 @@
 from flask import request
 
-from app.blueprints.address.address_service import AddressService
-from .schemas import addresses_schema, address_schema
+from app.blueprints.address.services.address_service import AddressService
+from ..schemas import addresses_schema, address_schema
 import logging
 from flask import Blueprint
 

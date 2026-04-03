@@ -1,4 +1,4 @@
-from app.blueprints.vendor_users.vendor_users_repository import VendorUserRepository
+from app.blueprints.vendor_users.repositories.vendor_users_repository import VendorUserRepository
 
 
 class VendorUserService:

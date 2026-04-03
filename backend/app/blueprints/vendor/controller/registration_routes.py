@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from marshmallow import ValidationError
 from app.blueprints.vendor.schemas import CombinedVendorRegistrationSchema
-from app.blueprints.vendor.registration_service import VendorRegistrationService
+from app.blueprints.vendor.services.registration_service import VendorRegistrationService
 import logging
 
 logger = logging.getLogger(__name__)

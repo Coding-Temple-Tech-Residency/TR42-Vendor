@@ -1,5 +1,5 @@
 from app.extensions import db
-from .model import Vendor
+from ..model import Vendor
 from app.blueprints.address.model import Address
 from werkzeug.exceptions import BadRequest
 

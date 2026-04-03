@@ -1,6 +1,6 @@
 from flask import Blueprint, request
-from .vendor_users_service import VendorUserService
-from .schemas import vendor_user_schema, vendor_users_schema
+from ..services.vendor_users_service import VendorUserService
+from ..schemas import vendor_user_schema, vendor_users_schema
 
 vendor_user_bp = Blueprint("vendor_user", __name__)
 

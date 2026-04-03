@@ -1,4 +1,4 @@
-from .address_repository import AddressRepository
+from ..repositories.address_repository import AddressRepository
 import logging
 
 logger = logging.getLogger(__name__)

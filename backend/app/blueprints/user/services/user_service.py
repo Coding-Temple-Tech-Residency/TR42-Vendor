@@ -1,6 +1,6 @@
 
 from werkzeug.exceptions import BadRequest
-from .user_repository import UserRepository
+from ..repositories.user_repository import UserRepository
 from app.blueprints.user.utils import verify_password, create_token, hash_password
 from logging import getLogger
 

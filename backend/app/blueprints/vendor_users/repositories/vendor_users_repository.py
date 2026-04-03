@@ -1,5 +1,5 @@
 from app.extensions import db
-from .model import VendorUser
+from ..model import VendorUser
 from uuid import uuid4
 
 

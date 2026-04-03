@@ -1,4 +1,4 @@
-from app.blueprints.vendor.vendors_repository import VendorRepository
+from app.blueprints.vendor.repositories.vendors_repository import VendorRepository
 from werkzeug.exceptions import BadRequest
 
 

@@ -1,5 +1,5 @@
 from app.extensions import db
-from .model import User
+from ..model import User
 import uuid
 from uuid import uuid4
 from logging import getLogger
