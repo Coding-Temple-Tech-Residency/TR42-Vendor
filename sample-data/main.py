@@ -40,6 +40,13 @@ def generate_users(n=20):
             "username": fake.unique.user_name(),
             "password": fake.password(length=12),  # bcrypt.hashpw(default_password, salt),
             "email": fake.unique.email(),
+            "first_name": fake.first_name(),
+            "last_name": fake.last_name(),
+            "middle_name": fake.first_name(),
+            "contact_number": fake.phone_number(),
+            "alternate_number": fake.phone_number(),
+            "date_of_birth": fake.date_of_birth(minimum_age=18, maximum_age=65),
+            "ssn_last_four": fake.bothify("####"),
             "type": random.choice(USER_TYPES),
             "is_active": True,
             "is_admin": random.choice([True, False]),
@@ -48,8 +55,6 @@ def generate_users(n=20):
             "updated_at": now(),
             "created_by": user_id,  # may need to change to be created_by the system
             "updated_by": user_id, # may need to change to be updated_by the system to begin
-            "first_name": fake.first_name(),
-            "last_name": fake.last_name()
         })
         
         # print(f"User: {i} created")
@@ -153,14 +158,6 @@ def generate_contractors(n, vendors, users, addresses, vendor_users):
             "vendor_id": vendor["vendor_id"],
             "vendor_manager_id": random.choice(users)["user_id"],
             "user_id": user["user_id"],  
-            "first_name": user["first_name"],  # keep consistent with user
-            "last_name": user["last_name"], # keep consistent with user
-            "middle_name": fake.first_name(),
-            "contact_number": fake.phone_number(),
-            "alternate_number": fake.phone_number(),
-            "date_of_birth": fake.date_of_birth(minimum_age=18, maximum_age=65),
-            "ssn_last_four": fake.bothify("####"),
-            "email": user["email"],  # keep consistent
             "role": random.choice(ROLE_OPTIONS),
             "status": random.choice(CONTRACTOR_STATUS),
             "biometric_enrolled": random.choice([True, False]),
@@ -233,8 +230,10 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
             "priority": random.choice(PRIORITY),
             "status": random.choice(TICKET_STATUS),
             "vendor_id": contractor["vendor_id"],  # keep consistent
-            "start_date": now(),
+            "start_time": fake.date_time_between(start_date='-10d', end_date='+5d'),
             "due_date": fake.date_time_between(start_date='now', end_date='+10d'),
+            "assigned_at": fake.date_time_between(start_date='-30d', end_date='now'),
+            "completed_at": fake.date_time_between(start_date='-25d', end_date='+20d'),
             "estimated_duration": random.randint(1, 24),
             "notes": fake.text(max_nb_chars=100),
             "contractor_start_location": f"{fake.latitude()},{fake.longitude()}",
@@ -247,7 +246,8 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
             "created_at": now(),
             "updated_at": now(),
             "created_by": creator,
-            "updated_by": updater
+            "updated_by": updater,
+            "additional_information": fake.json()
         })
 
     return tickets
