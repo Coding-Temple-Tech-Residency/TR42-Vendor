@@ -3,13 +3,15 @@ import LoginPage from "./LoginPageTest";
 import RegisterPage from "./features/auth/pages/RegisterPage";
 import ProfileSetupPage from "./features/auth/pages/ProfileSetupPage";
 import SuccessPage from "./features/auth/pages/SuccessPage";
+// import DashboardPage from "./DashboardPage";
+
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* Login */}
-        <Route path="/" element={<LoginPage />} />
+        <Route path="/" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
 
         {/* Reg Flow */}
