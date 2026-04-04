@@ -46,3 +46,6 @@ volumes:
   frontend_node_modules:
   postgres_data:
   pgadmin_data:
+
+
+# docker compose up --build
