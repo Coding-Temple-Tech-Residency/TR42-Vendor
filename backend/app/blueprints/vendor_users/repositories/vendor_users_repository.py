@@ -1,5 +1,6 @@
 from app.extensions import db
-from app.blueprints.vendor_users.model import VendorUser
+from ..model import VendorUser
+from uuid import uuid4
 import logging
 
 
@@ -7,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class VendorUserRepository:
+
     """
     Retrieve all vendor users from the database.
 
@@ -33,7 +35,7 @@ class VendorUserRepository:
         Returns:
             VendorUser: The VendorUser object that was added to the database.
         """
-
+    
     @staticmethod
     def create(vendor_user: VendorUser):
         try:
