@@ -1,6 +1,7 @@
 import re
 from marshmallow import ValidationError
 from datetime import datetime, timezone
+import uuid
 
 PHONE_REGEX = re.compile(r"^\d{3}-\d{3}-\d{4}$")
 ADDRESS_REGEX = re.compile(r"^[A-Za-z0-9\s.'#,-]{5,120}$")
@@ -49,3 +50,7 @@ def validate_phone_format(value, **kwargs):
 
 def utc_now():
     return datetime.now(timezone.utc)
+
+
+def generate_uuid():
+    return str(uuid.uuid4())
