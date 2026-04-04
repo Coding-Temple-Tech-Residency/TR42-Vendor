@@ -9,7 +9,7 @@ import random
 import csv
 import os
 from faker import Faker
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 
 fake = Faker()
@@ -20,9 +20,13 @@ def gen_id():
 def now():
     return datetime.now()
 
-# time of 'created_at' periods
-def generate_time_span(start_date='-3y', end_date='now'):
-    return fake.date_time_between(start_date=start_date, end_date=end_date)
+def add_n_days(n):
+    one_day = timedelta(days=1)
+    return one_day * n
+
+
+def generate_time_span(sd='-1y', ed='now'):
+    return fake.date_time_between(start_date=sd, end_date=ed)
 
 USER_TYPES = ["operator", "vendor", "contractor"]
 VENDOR_STATUS = ["active", "inactive"]
@@ -210,7 +214,7 @@ def generate_work_orders(n, vendor_wells, users, wells):
             "assigned_at": generate_time_span(created_at),
             "completed_at": None, # Need to figure out way of calcualting this with tickets
             "description": fake.text(max_nb_chars=200),
-            "due_date": generate_time_span(created_at, end_date='+7d'),
+            "due_date": generate_time_span(created_at, '+7d'),
             "current_status": random.choice(ORDER_STATUS),
             "comments": fake.text(max_nb_chars=100),
             "location": fake.city(),
@@ -230,6 +234,7 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
     tickets = []
 
     for _ in range(n):
+        
         creator = random.choice(users)["user_id"]
         updater = random.choice(users)["user_id"]
 
@@ -237,10 +242,12 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
         contractor = random.choice(contractors)
         
         status = random.choice(TICKET_STATUS)
+        created_at = generate_time_span()
+        assigned_at = generate_time_span(created_at, created_at + add_n_days(3))
         
-        assigned_at = fake.date_time_between(start_date='-1y', end_date='now')
-        completed_at = fake.date_time_between(start_date=assigned_at, end_date='now') if status=='completed' else None
-
+        start_time = generate_time_span(sd=assigned_at, ed=assigned_at+add_n_days(7))
+        completed_at = fake.date_time_between(start_date=start_time, end_date=start_time + add_n_days(7)) if status=='completed' else None
+        due_date = generate_time_span(sd=created_at, ed=created_at+add_n_days(7))
         tickets.append({
             "ticket_id": gen_id(),
             "work_order_id": wo["work_order_id"],
@@ -249,8 +256,8 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
             "priority": random.choice(PRIORITY),
             "status": status,
             "vendor_id": contractor["vendor_id"],  # keep consistent
-            "start_time": fake.date_time_between(start_date='-1y', end_date='now'),
-            "due_date": fake.date_time_between(start_date='-1y', end_date='+7d'),
+            "start_time": start_time,
+            "due_date": due_date,
             "assigned_at": assigned_at,
             "completed_at": completed_at,
             "estimated_duration": random.randint(1, 24),
@@ -262,7 +269,7 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
             "special_requirements": fake.sentence(),
             "anomaly_flag": random.choice([True, False]),
             "anomaly_reason": fake.sentence() if random.choice([True, False]) else None,
-            "created_at": generate_time_span(),
+            "created_at": created_at,
             "updated_at": now(),
             "created_by": creator,
             "updated_by": updater,

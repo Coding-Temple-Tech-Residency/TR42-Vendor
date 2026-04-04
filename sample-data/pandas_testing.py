@@ -73,11 +73,12 @@ work_orders = pd.read_sql_query(
 # print(vendor_work_order_count)
 
 vendor_tickets = pd.merge(vendors, tickets, on='vendor_id', suffixes=['_vendor', '_ticket'])
-print(vendor_tickets.shape)
-vendor_tickets = vendor_tickets[vendor_tickets['completed_at'] >= pd.Timestamp.now() - pd.Timedelta(days=30)]
-print(vendor_tickets.shape)
+# print(vendor_tickets.shape)
+# vendor_tickets = vendor_tickets[vendor_tickets['completed_at'] >= pd.Timestamp.now() - pd.Timedelta(days=30)]
+# print(vendor_tickets.shape)
 
-vendor_tickets['completion_time'] = vendor_tickets['completed_at'] - vendor_tickets['assigned_at']
+# vendor_tickets['completion_time'] = vendor_tickets['completed_at'] - vendor_tickets['assigned_at']
 
-vendor_time_completion = vendor_tickets.groupby('company_name')['completion_time'].mean().sort_values(ascending=False)
-print(vendor_time_completion)
+
+# vendor_time_completion = vendor_tickets.groupby('company_name')['completion_time'].mean().sort_values(ascending=False)
+# print(vendor_time_completion)
