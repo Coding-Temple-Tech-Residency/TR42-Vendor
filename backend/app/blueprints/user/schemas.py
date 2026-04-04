@@ -1,5 +1,6 @@
 from app.extensions import ma
-from app.models.user import User
+#from marshmallow import fields
+from app.blueprints.user.model import User
 
 
 class UserSchema(ma.SQLAlchemyAutoSchema):
@@ -8,6 +9,7 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
         exclude = ("password",)
 
+    #vendor_links = fields.Nested("VendorUserSchema", many=True, dump_only=True)
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)

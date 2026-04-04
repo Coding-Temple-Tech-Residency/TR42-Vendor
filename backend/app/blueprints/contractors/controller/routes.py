@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from .service import ContractorService
-from .schemas import ContractorSchema
+from ..services.service import ContractorService
+from ..schemas import ContractorSchema
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
