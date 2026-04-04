@@ -20,6 +20,9 @@ def gen_id():
 def now():
     return datetime.now()
 
+# time of 'created_at' periods
+def generate_time_span(start_date='-3y', end_date='now'):
+    return fake.date_time_between(start_date=start_date, end_date=end_date)
 
 USER_TYPES = ["operator", "vendor", "contractor"]
 VENDOR_STATUS = ["active", "inactive"]
@@ -55,7 +58,7 @@ def generate_users(n=20):
             "is_active": True,
             "is_admin": random.choice([True, False]),
             "profile_photo": None,
-            "created_at": now(),
+            "created_at": generate_time_span(),
             "updated_at": now(),
             "created_by": user_id,  # may need to change to be created_by the system
             "updated_by": user_id, # may need to change to be updated_by the system to begin
@@ -78,7 +81,7 @@ def generate_addresses(n=30, users=[]):
             "state": fake.state(),
             "zip": fake.zipcode(),
             "country": "US",
-            "created_at": now(),
+            "created_at": generate_time_span(),
             "updated_at": now(),
             "created_by": creator,
             "updated_by": creator
@@ -108,7 +111,7 @@ def generate_vendors(n=10, users=[], addresses=[]):
             "onboarding": random.choice([True, False]),
             "compliance_status": random.choice(COMPLIANCE_STATUS),
             "description": fake.text(max_nb_chars=100),
-            "created_at": now(),
+            "created_at": generate_time_span(),
             "updated_at": now(),
             "created_by": creator,
             "updated_by": updater,
@@ -131,7 +134,7 @@ def generate_vendor_users(users, vendors, max_ratio=0.6):
             "user_id": user["user_id"],
             "vendor_id": random.choice(vendors)["vendor_id"],
             "role": random.choices(ROLE_OPTIONS, [80, 15, 5])[0],
-            "created_at": now(),
+            "created_at": generate_time_span(),
             "updated_at": now(),
             "created_by": creator,
             "updated_by": creator
@@ -177,7 +180,7 @@ def generate_contractors(n, vendors, users, addresses, vendor_users):
             "background_check_id": None,
             "preferred_job_types": json.dumps([fake.job(), fake.job()]),
             "drug_test_id": None,
-            "created_at": now(),
+            "created_at": generate_time_span(),
             "updated_at": now(),
             "created_by": creator,
             "updated_by": updater
@@ -199,15 +202,15 @@ def generate_work_orders(n, vendor_wells, users, wells):
         ]
 
         assigned_vendor = random.choice(valid_vendor_ids)
-        
+        created_at = generate_time_span()
 
         work_orders.append({
             "work_order_id": gen_id(),
             "assigned_vendor": assigned_vendor,
-            "assigned_at": now(),
-            "completed_at": None,
+            "assigned_at": generate_time_span(created_at),
+            "completed_at": None, # Need to figure out way of calcualting this with tickets
             "description": fake.text(max_nb_chars=200),
-            "due_date": fake.date_time_between(start_date='now', end_date='+30d'),
+            "due_date": generate_time_span(created_at, end_date='+7d'),
             "current_status": random.choice(ORDER_STATUS),
             "comments": fake.text(max_nb_chars=100),
             "location": fake.city(),
@@ -215,7 +218,7 @@ def generate_work_orders(n, vendor_wells, users, wells):
             "estimated_duration": random.randint(1, 72),  # hours
             "priority": random.choice(PRIORITY),
             "well_id": well["well_id"],
-            "created_at": now(),
+            "created_at": created_at,
             "updated_at": now(),
             "created_by": creator,
             "updated_by": updater
@@ -233,8 +236,10 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
         wo = random.choice(work_orders)
         contractor = random.choice(contractors)
         
+        status = random.choice(TICKET_STATUS)
+        
         assigned_at = fake.date_time_between(start_date='-1y', end_date='now')
-        completed_at = fake.date_time_between(start_date=assigned_at, end_date='now')
+        completed_at = fake.date_time_between(start_date=assigned_at, end_date='now') if status=='completed' else None
 
         tickets.append({
             "ticket_id": gen_id(),
@@ -242,12 +247,12 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
             "description": fake.text(max_nb_chars=200),
             "assigned_contractor": contractor["contractor_id"],
             "priority": random.choice(PRIORITY),
-            "status": random.choice(TICKET_STATUS),
+            "status": status,
             "vendor_id": contractor["vendor_id"],  # keep consistent
             "start_time": fake.date_time_between(start_date='-1y', end_date='now'),
             "due_date": fake.date_time_between(start_date='-1y', end_date='+7d'),
-            "assigned_at": fake.date_time_between(start_date='-1y', end_date='now'),
-            "completed_at": fake.date_time_between(start_date='-1y', end_date='now'),
+            "assigned_at": assigned_at,
+            "completed_at": completed_at,
             "estimated_duration": random.randint(1, 24),
             "notes": fake.text(max_nb_chars=100),
             "contractor_start_location": f"{fake.latitude()},{fake.longitude()}",
@@ -257,7 +262,7 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
             "special_requirements": fake.sentence(),
             "anomaly_flag": random.choice([True, False]),
             "anomaly_reason": fake.sentence() if random.choice([True, False]) else None,
-            "created_at": now(),
+            "created_at": generate_time_span(),
             "updated_at": now(),
             "created_by": creator,
             "updated_by": updater,
@@ -289,7 +294,7 @@ def generate_invoices(n, work_orders, tickets, users):
             "period_end": invoice_date,
             "total_amount": 0,  # will update after line items
             "invoice_status": random.choice(INVOICE_STATUS),
-            "created_at": now(),
+            "created_at": generate_time_span(),
             "updated_at": now(),
             "created_by": creator,
             "updated_by": updater
@@ -321,7 +326,7 @@ def generate_line_items(invoices, users):
                 "rate": rate,
                 "amount": amount,
                 "description": fake.sentence(),
-                "created_at": now(),
+                "created_at": generate_time_span(),
                 "updated_at": now(),
                 "created_by": creator,
                 "updated_by": updater
@@ -360,7 +365,7 @@ def generate_wells(n, users):
             "completion_date": completion_date,
             "access_instructions": fake.sentence(),
             "safety_notes": fake.sentence(),
-            "created_at": now(),
+            "created_at": generate_time_span(),
             "updated_at": now(),
             "created_by": creator,
             "updated_by": updater
@@ -394,7 +399,7 @@ def generate_well_locations(wells, users):
             "field_name": fake.word().capitalize() + " Field",
             "section": random.randint(1, 36),
             "township": fake.bothify("##"),
-            "created_at": now(),
+            "created_at": generate_time_span(),
             "updated_at": now(),
             "created_by": creator,
             "updated_by": updater
@@ -422,7 +427,7 @@ def generate_vendor_wells(vendors, wells, users):
                 "id": gen_id(),
                 "vendor_id": vendor["vendor_id"],
                 "well_id": well["well_id"],
-                "created_at": now(),
+                "created_at": generate_time_span(),
                 "updated_at": now(),
                 "created_by": creator,
                 "updated_by": updater

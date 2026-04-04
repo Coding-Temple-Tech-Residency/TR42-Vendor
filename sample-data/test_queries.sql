@@ -55,6 +55,45 @@
 -- join vendor v
 -- using(vendor_id)
 -- where t.completed_at >= datetime('now', '-30 days')
+-- group by 1
+-- order by 2 desc;
+
+
+-- Unassigned work orders by well
+
+-- select 
+--     w.well_name, 
+--     count(wo.work_order_id),
+--     (
+--         select count(*) 
+--         from work_orders 
+--         where current_status='unassigned'
+--     ) as 'total unassigned'
+-- from work_orders wo
+-- join well w
+-- using (well_id)
+-- where current_status = 'unassigned'
+-- group by well_id
+-- order by 2 desc;
+
+-- Tickets in progress
+-- select v.vendor_code, count(*) as 'tickets in progress'
+-- from ticket t
+-- join vendor v
+-- using (vendor_id)
+-- where t.status='in progress'
+-- group by vendor_id;
+
+-- Tickets Completed by Vendor
+-- select v.company_name, count(*) 
+-- from ticket t
+-- join vendor v
+-- using(vendor_id)
+-- where t.status='completed'
 -- group by 1;
 
-select * from vendor;
+select 
+    status,
+    completed_at
+from ticket
+limit 20;
