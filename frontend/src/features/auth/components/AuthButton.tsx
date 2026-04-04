@@ -5,7 +5,7 @@ type AuthButtonProps = {
     disabled?: boolean;
 };
 
-export default function AuthButton({
+function AuthButton({
     children,
     type = "button",
     onClick,
@@ -19,9 +19,13 @@ export default function AuthButton({
             className={`w-full rounded-md py-2 font-medium text-white transition-colors
                 ${
                     disabled
-                        ? "bg-gray-400 cursor-not-allowed"
+                        ? "bg-[#A0AEC0] cursor-not-allowed opacity-80"
                         : "bg-[#3E4C5E] hover:bg-[#2F3B4A] active:bg-[#243041]"
                 }`}
-                > {children}</button>
+        >
+            {children}
+        </button>
     );
 }
+
+export default AuthButton;
