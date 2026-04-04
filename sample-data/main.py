@@ -243,11 +243,11 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
         
         status = random.choice(TICKET_STATUS)
         created_at = generate_time_span()
-        assigned_at = generate_time_span(created_at, created_at + add_n_days(3))
+        assigned_at = generate_time_span(created_at, created_at + add_n_days(1))
         
-        start_time = generate_time_span(sd=assigned_at, ed=assigned_at+add_n_days(7))
+        start_time = generate_time_span(sd=assigned_at, ed=assigned_at+add_n_days(3))
         completed_at = fake.date_time_between(start_date=start_time, end_date=start_time + add_n_days(7)) if status=='completed' else None
-        due_date = generate_time_span(sd=created_at, ed=created_at+add_n_days(7))
+        due_date = generate_time_span(sd=created_at+add_n_days(3), ed=created_at+add_n_days(10))
         tickets.append({
             "ticket_id": gen_id(),
             "work_order_id": wo["work_order_id"],
