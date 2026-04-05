@@ -50,27 +50,27 @@
 -- where completed_at is not null and due_date < completed_at
 -- limit 10;
 
-select 
-    v.company_name,
-    avg(julianday(t.completed_at) - julianday(t.assigned_at)) as avg_ticket_completion_time
-from ticket t
-join vendor v
-using(vendor_id)
-where t.completed_at >= datetime('now', '-30 days')
-group by 1
-order by 2 desc;
+-- select 
+--     v.company_name,
+--     avg(julianday(t.completed_at) - julianday(t.assigned_at)) as avg_ticket_completion_time
+-- from ticket t
+-- join vendor v
+-- using(vendor_id)
+-- where t.completed_at >= datetime('now', '-30 days')
+-- group by 1
+-- order by 2 desc;
 
 
-select 
-    v.company_name,
-    avg(julianday(t.completed_at) - julianday(t.assigned_at)) as avg_ticket_completion_time
-from ticket t
-join vendor v
-using(vendor_id)
-where t.completed_at >= datetime('now', '-60 days')
-  and t.completed_at < datetime('now', '-30 days')
-group by 1
-order by 2 desc;
+-- select 
+--     v.company_name,
+--     avg(julianday(t.completed_at) - julianday(t.assigned_at)) as avg_ticket_completion_time
+-- from ticket t
+-- join vendor v
+-- using(vendor_id)
+-- where t.completed_at >= datetime('now', '-60 days')
+--   and t.completed_at < datetime('now', '-30 days')
+-- group by 1
+-- order by 2 desc;
 
 -- Unassigned work orders by well
 
@@ -110,3 +110,12 @@ order by 2 desc;
 --     completed_at
 -- from ticket
 -- limit 20;
+
+-- Invoices
+
+select invoice_id, count(*), i.total_amount, sum(li.amount)
+from invoice i
+join line_item li
+using (invoice_id)
+where i.invoice_status = 'paid'
+group by invoice_id;

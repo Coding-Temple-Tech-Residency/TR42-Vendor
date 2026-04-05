@@ -35,7 +35,7 @@ ROLE_OPTIONS = ["user", "manager", "admin"]
 CONTRACTOR_STATUS = ["active", "inactive"]
 ORDER_STATUS = ["unassigned", "assigned", "in progress", "completed"]
 PRIORITY = ["routine", "urgent", "emergency"]
-TICKET_STATUS = ["assigned", "in progress", "completed"]
+TICKET_STATUS = ["assigned", "in progress", "completed"] # need to add unassigned status
 INVOICE_STATUS = ["draft", "submitted", "approved", "paid", "rejected"]
 WELL_STATUS = ["active", "inactive", "plugged", "drilling"]
 WELL_TYPE = ["oil", "gas", "injection", "disposal"]
@@ -230,6 +230,10 @@ def generate_work_orders(n, vendor_wells, users, wells):
 
     return work_orders
 
+# TODO: 
+# continue working on making tickets realistic. 
+# - Add business hour limits for creation, assignment, and completion. 
+# - maybe utilize estimated_duration for difference between start_time and completed_at 
 def generate_tickets(n, work_orders, contractors, vendors, users):
     tickets = []
 
@@ -243,11 +247,11 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
         
         status = random.choice(TICKET_STATUS)
         created_at = generate_time_span()
-        assigned_at = generate_time_span(created_at, created_at + add_n_days(1))
+        assigned_at = generate_time_span(created_at, created_at + add_n_days(2))
         
-        start_time = generate_time_span(sd=assigned_at, ed=assigned_at+add_n_days(3))
-        completed_at = fake.date_time_between(start_date=start_time, end_date=start_time + add_n_days(7)) if status=='completed' else None
-        due_date = generate_time_span(sd=created_at+add_n_days(3), ed=created_at+add_n_days(10))
+        start_time = generate_time_span(sd=assigned_at, ed=assigned_at+add_n_days(2))
+        completed_at = fake.date_time_between(start_date=start_time, end_date=start_time + add_n_days(3)) if status=='completed' else None
+        due_date = generate_time_span(sd=created_at+add_n_days(5), ed=created_at+add_n_days(15))
         tickets.append({
             "ticket_id": gen_id(),
             "work_order_id": wo["work_order_id"],
@@ -483,12 +487,12 @@ def main():
         vendor_users=vendor_users 
     )
     
-    wells = generate_wells(25, users)
+    wells = generate_wells(50, users)
     well_locations = generate_well_locations(wells, users)
     vendor_wells = generate_vendor_wells(vendors, wells, users)
     
-    work_orders = generate_work_orders(500, vendor_wells, users, wells)
-    tickets = generate_tickets(1000, work_orders, contractors, vendors, users)
+    work_orders = generate_work_orders(1000, vendor_wells, users, wells)
+    tickets = generate_tickets(5000, work_orders, contractors, vendors, users)
     
     invoices = generate_invoices(300, work_orders, tickets, users)
     line_items = generate_line_items(invoices, users)
