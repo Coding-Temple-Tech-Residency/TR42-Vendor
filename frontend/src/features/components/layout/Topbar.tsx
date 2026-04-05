@@ -10,7 +10,7 @@ export default function Topbar({
     rightContent,
 }: TopbarProps) {
     return (
-        <div className="flex min-h-18 items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="sticky flex min-h-24 items-center justify-between border-b border-[#1F2A44] px-4 sm:px-6 lg:px-8">
             <div>
                 <p className="text-sm text-slate-500">Welcome back</p>
                 <h2 className="text-xl font-semibold text-slate-900">{title}</h2>

@@ -11,7 +11,7 @@ import {
     Cog6ToothIcon,
     UserIcon,
 } from "@heroicons/react/24/outline";
-import logo from "../../assets/logo.png";
+import logo from "../../../assets/logo.png";
 
 
 
@@ -32,7 +32,7 @@ export default function Sidebar() {
                 <div className="flex flex-1 flex-col px-4 py-6 whitespace-nowrap">
                     <nav className="flex flex-1 flex-col gap-2">
                         <NavLink
-                            to="/dashboard"
+                            to="/vendor/dashboard"
                             className={({ isActive }) =>    
                             `${baseLink} ${isActive ? activeLink : ""}`
                         }
@@ -41,7 +41,7 @@ export default function Sidebar() {
                         Dashboard</NavLink>
 
                         <NavLink
-                            to="/work-orders"
+                            to="/vendor/work-orders"
                             className={({ isActive }) => 
                             `${baseLink} ${isActive ? activeLink : ""}`
                         }
@@ -50,7 +50,7 @@ export default function Sidebar() {
                         Work Orders</NavLink>
 
                         <NavLink
-                            to="/tickets"
+                            to="/vendor/tickets"
                             className={({ isActive }) => 
                             `${baseLink} ${isActive ? activeLink : ""}`
                         }
@@ -59,7 +59,7 @@ export default function Sidebar() {
                         Tickets</NavLink>
 
                         <NavLink
-                            to="/contractors"
+                            to="/vendor/contractors"
                             className={({ isActive }) => 
                             `${baseLink} ${isActive ? activeLink : ""}`
                         }
@@ -68,7 +68,7 @@ export default function Sidebar() {
                         Contractors</NavLink>
 
                         <NavLink
-                            to="/invoices"
+                            to="/vendor/invoices"
                             className={({ isActive }) => 
                             `${baseLink} ${isActive ? activeLink : ""}`
                         }
@@ -77,7 +77,7 @@ export default function Sidebar() {
                         Invoices</NavLink>
 
                         <NavLink
-                            to="/reports"
+                            to="/vendor/reports"
                             className={({ isActive }) => 
                             `${baseLink} ${isActive ? activeLink : ""}`
                         }
@@ -86,7 +86,7 @@ export default function Sidebar() {
                         Reports</NavLink>
 
                         <NavLink
-                            to="/fraud-risk"
+                            to="/vendor/fraud-risks"
                             className={({ isActive }) => 
                             `${baseLink} ${isActive ? activeLink : ""}`
                         }
@@ -95,7 +95,7 @@ export default function Sidebar() {
                         Fraud Risk</NavLink>
 
                         <NavLink
-                            to="/messages"
+                            to="/vendor/messages"
                             className={({ isActive }) => 
                             `${baseLink} ${isActive ? activeLink : ""}`
                         }
@@ -104,7 +104,7 @@ export default function Sidebar() {
                         Messages</NavLink>
 
                         <NavLink
-                            to="/admin"
+                            to="/vendor/admin"
                             className={({ isActive }) => 
                             `${baseLink} ${isActive ? activeLink : ""}`
                         }
@@ -115,7 +115,7 @@ export default function Sidebar() {
 
                     <nav className="mt-auto pt-6">
                         <NavLink
-                            to="/settings"
+                            to="/vendor/settings"
                             className={({ isActive }) => 
                             `${baseLink} ${isActive ? activeLink : ""}`
                         }

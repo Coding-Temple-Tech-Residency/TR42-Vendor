@@ -11,7 +11,7 @@ export default function AppLayout({
 }: AppLayoutProps){
     return (
         <div 
-            className="min-h-screen"
+            className="h-screen overflow-hidden"
             style={{
                 background:`
                     radial-gradient(
@@ -25,17 +25,17 @@ export default function AppLayout({
                             #ffffff                    
                             `,                    
                 }}>
-            <div className="flex min-h-screen">
-                <aside className="hidden w-64 shrink-0 lg:block">
+            <div className="flex h-full">
+                <aside className="hidden h-full w-64 shrink-0 lg:block">
                     {sidebar}
                 </aside>
 
                 <div className="flex min-w-0 flex-1 flex-col">
-                    <div className="sticky top-0 z-20 border-b border-[#1E3A5F] bg-[#E5E7EB]/50">
+                    <div className="top-0 z-20 border-b border-[#1E3A5F] bg-[#E5E7EB]/50">
                         {topbar}
                     </div>
 
-                    <main className="flex-1 p-4 sm:p-6 lg:p-8">
+                    <main className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
                         <div className="w-full">
                             {children}
                         </div>

@@ -1,16 +1,13 @@
+from app.blueprints.vendor_users.repositories.vendor_users_repository import VendorUserRepository
 import uuid
 from datetime import datetime
 from app.blueprints.vendor_users.model import VendorUser
-from app.blueprints.vendor_users.repositories.vendor_users_repository import (
-    VendorUserRepository,
-)
 import logging
-
 
 logger = logging.getLogger(__name__)
 
-
 class VendorUserService:
+
     """
     Retrieve all vendor users from the database.
 
@@ -45,6 +42,7 @@ class VendorUserService:
         Raises:
             DatabaseError: If the database operation fails during creation.
         """
+    
 
     @staticmethod
     def create_user(data):

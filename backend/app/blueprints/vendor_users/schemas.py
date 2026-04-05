@@ -1,12 +1,25 @@
 from app.extensions import ma
-from .model import VendorUser
+from marshmallow import fields
+from app.blueprints.vendor_users.model import VendorUser
 
 
 class VendorUserSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = VendorUser
         load_instance = True
+        include_fk = True
 
+    vendor = fields.Nested(
+        "VendorSchema",
+        dump_only=True,
+        exclude=("users", "address")
+    )
+
+    user = fields.Nested(
+        "UserSchema",
+        dump_only=True,
+        exclude=("vendor_links",)
+    )
 
 vendor_user_schema = VendorUserSchema()
 vendor_users_schema = VendorUserSchema(many=True)

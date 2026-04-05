@@ -1,12 +1,12 @@
 from flask import Blueprint, request
-from app.blueprints.vendor_users.schemas import vendor_user_schema, vendor_users_schema
-from app.blueprints.vendor_users.services.vendor_users_service import VendorUserService
+from ..services.vendor_users_service import VendorUserService
+from ..schemas import vendor_user_schema, vendor_users_schema
 import logging
-
 
 logger = logging.getLogger(__name__)
 
-vendor_users_bp = Blueprint("vendor_users_bp", __name__)
+vendor_user_bp = Blueprint("vendor_user", __name__)
+
 
 """
 Handles GET requests to the root endpoint of the vendor user blueprint.
@@ -17,7 +17,8 @@ Returns:
 """
 
 
-@vendor_users_bp.get("/")
+
+@vendor_user_bp.get("/")
 def get_vendor_users():
     try:
         logger.debug("Fetching all vendor users")
@@ -27,6 +28,8 @@ def get_vendor_users():
     except Exception as e:
         logger.error(f"Error fetching users: {str(e)}")
         return {"error": "An error occurred while fetching users"}, 500
+
+
 
 
 """
@@ -46,7 +49,7 @@ Raises:
 """
 
 
-@vendor_users_bp.post("/")
+@vendor_user_bp.post("/")
 def create_vendor_user():
     try:
         logger.debug("Creating a new vendor user")

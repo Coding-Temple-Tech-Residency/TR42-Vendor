@@ -1,19 +1,7 @@
-import { Routes, Route } from "react-router-dom";
-import LoginPage from "./LoginPageTest";
-import RegisterPage from "./features/RegisterPage";
-import ProfileSetupPage from "./features/ProfileSetupPage";
-import DashboardPage from "./test";
+import AppRouter from "./routes/AppRouter";
 
 function App() {
-  return (
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
-
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/profile-setup" element={<ProfileSetupPage />} />
-      <Route path="/test" element={<DashboardPage />} />
-    </Routes>
-  );
+  return <AppRouter />;
 }
 
-export default App;
+export default App
