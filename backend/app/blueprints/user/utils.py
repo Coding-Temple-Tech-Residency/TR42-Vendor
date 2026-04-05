@@ -4,7 +4,10 @@ from datetime import datetime, timedelta
 from flask import current_app
 from logging import getLogger
 
+
 logger = getLogger(__name__)
+
+
 
 def hash_password(password):
     logger.info("Hashing password")
@@ -22,4 +25,5 @@ def create_token(user):
         "is_admin": user.is_admin,
         "exp": datetime.utcnow() + timedelta(hours=8)
     }
+    
     return jwt.encode(payload, current_app.config["SECRET_KEY"], algorithm="HS256")

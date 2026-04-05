@@ -51,9 +51,9 @@ class UserService:
         if "password" not in data or not data["password"]:
             raise BadRequest("Password is required")
         
-        # existing = UserRepository.get_by_username(data["username"])
-        # if existing:
-        #     raise BadRequest("Username already exists")
+        existing = UserRepository.get_by_username(data["username"])
+        if existing:
+            raise BadRequest("Username already exists")
 
         # Hash password
         data["password"] = hash_password(data["password"])
@@ -84,7 +84,28 @@ class UserService:
             return None  # Let controller handle 404
 
         return user
-
+    
+    # -----------------------
+    # GET USER BY ID
+    # -----------------------
+    @staticmethod
+    def get_current_user(user):
+        """
+        Get the current logged-in user's profile.
+        
+        Business logic:
+        - Verify user is active
+        - Optional: load permissions or additional data
+        - Log the access
+        """
+        logger.info("Fetching profile for user: %s", user.user_id)
+        
+        if not user.is_active:
+            logger.warning("Attempted profile access by inactive user: %s", user.user_id)
+            raise BadRequest("User account is inactive")
+        
+        logger.info("Successfully retrieved profile for user: %s", user.user_id)
+        return user
 
     # -----------------------
     # UPDATE USER

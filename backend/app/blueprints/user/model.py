@@ -10,6 +10,8 @@ class User(BaseModel):
     password = db.Column(db.String(400), nullable=False)
     email = db.Column(db.String(40), unique=True, nullable=False)
 
+    token_version = db.Column(db.Integer, default=0)
+
     type = db.Column(db.Enum('operator', 'vendor', 'contractor', name='user_type'), nullable=False)
 
     is_active = db.Column(db.Boolean, default=True, nullable=False)

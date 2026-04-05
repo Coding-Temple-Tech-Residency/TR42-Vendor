@@ -3,7 +3,8 @@ from datetime import datetime, timedelta, timezone
 from jose import jwt, exceptions as jose_exceptions
 from functools import wraps
 from flask import request, jsonify
-from app.models import # models to import
+from app.blueprints.user.model import User
+from app.extensions import db
 import os
 
 SECRET_KEY = os.environ.get("SECRET_KEY") or "super secret secrets"
@@ -11,12 +12,12 @@ SECRET_KEY = os.environ.get("SECRET_KEY") or "super secret secrets"
 # github will use the or for testing purposes because it wont have the actual key
 
 
-def encode_token(user_uuid, role, token_version):
+def encode_token(user_id, role, token_version):
     """Encode JWT using user_uuid and token_version instead of user_id"""
     payload = {
         "exp": datetime.now(timezone.utc) + timedelta(hours=1),
         "iat": datetime.now(timezone.utc),
-        "user_uuid": str(user_uuid),
+        "user_id": str(user_id),
         "role": role,
         "token_version": token_version,
     }
@@ -43,16 +44,14 @@ def token_required(f):
 
         try:
             data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-            user_uuid = data.get("user_uuid")
+            user_id = data.get("user_id")
             user_role = data.get("role")
             token_version = data.get("token_version", 0)
 
-            # here we need to define roles for vendor users
-            # Fetch user by role and UUID
-            if user_role == #role:
-                user = db.session.query(#Model).filter_by(user_uuid=user_uuid).first()
-            else:
+            if user_role not in ['operator', 'vendor', 'contractor']:
                 return jsonify({"message": "Invalid role in token"}), 401
+            
+            user = db.session.query(User).filter_by(user_id=user_id).first()
 
             if not user or token_version != user.token_version:
                 return jsonify({"message": "Token is no longer valid"}), 401

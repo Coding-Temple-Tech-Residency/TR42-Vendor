@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from ..services.user_service import UserService
 from ..schemas import user_schema, users_schema
+from utils.jwt_auth_middleware import token_required
 import logging
 
 user_bp = Blueprint("user_bp", __name__)
@@ -36,7 +37,20 @@ def create_user():
     except Exception as e:
         logger.exception("Failed to create user")
         return jsonify({"error": str(e)}), 500
+    
 
+# -----------------------
+# GET LOGGED IN USER
+# -----------------------
+@user_bp.get("/profile")
+@token_required
+def get_logged_in_user(user, user_role):
+    try:
+        # User is already fetched and passed by the middleware
+        return user_schema.dump(user), 200
+    except Exception as e:
+        logger.exception("Failed to fetch logged-in user")
+        return jsonify({"error": str(e)}), 500
 
 # -----------------------
 # GET ALL USERS
