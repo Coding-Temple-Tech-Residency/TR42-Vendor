@@ -1,8 +1,3 @@
-// import React from "react";
-// import AuthLayout from "../components/AuthLayout";
-// import AuthCard from "../components/AuthCard";
-// import AuthHeader from "../components/AuthHeader";
-// import AuthFooterLink from "../components/AuthFooterLink";
 import RegisterForm from "./auth/forms/RegisterForm";
 
 function RegisterPage() {
