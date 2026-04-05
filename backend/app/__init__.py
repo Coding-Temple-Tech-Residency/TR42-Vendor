@@ -6,7 +6,7 @@ from app.logging_config import setup_logging
 # from work_order import register_work_order
 # from ticket import register_ticket
 # from contractor import register_contractor
-#from ratings import register_rating
+# from ratings import register_rating
 
 
 def create_app():
