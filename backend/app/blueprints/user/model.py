@@ -1,34 +1,85 @@
-from app.extensions import db
 from datetime import datetime
-from uuid import uuid4
+import enum
+from app.functions import generate_uuid, utc_now
+
+from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Integer, LargeBinary, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from app.blueprints.user.security import hash_password, verify_password
+
+from app.extensions import db
+from app.blueprints.vendor_user.model import VendorUser
+
+
+class UserType(enum.Enum):
+    OPERATOR = "operator"
+    VENDOR = "vendor"
+    CONTRACTOR = "contractor"
+
 
 class User(db.Model):
     __tablename__ = "user"
 
-    user_id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid4()))
-    username = db.Column(db.String(40), unique=True, nullable=False)
-    password = db.Column(db.String(400), nullable=False)
-    email = db.Column(db.String(40), unique=True, nullable=False)
-
-    type = db.Column(
-        db.Enum("operator", "vendor", "contractor", name="user_type"),
-        nullable=False
+    user_id: Mapped[str] = mapped_column(
+        String(36),
+        primary_key=True,
+        default=generate_uuid,
     )
 
-    is_active = db.Column(db.Boolean, default=True, nullable=False)
-    is_admin = db.Column(db.Boolean, default=False)
+    username: Mapped[str] = mapped_column(String(80), unique=True, nullable=False)
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
 
-    profile_photo = db.Column(db.LargeBinary)
+    token_version: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    user_type: Mapped[UserType] = mapped_column(
+        Enum(UserType, name="user_type"), nullable=False, index=True
+    )
 
-    created_by = db.Column(db.String(36), nullable=False)
-    updated_by = db.Column(db.String(36))
+    is_active: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=True, index=True
+    )
+    is_admin: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
-    first_name = db.Column(db.String(50), nullable=False)
-    last_name = db.Column(db.String(50), nullable=False)
+    profile_photo: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
 
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, default=utc_now, index=True
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=utc_now, nullable=False, onupdate=utc_now, index=True
+    )
 
-    # Relationship to vendor_user join table
-    vendor_links = db.relationship("VendorUser", back_populates="user",foreign_keys="VendorUser.user_id")
+    created_by_user_id: Mapped[str | None] = mapped_column(
+        ForeignKey("user.user_id"), nullable=True
+    )
+    updated_by_user_id: Mapped[str | None] = mapped_column(
+        ForeignKey("user.user_id"), nullable=True
+    )
+
+    first_name: Mapped[str] = mapped_column(String(50), nullable=False)
+    last_name: Mapped[str] = mapped_column(String(50), nullable=False)
+
+    vendor_links: Mapped[list["VendorUser"]] = relationship(
+        VendorUser,
+        back_populates="user",
+        foreign_keys="VendorUser.user_id",
+        cascade="all, delete-orphan",
+    )
+
+    created_by_user: Mapped["User | None"] = relationship(
+        "User",
+        foreign_keys=[created_by_user_id],
+        remote_side=[user_id],
+    )
+
+    updated_by_user: Mapped["User | None"] = relationship(
+        "User",
+        foreign_keys=[updated_by_user_id],
+        remote_side=[user_id],
+    )
+
+    def set_password(self, raw_password: str) -> None:
+        self.password_hash = hash_password(raw_password)
+
+    def check_password(self, raw_password: str) -> bool:
+        return verify_password(raw_password, self.password_hash)

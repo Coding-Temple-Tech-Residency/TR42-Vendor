@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from app.blueprints.vendor_users.repositories.vendor_users_repository import VendorUserRepository
+from app.blueprints.vendor_user.repositories.vendor_users_repository import VendorUserRepository
 
 @pytest.fixture
 def mock_vendor_user_query():

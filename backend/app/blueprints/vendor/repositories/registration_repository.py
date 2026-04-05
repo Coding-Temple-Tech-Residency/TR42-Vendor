@@ -2,7 +2,7 @@ from app.extensions import db
 from app.blueprints.vendor.model import Vendor
 from app.blueprints.address.model import Address
 from app.blueprints.user.model import User
-from app.blueprints.vendor_users.model import VendorUser
+from app.blueprints.vendor_user.model import VendorUser
 import uuid
 
 class VendorRegistrationRepository:

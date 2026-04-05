@@ -1,16 +1,12 @@
 import pytest
 from unittest.mock import patch
-from flask import Flask
+from app import create_app
 
 
 @pytest.fixture(scope="session")
 def app():
-    from app.blueprints.vendors.controller.routes import vendors_bp
-
-    app = Flask(__name__)
+    app = create_app()
     app.config["TESTING"] = True
-    app.register_blueprint(vendors_bp)
-
     return app
 
 
@@ -26,21 +22,19 @@ def test_get_vendors_success(client):
     ]
 
     with patch(
-        "app.blueprints.vendors.controller.routes.VendorService.get_all_vendors",
+        "app.blueprints.vendor.controller.routes.VendorService.get_all_vendors",
         return_value=mock_vendors,
     ):
         response = client.get("/vendors/")
-        assert response.status_code == 200
-        assert response.get_json() == mock_vendors
+    assert response.status_code == 200
+    assert response.get_json() == mock_vendors
 
 
 def test_get_vendors_exception(client):
     with patch(
-        "app.blueprints.vendors.controller.routes.VendorService.get_all_vendors",
+        "app.blueprints.vendor.controller.routes.VendorService.get_all_vendors",
         side_effect=Exception("DB error"),
     ):
         response = client.get("/vendors/")
-        assert response.status_code == 500
-        assert response.get_json() == {
-            "error": "An error occurred while fetching vendors"
-        }
+    assert response.status_code == 500
+    assert response.get_json() == {"error": "An error occurred while fetching vendors"}

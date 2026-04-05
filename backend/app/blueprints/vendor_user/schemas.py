@@ -1,6 +1,6 @@
 from app.extensions import ma
 from marshmallow import fields
-from app.blueprints.vendor_users.model import VendorUser
+from app.blueprints.vendor_user.model import VendorUser
 
 
 class VendorUserSchema(ma.SQLAlchemyAutoSchema):

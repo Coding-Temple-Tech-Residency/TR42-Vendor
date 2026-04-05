@@ -3,42 +3,75 @@ from app.functions import generate_uuid
 from datetime import date
 from typing import List
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, String, Integer, Date, Float, ForeignKey, Table
+from sqlalchemy import (
+    Boolean,
+    Column,
+    Enum,
+    String,
+    Integer,
+    Date,
+    Float,
+    ForeignKey,
+    Table,
+)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+
+import enum
+
+
+class VendorStatus(enum.Enum):
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+
+
+class ComplianceStatus(enum.Enum):
+    EXPIRED = "expired"
+    INCOMPLETE = "incomplete"
+    COMPLETE = "complete"
 
 
 class Vendor(db.Model):
     __tablename__ = "vendor"
 
     vendor_id: Mapped[str] = mapped_column(
-        String(36), unique=True, nullable=False, default=generate_uuid
+        String(36), primary_key=True, nullable=False, default=generate_uuid
     )
 
     company_name: Mapped[str] = mapped_column(String(80), nullable=False, unique=True)
 
     company_code: Mapped[str] = mapped_column(String)
 
+    # this is going to have to connect to the user in the create user step
     primary_contact_name: Mapped[str] = mapped_column(String)
-    company_email = db.Column(db.String, nullable=False)
-    company_phone = db.Column(db.String, nullable=False)
 
-    status = db.Column(
-        db.Enum("active", "inactive", name="vendor_status"), nullable=False
+    company_email: Mapped[str] = mapped_column(String, nullable=False)
+    company_phone: Mapped[str] = mapped_column(String, nullable=False)
+
+    status: Mapped[VendorStatus] = mapped_column(
+        Enum(VendorStatus, name="vendor_status"),
+        nullable=False,
+        default=VendorStatus.ACTIVE,
     )
 
-    onboarding = db.Column(db.Boolean, nullable=False)
+    onboarding: Mapped[bool] = mapped_column(Boolean, nullable=True, default=False)
 
-    compliance_status = db.Column(
-        db.Enum("expired", "incomplete", "complete", name="compliance_status")
+    compliance_status: Mapped[ComplianceStatus] = mapped_column(
+        Enum(ComplianceStatus, name="compliance_status"),
+        nullable=False,
+        default=ComplianceStatus.INCOMPLETE,
     )
 
-    # description = db.Column(db.Text)
+    description: Mapped[str] = mapped_column(String)
 
-    address_id = db.Column(db.String, db.ForeignKey("address.address_id"))
-    created_by = db.Column(db.String, default="system")
-    updated_by = db.Column(db.String, default="system")
+    address_id: Mapped[str] = mapped_column(
+        ForeignKey("address.address_id"),
+        unique=True,
+    )
 
-    # FIXED: use back_populates instead of backref
-    address = db.relationship("Address", back_populates="vendor")
+    # relationships
 
-    users = db.relationship("VendorUser", back_populates="vendor")
+    address: Mapped["Address"] = relationship(back_populates="vendor")  # type: ignore
+
+    vendor_links: Mapped[list["VendorUser"]] = relationship(
+        back_populates="vendor", cascade="all, delete-orphan"
+    )

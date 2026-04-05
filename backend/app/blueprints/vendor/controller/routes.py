@@ -9,7 +9,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-vendor_bp = Blueprint("vendor_bp", __name__, url_prefix="/vendors")
+vendor_bp = Blueprint(
+    "vendor_bp",
+    __name__,
+)
 
 
 @vendor_bp.get("/")

@@ -1,8 +1,8 @@
 import pytest
 from unittest.mock import patch, MagicMock
 
-from app.blueprints.vendors.services.vendors_service import VendorService
-from app.blueprints.vendors.model import Vendor
+from app.blueprints.vendor.services.vendors_service import VendorService
+from app.blueprints.vendor.model import Vendor
 
 
 @patch("app.blueprints.vendors.services.vendors_service.VendorRepository")

@@ -2,8 +2,8 @@ import pytest
 
 from app import create_app
 from app.extensions import db
-from app.blueprints.vendors.model import Vendor
-from app.blueprints.vendors.repositories.vendors_repository import VendorRepository
+from app.blueprints.vendor.model import Vendor
+from app.blueprints.vendor.repositories.vendors_repository import VendorRepository
 
 
 @pytest.fixture

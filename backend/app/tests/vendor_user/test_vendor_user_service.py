@@ -2,8 +2,8 @@ import unittest
 from unittest.mock import patch, MagicMock
 from uuid import uuid4
 from datetime import datetime
-from app.blueprints.vendor_users.services.vendor_users_service import VendorUserService
-from app.blueprints.vendor_users.model import VendorUser
+from app.blueprints.vendor_user.services.vendor_users_service import VendorUserService
+from app.blueprints.vendor_user.model import VendorUser
 
 
 class TestVendorUserService(unittest.TestCase):

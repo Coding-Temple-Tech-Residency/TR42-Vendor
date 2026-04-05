@@ -1,15 +1,27 @@
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 import os
+from typing import TYPE_CHECKING
 
 from flask import jsonify, request
 from jose import jwt, exceptions as jose_exceptions
+from werkzeug.security import generate_password_hash, check_password_hash
+
 
 from app.extensions import db
-from app.blueprints.user.model import User
-from app.blueprints.vendor_user.model import VendorUserRole
+
+if TYPE_CHECKING:
+    from app.blueprints.user.model import User
 
 SECRET_KEY = os.environ.get("SECRET_KEY") or "super secret secrets"
+
+
+def hash_password(raw_password: str) -> str:
+    return generate_password_hash(raw_password)
+
+
+def verify_password(raw_password: str, password_hash: str) -> bool:
+    return check_password_hash(password_hash, raw_password)
 
 
 def encode_token(user: User) -> str:
@@ -67,17 +79,3 @@ def token_required(f):
         return f(user, *args, **kwargs)
 
     return decorated
-
-
-def vendor_roles_required(allowed_roles: list[VendorUserRole]):
-    def decorator(f):
-        @wraps(f)
-        def decorated(current_user, vendor_link, *args, **kwargs):
-            if vendor_link.role not in allowed_roles:
-                return jsonify({"message": "Forbidden: insufficient vendor role"}), 403
-
-            return f(current_user, vendor_link, *args, **kwargs)
-
-        return decorated
-
-    return decorator

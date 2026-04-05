@@ -6,6 +6,7 @@ import uuid
 PHONE_REGEX = re.compile(r"^\d{3}-\d{3}-\d{4}$")
 ADDRESS_REGEX = re.compile(r"^[A-Za-z0-9\s.'#,-]{5,120}$")
 EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+PASSOWRD_REGEX = re.compile(r"^(?=.*\d).{6,}$")
 
 
 def strip_strings(data):
@@ -31,9 +32,11 @@ def validate_address(value, **kwargs):
         raise ValidationError("Enter a valid street address (e.g., '123 Main St')")
 
 
-def validate_password(value, **kwargs):
-    if not value or len(value) < 8:
-        raise ValidationError("Password must be longer than 8 characters.")
+def validate_password(value, min_length=6, **kwargs):
+    if not PASSOWRD_REGEX.match(value):
+        raise ValidationError(
+            f"Password must be longer than {min_length} and include a number."
+        )
 
 
 def validate_email_format(value, **kwargs):

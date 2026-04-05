@@ -1,7 +1,7 @@
-from app.blueprints.vendor_users.repositories.vendor_users_repository import VendorUserRepository
+from app.blueprints.vendor_user.repositories.vendor_users_repository import VendorUserRepository
 import uuid
 from datetime import datetime
-from app.blueprints.vendor_users.model import VendorUser
+from app.blueprints.vendor_user.model import VendorUser
 import logging
 
 logger = logging.getLogger(__name__)

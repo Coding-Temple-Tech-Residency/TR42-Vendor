@@ -2,8 +2,8 @@ from app.extensions import db
 from app.blueprints.user.model import User
 from app.blueprints.vendor.model import Vendor
 from app.blueprints.address.model import Address
-from app.blueprints.vendor_users.model import VendorUser
-from app.blueprints.user.utils import hash_password
+from app.blueprints.vendor_user.model import VendorUser
+from backend.app.blueprints.user.security import hash_password
 import uuid
 
 class VendorRegistrationService:
