@@ -7,21 +7,13 @@ from typing import TYPE_CHECKING
 
 from flask import jsonify, request
 from jose import jwt, exceptions as jose_exceptions
-from werkzeug.security import generate_password_hash, check_password_hash
-from app.extensions import db
+
+from app.blueprints.vendor_user.model import VendorUserRole
 
 SECRET_KEY = os.environ.get("SECRET_KEY") or "super secret secrets"
 
 if TYPE_CHECKING:
     from app.blueprints.user.model import User
-
-
-def hash_password(raw_password: str) -> str:
-    return generate_password_hash(raw_password)
-
-
-def verify_password(raw_password: str, password_hash: str) -> bool:
-    return check_password_hash(password_hash, raw_password)
 
 
 def encode_token(user: User) -> str:
@@ -38,7 +30,7 @@ def encode_token(user: User) -> str:
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        from app.blueprints.user.model import User
+        from app.blueprints.user.repositories.user_repositories import UserRepository
 
         auth_header = request.headers.get("Authorization", "")
         parts = auth_header.split()
@@ -62,7 +54,10 @@ def token_required(f):
             user_id = data.get("user_id")
             token_version = data.get("token_version", 0)
 
-            user = db.session.query(User).filter_by(user_id=user_id).first()
+            if not isinstance(user_id, str):
+                return jsonify({"message": "Invalid token"}), 401
+
+            user = UserRepository.get_by_id(user_id)
 
             if not user:
                 return jsonify({"message": "User not found"}), 401
@@ -81,3 +76,42 @@ def token_required(f):
         return f(user, *args, **kwargs)
 
     return decorated
+
+
+def vendor_membership_required(f):
+    @wraps(f)
+    def decorated(current_user, *args, **kwargs):
+        from app.blueprints.vendor_user.repositories.vendor_user_repositories import (
+            VendorUserRepository,
+        )
+
+        vendor_id = kwargs.get("vendor_id")
+
+        if not vendor_id:
+            return jsonify({"message": "vendor_id is required"}), 400
+
+        vendor_link = VendorUserRepository.get_by_user_and_vendor(
+            current_user.user_id,
+            vendor_id,
+        )
+
+        if not vendor_link:
+            return jsonify({"message": "User is not part of this vendor"}), 403
+
+        return f(current_user, vendor_link, *args, **kwargs)
+
+    return decorated
+
+
+def vendor_roles_required(allowed_roles: list[VendorUserRole]):
+    def decorator(f):
+        @wraps(f)
+        def decorated(current_user, vendor_link, *args, **kwargs):
+            if vendor_link.vendor_user_role not in allowed_roles:
+                return jsonify({"message": "Forbidden: insufficient vendor role"}), 403
+
+            return f(current_user, vendor_link, *args, **kwargs)
+
+        return decorated
+
+    return decorator

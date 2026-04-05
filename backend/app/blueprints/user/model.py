@@ -4,7 +4,7 @@ from app.functions import generate_uuid, utc_now
 
 from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Integer, LargeBinary, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.blueprints.user.security import hash_password, verify_password
+from app.auth.passwords import hash_password, verify_password
 
 from app.extensions import db
 from app.blueprints.vendor_user.model import VendorUser

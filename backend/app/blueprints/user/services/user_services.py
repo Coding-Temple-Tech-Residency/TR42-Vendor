@@ -4,12 +4,11 @@ from app.extensions import db
 
 from app.blueprints.user.model import User
 from app.blueprints.user.repositories.user_repositories import UserRepository
+from app.blueprints.user.schemas import users_schema
 
-# from app.blueprints.user.security import (
-#     verify_password,
-#     create_token,
-#     hash_password,
-# )
+from app.auth.passwords import verify_password
+from app.auth.tokens import encode_token
+
 from logging import getLogger
 
 
@@ -18,56 +17,96 @@ logger = getLogger(__name__)
 
 class UserService:
 
-    # @staticmethod
-    # def login(data: dict):
-    #     logger.info("Attempting login for user: %s", data.get("username"))
-    #     username = data.get("username")
-    #     password = data.get("password")
+    @staticmethod
+    def login(data: dict):
+        logger.info("Attempting login for user: %s", data.get("username"))
 
-    #     if not username or not password:
-    #         logger.warning("Login failed: Missing username or password")
-    #         raise BadRequest("Username and password are required")
+        username = data.get("username")
+        password = data.get("password")
 
-    #     user = UserRepository.get_by_username(username)
-    #     if not user:
-    #         logger.warning("Login failed: Invalid username or password")
-    #         raise BadRequest("Invalid username or password")
+        if not username or not password:
+            logger.warning("Login failed: Missing username or password")
+            raise BadRequest("Username and password are required")
 
-    #     if not verify_password(password, user.password):
-    #         logger.warning("Login failed: Invalid username or password")
-    #         raise BadRequest("Invalid username or password")
+        user = UserRepository.get_by_username(username)
+        if not user:
+            logger.warning("Login failed: User not found: %s", username)
+            raise BadRequest("Invalid username or password")
 
-    #     token = create_token(user)
-    #     logger.info("Login successful for user: %s  and token: %s", username, token)
+        if not verify_password(password, user.password_hash):
+            logger.warning("Login failed: Incorrect password for user: %s", username)
+            raise BadRequest("Invalid username or password")
 
-    #     return {
-    #         "message": "Login successful",
-    #         "token": token,
-    #         "user_id": user.user_id,
-    #         "username": user.username,
-    #         "email": user.email,
-    #         "type": user.type,
-    #         "is_admin": user.is_admin,
-    #     }
-    # logger.info("Returning login response for user: %s", username)
+        token = encode_token(user)
+        logger.info("Login successful for user: %s", username)
 
-    # @staticmethod
-    # def get_all():
-    #     return UserRepository.get_all()
+        return {
+            "message": "Login successful",
+            "token": token,
+            "user_id": user.user_id,
+            "username": user.username,
+            "email": user.email,
+            "type": user.user_type.value,
+            "is_admin": user.is_admin,
+        }
 
-    # @staticmethod
-    # def get(user_id: str):
-    #     return UserRepository.get_by_id(user_id)
+    @staticmethod
+    def get_all():
+        logger.debug("Fetching all users")
+        return UserRepository.get_all()
+
+    @staticmethod
+    def get_all_paginated(page: int = 1, per_page: int = 10):
+        pagination = UserRepository.get_all_paginated(page=page, per_page=per_page)
+
+        return {
+            "total": pagination.total,
+            "page": pagination.page,
+            "pages": pagination.pages,
+            "per_page": pagination.per_page,
+            "users": users_schema.dump(pagination.items),
+        }
+
+    @staticmethod
+    def get_vendor_users_paginated(vendor_id: str, page: int = 1, per_page: int = 10):
+        pagination = UserRepository.get_by_vendor_paginated(
+            vendor_id=vendor_id, page=page, per_page=per_page
+        )
+
+        return {
+            "total": pagination.total,
+            "page": pagination.page,
+            "pages": pagination.pages,
+            "per_page": pagination.per_page,
+            "users": users_schema.dump(pagination.items),
+        }
+
+    @staticmethod
+    def get(user_id: str):
+        logger.debug("Fetching user with id: %s", user_id)
+        return UserRepository.get_by_id(user_id)
 
     @staticmethod
     def create_user(data: dict) -> User:
+        logger.info(
+            "Creating user: username=%s, email=%s",
+            data.get("username"),
+            data.get("email"),
+        )
 
         existing_email = UserRepository.get_by_email(data["email"])
         if existing_email:
+            logger.warning(
+                "User creation failed: Email already exists: %s", data["email"]
+            )
             raise ValueError("Email already exists")
 
         existing_username = UserRepository.get_by_username(data["username"])
         if existing_username:
+            logger.warning(
+                "User creation failed: Username already exists: %s",
+                data["username"],
+            )
             raise ValueError("Username already exists")
 
         user = User(
@@ -80,19 +119,35 @@ class UserService:
             is_admin=False,
             profile_photo=data.get("profile_photo"),
         )
+
+        logger.debug("Setting password for user: %s", data["username"])
         user.set_password(data["password"])
 
         try:
             UserRepository.create(user)
+            logger.debug("User added to session: %s", user.username)
+
             db.session.commit()
+            logger.info("User created successfully: %s", user.user_id)
+
             return user
 
-        except IntegrityError:
+        except IntegrityError as e:
             db.session.rollback()
+            logger.exception(
+                "IntegrityError during user creation for username=%s: %s",
+                data.get("username"),
+                e,
+            )
             raise ValueError("User creation failed due to a database constraint")
 
-        except Exception:
+        except Exception as e:
             db.session.rollback()
+            logger.exception(
+                "Unexpected error during user creation for username=%s: %s",
+                data.get("username"),
+                e,
+            )
             raise
 
     # @staticmethod

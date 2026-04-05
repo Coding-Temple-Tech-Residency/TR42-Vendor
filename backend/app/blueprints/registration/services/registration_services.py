@@ -52,7 +52,7 @@ class RegistrationService:
                 username=user_data["username"],
                 user_type=UserType.VENDOR,
                 is_active=True,
-                is_admin=False,
+                is_admin=True,
             )
             user.set_password(user_data["password"])
             UserRepository.create(user)
