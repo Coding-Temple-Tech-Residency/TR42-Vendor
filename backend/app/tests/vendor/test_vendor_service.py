@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch, MagicMock
 
-from app.blueprints.vendor.services.vendors_service import VendorService
+from backend.app.blueprints.vendor.services.vendors_services import VendorService
 from app.blueprints.vendor.model import Vendor
 
 

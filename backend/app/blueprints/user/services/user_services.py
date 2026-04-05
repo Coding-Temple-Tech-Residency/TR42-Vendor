@@ -1,8 +1,9 @@
+from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import BadRequest
 from app.extensions import db
 
 from app.blueprints.user.model import User
-from app.blueprints.user.repositories.user_repository import UserRepository
+from app.blueprints.user.repositories.user_repositories import UserRepository
 
 # from app.blueprints.user.security import (
 #     verify_password,
@@ -60,7 +61,6 @@ class UserService:
 
     @staticmethod
     def create_user(data: dict) -> User:
-        password = data.pop("password")
 
         existing_email = UserRepository.get_by_email(data["email"])
         if existing_email:
@@ -70,10 +70,30 @@ class UserService:
         if existing_username:
             raise ValueError("Username already exists")
 
-        user = User(**data)
-        user.set_password(password)
+        user = User(
+            first_name=data["first_name"],
+            last_name=data["last_name"],
+            email=data["email"],
+            username=data["username"],
+            user_type=data["user_type"],
+            is_active=True,
+            is_admin=False,
+            profile_photo=data.get("profile_photo"),
+        )
+        user.set_password(data["password"])
 
-        return UserRepository.create(user)
+        try:
+            UserRepository.create(user)
+            db.session.commit()
+            return user
+
+        except IntegrityError:
+            db.session.rollback()
+            raise ValueError("User creation failed due to a database constraint")
+
+        except Exception:
+            db.session.rollback()
+            raise
 
     # @staticmethod
     # def update(user_id: str, data: dict):

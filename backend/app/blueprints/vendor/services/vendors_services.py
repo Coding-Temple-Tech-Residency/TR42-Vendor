@@ -1,5 +1,8 @@
-from app.blueprints.vendor.repositories.vendors_repository import VendorRepository
+from sqlalchemy.exc import IntegrityError
+
+from app.blueprints.vendor.repositories.vendors_repositories import VendorRepository
 from app.blueprints.vendor.model import Vendor
+from app.extensions import db
 import logging
 
 
@@ -29,8 +32,16 @@ class VendorService:
             if existing_vendor:
                 raise ValueError("Vendor with this company name already exists")
 
-            return VendorRepository.create(vendor)
+            VendorRepository.create(vendor)
+            db.session.commit()
+
+            return vendor
+
+        except IntegrityError:
+            db.session.rollback()
+            raise ValueError("Vendor creation failed due to a database constraint")
 
         except Exception:
+            db.session.rollback()
             logger.exception("Failed to create vendor in service layer")
             raise

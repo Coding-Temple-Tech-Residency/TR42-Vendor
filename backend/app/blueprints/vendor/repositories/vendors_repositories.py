@@ -1,4 +1,6 @@
 import logging
+from sqlalchemy import select
+
 from app.extensions import db
 from app.blueprints.vendor.model import Vendor
 
@@ -11,7 +13,7 @@ class VendorRepository:
     def get_all():
         try:
             logger.debug("Fetching all vendors from database")
-            return db.session.query(Vendor).all()
+            return db.session.scalars(select(Vendor)).all()
         except Exception:
             logger.exception("Failed to fetch vendors from database")
             raise
@@ -19,23 +21,20 @@ class VendorRepository:
     @staticmethod
     def get_by_company_name(company_name: str):
         try:
-            logger.debug(f"Fetching vendor by name: {company_name}")
-            return db.session.query(Vendor).filter_by(company_name=company_name).first()
+            logger.debug("Fetching vendor by name: %s", company_name)
+            return db.session.scalar(
+                select(Vendor).where(Vendor.company_name == company_name)
+            )
         except Exception:
-            logger.exception(f"Failed to fetch vendor by name: {company_name}")
+            logger.exception("Failed to fetch vendor by name: %s", company_name)
             raise
 
     @staticmethod
-    def create(vendor: Vendor):
+    def create(vendor: Vendor) -> Vendor:
         try:
-            logger.debug(f"Saving vendor to database: {vendor.company_name}")
-
+            logger.debug("Adding vendor to session: %s", vendor.company_name)
             db.session.add(vendor)
-            db.session.commit()
-
             return vendor
-
         except Exception:
-            db.session.rollback()
-            logger.exception("Failed to create vendor in database")
+            logger.exception("Failed to add vendor to session")
             raise

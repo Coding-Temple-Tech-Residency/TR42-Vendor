@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from marshmallow import ValidationError
 
 from app.blueprints.vendor.model import Vendor
-from app.blueprints.vendor.services.vendors_service import VendorService
+from app.blueprints.vendor.services.vendors_services import VendorService
 from app.blueprints.vendor.schemas import vendor_schema, vendors_schema
 import logging
 
@@ -16,7 +16,7 @@ vendor_bp = Blueprint(
 
 
 @vendor_bp.get("/")
-def get_vendors():
+def get_all_vendors():
     try:
         logger.debug("Fetching all vendors")
         vendor = VendorService.get_all_vendors()

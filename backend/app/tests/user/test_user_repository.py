@@ -1,6 +1,6 @@
 from app.extensions import db
 from app.blueprints.user.model import User
-from app.blueprints.user.repositories.user_repository import UserRepository
+from backend.app.blueprints.user.repositories.user_repositories import UserRepository
 
 
 def test_add_user(app):

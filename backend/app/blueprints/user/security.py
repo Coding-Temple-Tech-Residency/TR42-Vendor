@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 import os
@@ -6,14 +8,12 @@ from typing import TYPE_CHECKING
 from flask import jsonify, request
 from jose import jwt, exceptions as jose_exceptions
 from werkzeug.security import generate_password_hash, check_password_hash
-
-
 from app.extensions import db
+
+SECRET_KEY = os.environ.get("SECRET_KEY") or "super secret secrets"
 
 if TYPE_CHECKING:
     from app.blueprints.user.model import User
-
-SECRET_KEY = os.environ.get("SECRET_KEY") or "super secret secrets"
 
 
 def hash_password(raw_password: str) -> str:
@@ -38,6 +38,8 @@ def encode_token(user: User) -> str:
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
+        from app.blueprints.user.model import User
+
         auth_header = request.headers.get("Authorization", "")
         parts = auth_header.split()
 

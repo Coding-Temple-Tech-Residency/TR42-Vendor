@@ -1,9 +1,6 @@
 from sqlalchemy import select
-
 from app.extensions import db
-from ..model import User
-import uuid
-from uuid import uuid4
+from app.blueprints.user.model import User
 from logging import getLogger
 
 logger = getLogger(__name__)
@@ -30,7 +27,6 @@ class UserRepository:
     @staticmethod
     def create(user: User) -> User:
         db.session.add(user)
-        db.session.commit()
         return user
 
     # @staticmethod

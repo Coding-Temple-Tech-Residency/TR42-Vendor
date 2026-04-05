@@ -31,18 +31,18 @@ def create_app():
 
         db.create_all()
 
-    from app.blueprints.user.controller.routes import user_bp
-    from app.blueprints.address.controller.routes import address_bp
-    from app.blueprints.vendor.controller.routes import vendor_bp
-    from app.blueprints.vendor.controller.registration_routes import (
-        vendor_registration_bp,
+    from app.blueprints.user.controller.user_routes import user_bp
+    from app.blueprints.address.controller.address_routes import address_bp
+    from app.blueprints.vendor.controller.vendor_routes import vendor_bp
+    from app.blueprints.registration.controller.registration_routes import (
+        registration_bp,
     )
-    from app.blueprints.vendor_user.controller.routes import vendor_user_bp
+    from app.blueprints.vendor_user.controller.vendor_user_routes import vendor_user_bp
 
     app.register_blueprint(user_bp, url_prefix="/users")
     app.register_blueprint(address_bp, url_prefix="/addresses")
     app.register_blueprint(vendor_bp, url_prefix="/vendors")
-    app.register_blueprint(vendor_registration_bp, url_prefix="/vendors")
+    app.register_blueprint(registration_bp, url_prefix="/registration")
     app.register_blueprint(vendor_user_bp, url_prefix="/vendor_users")
 
     return app

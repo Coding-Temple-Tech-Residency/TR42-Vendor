@@ -1,20 +1,13 @@
 from app.extensions import db
 from app.functions import generate_uuid
-from datetime import date
-from typing import List
-from flask_sqlalchemy import SQLAlchemy
+
 from sqlalchemy import (
     Boolean,
-    Column,
     Enum,
     String,
-    Integer,
-    Date,
-    Float,
     ForeignKey,
-    Table,
 )
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 import enum
 
@@ -39,7 +32,7 @@ class Vendor(db.Model):
 
     company_name: Mapped[str] = mapped_column(String(80), nullable=False, unique=True)
 
-    company_code: Mapped[str] = mapped_column(String)
+    company_code: Mapped[str] = mapped_column(String, nullable=True)
 
     # this is going to have to connect to the user in the create user step
     primary_contact_name: Mapped[str] = mapped_column(String)
@@ -61,7 +54,7 @@ class Vendor(db.Model):
         default=ComplianceStatus.INCOMPLETE,
     )
 
-    description: Mapped[str] = mapped_column(String)
+    description: Mapped[str] = mapped_column(String, nullable=True)
 
     address_id: Mapped[str] = mapped_column(
         ForeignKey("address.address_id"),

@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from app.blueprints.user.schemas import user_schema, users_schema
-from app.blueprints.user.services.user_service import UserService
+from app.blueprints.user.services.user_services import UserService
 
 import logging
 

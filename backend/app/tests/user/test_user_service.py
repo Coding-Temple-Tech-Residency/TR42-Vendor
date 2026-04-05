@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from app.blueprints.user.services.user_service import UserService
+from backend.app.blueprints.user.services.user_services import UserService
 
 
 class MockUser:

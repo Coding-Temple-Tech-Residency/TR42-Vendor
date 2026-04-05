@@ -47,5 +47,6 @@ volumes:
   postgres_data:
   pgadmin_data:
 
-
+# docker compose down -v <- this wipes the database
+# docker compose down <- Stops and removes containers, keeps data
 # docker compose up --build
