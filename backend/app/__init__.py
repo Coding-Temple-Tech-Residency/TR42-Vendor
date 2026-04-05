@@ -2,9 +2,11 @@ from flask import Flask
 from app.extensions import db, ma
 from app.config import Config
 from app.logging_config import setup_logging
+
 # from work_order import register_work_order
 # from ticket import register_ticket
 # from contractor import register_contractor
+#from ratings import register_rating
 
 
 def create_app():
@@ -23,9 +25,9 @@ def create_app():
     # This ensures SQLAlchemy knows every table + FK relationship
     from app.blueprints.vendor_users.model import VendorUser
     from app.blueprints.user.model import User
-   
     from app.blueprints.address.model import Address
     from app.blueprints.vendor.model import Vendor
+    from app.blueprints.ratings.model import Rating
 
         # try:
     #     from app.blueprints.vendor_users import register_vendor_user
@@ -57,13 +59,20 @@ def create_app():
 
     # try:
     #     from app.blueprints.contractor import register_contractor
-
+    
     #     app.register_blueprint(register_contractor)
     # except ImportError as e:
     #     print(f"Contractor blueprint import failed: {e}")
+    
+    # try:
+    #     from app.blueprints.ratings import register_rating
 
+    #   app.register_blueprint(register_rating)
+    # except ImportError as e:
+    #     print(f"Rating blueprint import failed: {e}")
+    
 
-        # Create tables AFTER all models are imported
+    # Create tables AFTER all models are imported
     with app.app_context():
         db.create_all()
 
@@ -75,11 +84,13 @@ def create_app():
     from app.blueprints.vendor.controller.routes import vendor_bp
     from app.blueprints.vendor.controller.registration_routes import vendor_registration_bp
     from app.blueprints.vendor_users.controller.routes import vendor_user_bp
+    from app.blueprints.ratings.controller.routes import ratings_bp
 
     app.register_blueprint(user_bp, url_prefix="/users")
     app.register_blueprint(address_bp, url_prefix="/addresses")
     app.register_blueprint(vendor_bp, url_prefix="/vendors")
     app.register_blueprint(vendor_registration_bp, url_prefix="/vendors")
     app.register_blueprint(vendor_user_bp, url_prefix="/vendor_users")
+    app.register_blueprint(ratings_bp, url_prefix="/ratings")
 
     return app
