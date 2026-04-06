@@ -150,12 +150,46 @@
 -- group by 1
 -- order by 2 desc;
 
-select v.company_name, round(cp.avg_rating, 2)
-from (
-    select c.vendor_id, avg(cp.rating) as avg_rating
-    from contractor_performance cp
-    join contractors c using (contractor_id)
-    group by c.vendor_id
-) cp
+-- select v.company_name, round(cp.avg_rating, 2)
+-- from (
+--     select c.vendor_id, avg(cp.rating) as avg_rating
+--     from contractor_performance cp
+--     join contractors c using (contractor_id)
+--     group by c.vendor_id
+-- ) cp
+-- join vendor v using (vendor_id)
+-- order by cp.avg_rating desc;
+
+-- On time Delivery by Vendor
+
+select 
+    v.company_name,
+    round(avg(
+        case 
+            when (t.completed_at > t.due_date) or (t.completed_at is null and t.due_date < '2026-03-01')
+            then 0
+            else 1
+        end
+    ) * 100, 2) as on_time,
+    count(t.ticket_id) as ticket_count
+from ticket t
 join vendor v using (vendor_id)
-order by cp.avg_rating desc;
+where t.created_at between '2025-11-01' and '2026-03-01'
+group by v.vendor_id
+order by on_time desc;
+
+select 
+    v.company_name,
+    round(avg(
+        case 
+            when (t.completed_at > t.due_date) or (t.completed_at is null and t.due_date < date('now'))
+            then 0
+            else 1
+        end
+    ) * 100, 2) as on_time,
+    count(t.ticket_id) as ticket_count
+from ticket t
+join vendor v using (vendor_id)
+where t.created_at between '2025-11-01' and date('now')
+group by v.vendor_id
+order by on_time desc;
