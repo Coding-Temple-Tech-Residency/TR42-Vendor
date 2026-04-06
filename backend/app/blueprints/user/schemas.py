@@ -50,6 +50,7 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
     def check_password(self, value, **kwargs):
         return validate_password(value, min_length=6)
 
+    #vendor_links = fields.Nested("VendorUserSchema", many=True, dump_only=True)
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)

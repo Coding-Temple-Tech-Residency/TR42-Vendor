@@ -1,5 +1,5 @@
 from app.extensions import ma
-from app.models.invoice import Invoice
+from invoice.model import Invoice
 
 
 class InvoiceSchema(ma.SQLAlchemyAutoSchema):
