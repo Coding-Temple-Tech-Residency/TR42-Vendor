@@ -1,12 +1,11 @@
 from app.extensions import db
-from app.models.base import BaseModel
 from datetime import datetime
 
-class Rating(BaseModel): #rename ContractorPerformance 
-    __tablename__ = 'ratings'
+class ContractorPerformance(db.Model): 
+    __tablename__ = 'contractor_performance'
 
-    rating_id = db.Column(db.String, primary_key=True)
-    rating_value = db.Column(db.Integer) #1.0 to 5.0
+    contractor_performance_id = db.Column(db.String, primary_key=True)
+    performance_value = db.Column(db.Integer) #1.0 to 5.0
     comments = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

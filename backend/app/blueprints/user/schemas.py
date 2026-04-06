@@ -1,5 +1,5 @@
 from app.extensions import ma
-from marshmallow import fields
+# from marshmallow import fields
 from app.blueprints.user.model import User
 
 
