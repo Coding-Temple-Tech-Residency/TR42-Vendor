@@ -52,9 +52,12 @@ def token_required(f):
         try:
             data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
             user_id = data.get("user_id")
-            token_version = data.get("token_version", 0)
+            token_version = data.get("token_version")
 
             if not isinstance(user_id, str):
+                return jsonify({"message": "Invalid token"}), 401
+
+            if not isinstance(token_version, int):
                 return jsonify({"message": "Invalid token"}), 401
 
             user = UserRepository.get_by_id(user_id)
