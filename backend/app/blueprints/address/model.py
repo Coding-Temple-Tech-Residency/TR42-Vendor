@@ -1,6 +1,5 @@
 from datetime import datetime
-from app.functions import generate_uuid
-from app.functions import utc_now
+from app.functions import generate_uuid, utc_now
 from sqlalchemy import DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.extensions import db
