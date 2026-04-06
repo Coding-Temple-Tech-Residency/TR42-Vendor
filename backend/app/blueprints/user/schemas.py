@@ -13,6 +13,13 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
 
     password = fields.String(required=True, load_only=True)
 
+    vendor_links = fields.Nested(
+        "VendorUserSchema",
+        many=True,
+        dump_only=True,
+        exclude=("user",),
+    )
+
     class Meta:
         model = User
         load_instance = False
