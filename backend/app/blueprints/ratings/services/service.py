@@ -1,5 +1,5 @@
-from .repository import RatingRepository
-from models import Rating
+from ..repositories import RatingRepository
+from ..model import Rating
 
 class RatingService:
     

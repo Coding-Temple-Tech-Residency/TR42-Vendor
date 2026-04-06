@@ -1,11 +1,10 @@
 from flask import Blueprint, request, jsonify
-from .service import RatingsService
-from .schema import RatingSchema
+from app.blueprints.ratings.services.service import RatingsService
+from app.blueprints.ratings.schemas import rating_scehma, ratings_schema
 
 
 ratings_bp = Blueprint('ratings', __name__)
-schema = RatingSchema()
-schema_many = RatingSchema(many=True)
+
 
 
 # Get all ratings
@@ -13,7 +12,7 @@ schema_many = RatingSchema(many=True)
 def get_ratings():
     try:
         ratings = RatingsService.get_all_ratings()
-        return jsonify(schema_many.dump(ratings)), 200
+        return jsonify(ratings_schema.dump(ratings)), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -24,7 +23,7 @@ def get_rating(rating_id):
         rating = RatingsService.get_rating(rating_id)
         if not rating:
             return jsonify({'error': 'Rating not found'}), 404
-        return jsonify(schema.dump(rating)), 200
+        return jsonify(rating_scehma.dump(rating)), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -34,7 +33,7 @@ def create_rating():
     try:
         data = request.get_json()
         rating = RatingsService.create_rating(data)
-        return jsonify(schema.dump(rating)), 201
+        return jsonify(rating_scehma.dump(rating)), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -46,7 +45,7 @@ def update_rating(rating_id):
         rating = RatingsService.update_rating(rating_id, data)
         if not rating:
             return jsonify({'error': 'Rating not found'}), 404
-        return jsonify(schema.dump(rating)), 200
+        return jsonify(rating_scehma.dump(rating)), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

@@ -1,4 +1,4 @@
-from models import Rating, db
+from ..model import Rating, db
 
 class RatingRepository:
     
