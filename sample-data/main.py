@@ -453,6 +453,42 @@ def generate_vendor_wells(vendors, wells, users):
 
     return vendor_wells
 
+def generate_contractor_performance(tickets, contractors, users):
+    performance = []
+
+    # optional: quick lookup for contractors
+    contractor_lookup = {
+        c["contractor_id"]: c for c in contractors
+    }
+
+    for ticket in tickets:
+        # ✅ only rate completed work
+        if ticket["status"] != "completed":
+            continue
+
+        contractor_id = ticket["assigned_contractor"]
+
+        # safety check (should always pass if your data is good)
+        if contractor_id not in contractor_lookup:
+            continue
+
+        creator = random.choice(users)["user_id"]
+        updater = random.choice(users)["user_id"]
+
+        performance.append({
+            "rating_id": gen_id(),
+            "contractor_id": contractor_id,   # ✅ tied to ticket
+            "ticket_id": ticket["ticket_id"], # ✅ correct FK
+            "rating": random.randint(1, 5),
+            "comments": fake.sentence(),
+            "created_at": now(),
+            "updated_at": now(),
+            "created_by": creator,
+            "updated_by": updater
+        })
+
+    return performance
+
 def serialize(value):
     if isinstance(value, datetime):
         return value.isoformat()
@@ -502,6 +538,13 @@ def main():
     invoices = generate_invoices(300, work_orders, tickets, users)
     line_items = generate_line_items(invoices, users)
     
+    contractor_performance = generate_contractor_performance(
+        tickets,
+        contractors,
+        users
+    )
+    
+    
     data = {
         "user": users,
         "address": addresses,
@@ -514,7 +557,8 @@ def main():
         "work_orders": work_orders,
         "ticket": tickets,
         "invoice": invoices,
-        "line_item": line_items
+        "line_item": line_items,
+        "contractor_performance": contractor_performance
     }
 
     export_to_csv(data)

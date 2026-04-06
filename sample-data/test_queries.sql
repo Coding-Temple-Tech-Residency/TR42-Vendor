@@ -50,15 +50,17 @@
 -- where completed_at is not null and due_date < completed_at
 -- limit 10;
 
-select 
-    v.company_name,
-    avg(julianday(t.completed_at) - julianday(t.assigned_at)) as avg_ticket_completion_time
-from ticket t
-join vendor v
-using(vendor_id)
-where t.completed_at >= datetime('now', '-30 days')
-group by 1
-order by 2 desc;
+-- Vendor average Completion time
+
+-- select 
+--     v.company_name,
+--     avg(julianday(t.completed_at) - julianday(t.assigned_at)) as avg_ticket_completion_time
+-- from ticket t
+-- join vendor v
+-- using(vendor_id)
+-- where t.completed_at >= datetime('now', '-30 days')
+-- group by 1
+-- order by 2 desc;
 
 
 -- select 
@@ -119,3 +121,29 @@ order by 2 desc;
 -- using (invoice_id)
 -- where i.invoice_status = 'paid'
 -- group by invoice_id;
+
+-- Contractor Performance
+
+-- select * from vendor
+-- limit 1;
+
+-- Test Vendor: 3c0d000d-535b-4008-bf4a-7d351976d8cd
+
+select 
+    vc.full_name,
+    round(avg(cp.rating), 2),
+    count(cp.ticket_id)
+from 
+(
+select 
+    c.contractor_id,
+    u.first_name || " " || u.last_name as full_name
+from contractors c
+join user u
+using (user_id)
+where vendor_id = '3c0d000d-535b-4008-bf4a-7d351976d8cd'
+) as vc
+join contractor_performance cp
+using (contractor_id)
+group by 1
+order by 2 desc;
