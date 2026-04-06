@@ -6,7 +6,7 @@ from app.blueprints.registration.schemas import combined_registration_schema
 from app.blueprints.user.model import User, UserType
 from app.blueprints.user.repositories.user_repositories import UserRepository
 from app.blueprints.vendor.model import Vendor
-from app.blueprints.vendor.repositories.vendors_repositories import (
+from app.blueprints.vendor.repositories.vendor_repositories import (
     VendorRepository,
 )
 from app.blueprints.address.model import Address

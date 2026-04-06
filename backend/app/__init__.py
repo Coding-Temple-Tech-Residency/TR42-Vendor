@@ -8,9 +8,13 @@ from app.logging_config import setup_logging
 import app.models
 
 
-def create_app():
+def create_app(config_object=None):
     app = Flask(__name__)
-    app.config.from_object(Config)
+
+    if config_object:
+        app.config.from_object(config_object)
+    else:
+        app.config.from_object(Config)
 
     setup_logging()
 
@@ -18,16 +22,18 @@ def create_app():
     ma.init_app(app)
 
     with app.app_context():
-        for i in range(10):
-            try:
-                db.session.execute(text("SELECT 1"))
-                print("Database is ready")
-                break
-            except Exception as e:
-                print(f"Database not ready yet, retrying... ({i + 1}/10): {e}")
-                time.sleep(2)
-        else:
-            raise RuntimeError("Database was not ready after multiple attempts")
+        if not app.config.get("TESTING"):
+
+            for i in range(10):
+                try:
+                    db.session.execute(text("SELECT 1"))
+                    print("Database is ready")
+                    break
+                except Exception as e:
+                    print(f"Database not ready yet, retrying... ({i + 1}/10): {e}")
+                    time.sleep(2)
+            else:
+                raise RuntimeError("Database was not ready after multiple attempts")
 
         db.create_all()
 

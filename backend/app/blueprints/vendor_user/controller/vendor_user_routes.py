@@ -16,7 +16,7 @@ def get_all_vendor_users():
         users = VendorUserService.get_all_users()
 
         logger.info(f"Retrieved {len(users)} users")
-        return jsonify(vendor_users_schema.dump(users)), 201
+        return jsonify(vendor_users_schema.dump(users)), 200
 
     except Exception as e:
         logger.error(f"Error fetching users: {str(e)}")

@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from backend.app.blueprints.user.services.user_services import UserService
+from app.blueprints.user.services.user_services import UserService
 
 
 class MockUser:
@@ -12,7 +12,7 @@ class MockUser:
         self.email = "jane@example.com"
         self.first_name = "Jane"
         self.last_name = "Doe"
-        self.user_type = "vendor"
+        self.user_type = "VENDOR"
         self.is_active = True
         self.is_admin = False
         self.token_version = 0
@@ -25,9 +25,6 @@ class MockUser:
         return self.password_hash == f"hashed::{raw_password}"
 
 
-from types import SimpleNamespace
-
-
 def test_create_user_success():
     data = {
         "username": "jane123",
@@ -35,35 +32,28 @@ def test_create_user_success():
         "email": "jane@example.com",
         "first_name": "Jane",
         "last_name": "Doe",
-        "user_type": "vendor",
+        "user_type": "VENDOR",
         "is_active": True,
         "is_admin": False,
     }
 
-    created = SimpleNamespace(
-        username="jane123",
-        email="jane@example.com",
-        first_name="Jane",
-        last_name="Doe",
-        user_type="vendor",
-        is_active=True,
-        is_admin=False,
-    )
-
     with patch(
-        "app.blueprints.user.services.user_service.UserRepository.get_by_email",
+        "app.blueprints.user.services.user_services.UserRepository.get_by_email",
         return_value=None,
     ), patch(
-        "app.blueprints.user.services.user_service.UserRepository.get_by_username",
+        "app.blueprints.user.services.user_services.UserRepository.get_by_username",
         return_value=None,
     ), patch(
-        "app.blueprints.user.services.user_service.UserRepository.create",
-        return_value=created,
-    ) as mock_create:
+        "app.blueprints.user.services.user_services.UserRepository.create"
+    ) as mock_create, patch(
+        "app.blueprints.user.services.user_services.db.session.commit"
+    ):
         created_user = UserService.create_user(data.copy())
 
     assert created_user.username == "jane123"
     assert created_user.email == "jane@example.com"
+    assert created_user.first_name == "Jane"
+    assert created_user.last_name == "Doe"
     mock_create.assert_called_once()
 
 
@@ -74,7 +64,7 @@ def test_create_user_duplicate_email():
         "email": "jane@example.com",
         "first_name": "Jane",
         "last_name": "Doe",
-        "user_type": "vendor",
+        "user_type": "VENDOR",
         "is_active": True,
         "is_admin": False,
     }
@@ -82,7 +72,7 @@ def test_create_user_duplicate_email():
     existing_user = MockUser()
 
     with patch(
-        "app.blueprints.user.services.user_service.UserRepository.get_by_email",
+        "app.blueprints.user.services.user_services.UserRepository.get_by_email",
         return_value=existing_user,
     ):
         with pytest.raises(ValueError, match="Email already exists"):
@@ -96,16 +86,16 @@ def test_create_user_duplicate_username():
         "email": "jane@example.com",
         "first_name": "Jane",
         "last_name": "Doe",
-        "user_type": "vendor",
+        "user_type": "VENDOR",
         "is_active": True,
         "is_admin": False,
     }
 
     with patch(
-        "app.blueprints.user.services.user_service.UserRepository.get_by_email",
+        "app.blueprints.user.services.user_services.UserRepository.get_by_email",
         return_value=None,
     ), patch(
-        "app.blueprints.user.services.user_service.UserRepository.get_by_username",
+        "app.blueprints.user.services.user_services.UserRepository.get_by_username",
         return_value=MockUser(),
     ):
         with pytest.raises(ValueError, match="Username already exists"):

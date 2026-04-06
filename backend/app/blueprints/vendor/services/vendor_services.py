@@ -1,6 +1,6 @@
 from sqlalchemy.exc import IntegrityError
 
-from app.blueprints.vendor.repositories.vendors_repositories import VendorRepository
+from app.blueprints.vendor.repositories.vendor_repositories import VendorRepository
 from app.blueprints.vendor.model import Vendor
 from app.extensions import db
 import logging
