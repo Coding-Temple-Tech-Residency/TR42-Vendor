@@ -24,6 +24,10 @@ def add_n_days(n):
     one_day = timedelta(days=1)
     return one_day * n
 
+def add_n_hours(n):
+    one_day = timedelta(hours=1)
+    return one_day * n
+
 
 def generate_time_span(sd='-1y', ed='now'):
     return fake.date_time_between(start_date=sd, end_date=ed)
@@ -248,9 +252,10 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
         status = random.choice(TICKET_STATUS)
         created_at = generate_time_span()
         assigned_at = generate_time_span(created_at, created_at + add_n_days(2))
+        estimated_duration = random.randint(1, 24)
         
-        start_time = generate_time_span(sd=assigned_at, ed=assigned_at+add_n_days(2))
-        completed_at = fake.date_time_between(start_date=start_time, end_date=start_time + add_n_days(3)) if status=='completed' else None
+        start_time = generate_time_span(sd=assigned_at, ed=assigned_at+add_n_days(3))
+        completed_at = fake.date_time_between(start_date=start_time, end_date=start_time + add_n_hours(estimated_duration)) if status=='completed' else None
         due_date = generate_time_span(sd=created_at+add_n_days(5), ed=created_at+add_n_days(15))
         tickets.append({
             "ticket_id": gen_id(),
@@ -264,7 +269,7 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
             "due_date": due_date,
             "assigned_at": assigned_at,
             "completed_at": completed_at,
-            "estimated_duration": random.randint(1, 24),
+            "estimated_duration": estimated_duration,
             "notes": fake.text(max_nb_chars=100),
             "contractor_start_location": f"{fake.latitude()},{fake.longitude()}",
             "contractor_end_location": f"{fake.latitude()},{fake.longitude()}",
