@@ -52,14 +52,14 @@ class UserRepository:
         db.session.add(user)
         return user
 
-    # @staticmethod
-    # def update(user: User, data: dict):
-    #     for key, value in data.items():
-    #         setattr(user, key, value)
-    #     db.session.commit()
-    #     return user
+    @staticmethod
+    def update(user: User, data: dict):
+        for key, value in data.items():
+            setattr(user, key, value)
+            db.session.commit()
+            return user
 
-    # @staticmethod
-    # def delete(user: User):
-    #     db.session.delete(user)
-    #     db.session.commit()
+    @staticmethod
+    def delete(user: User):
+        db.session.delete(user)
+        db.session.commit()

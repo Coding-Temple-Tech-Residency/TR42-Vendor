@@ -82,9 +82,14 @@ class UserService:
         }
 
     @staticmethod
-    def get(user_id: str):
-        logger.debug("Fetching user with id: %s", user_id)
-        return UserRepository.get_by_id(user_id)
+    def get_by_id(user_id: str):
+        user = UserRepository.get_by_id(user_id)
+
+        if not user:
+            logger.warning("User not found: %s", user_id)
+            return None  # Let controller handle 404
+
+        return user
 
     @staticmethod
     def create_user(data: dict) -> User:
@@ -150,17 +155,21 @@ class UserService:
             )
             raise
 
-    # @staticmethod
-    # def update(user_id: str, data: dict):
-    #     user = UserRepository.get_by_id(user_id)
-    #     if not user:
-    #         return None
-    #     return UserRepository.update(user, data)
+    @staticmethod
+    def update(user, data: dict):
+        logger.info("Updating user: %s", user.user_id)
 
-    # @staticmethod
-    # def delete(user_id: str):
-    #     user = UserRepository.get_by_id(user_id)
-    #     if not user:
-    #         return None
-    #     UserRepository.delete(user)
-    #     return True
+        # Handle password update safely
+        if "password" in data and data["password"]:
+            data["password"] = hash_password(data["password"])
+
+        for key, value in data.items():
+            setattr(user, key, value)
+
+        return UserRepository.update(user)
+
+    @staticmethod
+    def delete(user):
+        logger.info("Deleting user: %s", user.user_id)
+        UserRepository.delete(user)
+        return True
