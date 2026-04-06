@@ -129,21 +129,33 @@
 
 -- Test Vendor: 3c0d000d-535b-4008-bf4a-7d351976d8cd
 
-select 
-    vc.full_name,
-    round(avg(cp.rating), 2),
-    count(cp.ticket_id)
-from 
-(
-select 
-    c.contractor_id,
-    u.first_name || " " || u.last_name as full_name
-from contractors c
-join user u
-using (user_id)
-where vendor_id = '3c0d000d-535b-4008-bf4a-7d351976d8cd'
-) as vc
-join contractor_performance cp
-using (contractor_id)
-group by 1
-order by 2 desc;
+-- Contractor Performance
+
+-- select 
+--     vc.full_name,
+--     round(avg(cp.rating), 2),
+--     count(cp.ticket_id)
+-- from 
+-- (
+-- select 
+--     c.contractor_id,
+--     u.first_name || " " || u.last_name as full_name
+-- from contractors c
+-- join user u
+-- using (user_id)
+-- where vendor_id = '3c0d000d-535b-4008-bf4a-7d351976d8cd'
+-- ) as vc
+-- join contractor_performance cp
+-- using (contractor_id)
+-- group by 1
+-- order by 2 desc;
+
+select v.company_name, round(cp.avg_rating, 2)
+from (
+    select c.vendor_id, avg(cp.rating) as avg_rating
+    from contractor_performance cp
+    join contractors c using (contractor_id)
+    group by c.vendor_id
+) cp
+join vendor v using (vendor_id)
+order by cp.avg_rating desc;
