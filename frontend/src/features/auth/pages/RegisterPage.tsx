@@ -19,7 +19,7 @@ function RegisterPage() {
         <AuthFooterLink
           text="Already have an account?"
           linkText="Login"
-          to="/login"
+          to="/vendor/login"
         />
         
       </AuthCard>
