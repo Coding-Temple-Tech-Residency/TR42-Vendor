@@ -1,7 +1,7 @@
 import { useState } from "react";
-import TextInput from "../auth/components/TextInput";
-import AuthButton from "../auth/components/AuthButton";
-import AuthFooterLink from "../auth/components/AuthFooterLink";
+import TextInput from "../components/TextInput";
+import AuthButton from "../components/AuthButton";
+import AuthFooterLink from "../components/AuthFooterLink";
 
 const ForgotPasswordForm = () => {
   const [email, setEmail] = useState("");
@@ -27,7 +27,7 @@ const ForgotPasswordForm = () => {
       <AuthFooterLink
         text="Remember your password?"
         linkText="Back to login"
-        to="/"
+        to="/vendor/login"
       />
     </form>
   );

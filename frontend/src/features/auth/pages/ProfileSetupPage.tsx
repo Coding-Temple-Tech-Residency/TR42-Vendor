@@ -19,7 +19,7 @@ function ProfileSetupPage() {
         <AuthFooterLink
           text="Need to go back?"
           linkText="Back to Step 1"
-          to="/register"
+          to="/vendor/register"
         />
       </AuthCard>
     </AuthLayout>

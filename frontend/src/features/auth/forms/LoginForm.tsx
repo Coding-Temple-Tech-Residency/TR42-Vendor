@@ -1,10 +1,13 @@
 import { useState } from "react";
-import TextInput from "../auth/components/TextInput";
-import PasswordInput from "../auth/components/PasswordInput";
-import AuthButton from "../auth/components/AuthButton";
-import AuthFooterLink from "../auth/components/AuthFooterLink";
+import { useNavigate } from "react-router-dom";
+import TextInput from "../components/TextInput";
+import PasswordInput from "../components/PasswordInput";
+import AuthButton from "../components/AuthButton";
+import AuthFooterLink from "../components/AuthFooterLink";
 
 const LoginForm = () => {
+  const navigate = useNavigate();
+
   // Form state
   const [formData, setFormData] = useState({
     email: "",
@@ -21,14 +24,13 @@ const LoginForm = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
-    setError(null); // clear error when user types
+    setError(null);
   };
 
   // Handle form submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Basic front-end validation
     if (!formData.email || !formData.password) {
       setError("Please enter both email and password.");
       return;
@@ -39,8 +41,8 @@ const LoginForm = () => {
       setError(null);
 
       // TODO: Replace with real API call
-      // Example mock login:
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // simulate network delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       if (
         formData.email !== "test@example.com" ||
         formData.password !== "123456"
@@ -48,9 +50,10 @@ const LoginForm = () => {
         throw new Error("Invalid email or password.");
       }
 
-      // Success
       console.log("Login successful!", formData);
-      // TODO: Redirect user or update global auth state
+
+      // Redirect to dashboard
+      navigate("/vendor/dashboard");
     } catch (err: any) {
       setError(err.message || "Login failed. Please try again.");
     } finally {
@@ -76,8 +79,7 @@ const LoginForm = () => {
         onChange={handleChange}
       />
 
-      {/* Display error message */}
-      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
 
       <AuthButton type="submit" disabled={loading}>
         {loading ? "Logging in..." : "Login"}
@@ -86,13 +88,13 @@ const LoginForm = () => {
       <AuthFooterLink
         text="Forgot your password?"
         linkText="Reset it"
-        to="/forgot-password"
+        to="/vendor/forgot-password"
       />
 
       <AuthFooterLink
         text="Don’t have an account?"
         linkText="Create one"
-        to="/register"
+        to="/vendor/register"
       />
     </form>
   );
