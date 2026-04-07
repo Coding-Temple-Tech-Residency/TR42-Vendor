@@ -35,6 +35,16 @@ def add_n_hours(n):
 def generate_time_span(sd="-1y", ed="now"):
     return fake.date_time_between(start_date=sd, end_date=ed)
 
+def between(start, end):
+    return fake.date_time_between(start_date=start, end_date=end)
+
+
+def after(start, max_days=30):
+    return fake.date_time_between(
+        start_date=start,
+        end_date=start + timedelta(days=max_days)
+    )
+
 
 USER_TYPES = ["operator", "vendor", "contractor"]
 VENDOR_STATUS = ["active", "inactive"]
@@ -230,35 +240,54 @@ def generate_work_orders(n, vendor_wells, users, wells):
     for _ in range(n):
         creator = random.choice(users)["user_id"]
         updater = random.choice(users)["user_id"]
+
         well = random.choice(wells)
+
         valid_vendor_ids = [
-            vw["vendor_id"] for vw in vendor_wells if vw["well_id"] == well["well_id"]
+            vw["vendor_id"]
+            for vw in vendor_wells
+            if vw["well_id"] == well["well_id"]
         ]
 
-        assigned_vendor = random.choice(valid_vendor_ids)
-        created_at = generate_time_span()
+        if not valid_vendor_ids:
+            continue
 
-        work_orders.append(
-            {
-                "work_order_id": gen_id(),
-                "assigned_vendor": assigned_vendor,
-                "assigned_at": generate_time_span(created_at),
-                "completed_at": None,  # Need to figure out way of calcualting this with tickets
-                "description": fake.text(max_nb_chars=200),
-                "due_date": generate_time_span(created_at, "+7d"),
-                "current_status": random.choice(ORDER_STATUS),
-                "comments": fake.text(max_nb_chars=100),
-                "location": fake.city(),
-                "estimated_cost": round(random.uniform(100, 10000), 2),
-                "estimated_duration": random.randint(1, 72),  # hours
-                "priority": random.choice(PRIORITY),
-                "well_id": well["well_id"],
-                "created_at": created_at,
-                "updated_at": now(),
-                "created_by": creator,
-                "updated_by": updater,
-            }
-        )
+        assigned_vendor = random.choice(valid_vendor_ids)
+
+        # 🧠 START TIMELINE (WIDER RANGE)
+        created_at = generate_time_span("-2y", "-30d")
+
+        assigned_at = after(created_at, max_days=14)
+
+        est_start = after(assigned_at, max_days=14)
+        est_end = est_start + timedelta(days=random.randint(1, 30))
+
+        status = random.choice(ORDER_STATUS)
+
+        completed_at = None
+        if status == "completed":
+            completed_at = after(est_end, max_days=30)
+
+        work_orders.append({
+            "work_order_id": gen_id(),
+            "assigned_vendor": assigned_vendor,
+            "assigned_at": assigned_at,
+            "completed_at": completed_at,
+            "description": fake.text(max_nb_chars=200),
+            "estimated_start_date": est_start,
+            "estimated_end_date": est_end,
+            "current_status": status,
+            "comments": fake.text(max_nb_chars=100),
+            "location": fake.city(),
+            "estimated_cost": round(random.uniform(500, 50000), 2),
+            "estimated_duration": timedelta(days=random.randint(1, 30)),
+            "priority": random.choice(PRIORITY),
+            "well_id": well["well_id"],
+            "created_at": created_at,
+            "updated_at": now(),
+            "created_by": creator,
+            "updated_by": updater
+        })
 
     return work_orders
 
@@ -266,66 +295,76 @@ def generate_work_orders(n, vendor_wells, users, wells):
 # TODO:
 # continue working on making tickets realistic.
 # - Add business hour limits for creation, assignment, and completion.
-# - maybe utilize estimated_duration for difference between start_time and completed_at
 def generate_tickets(n, work_orders, contractors, vendors, users):
     tickets = []
 
     for _ in range(n):
-
         creator = random.choice(users)["user_id"]
         updater = random.choice(users)["user_id"]
 
         wo = random.choice(work_orders)
-        contractor = random.choice(contractors)
 
-        status = random.choice(TICKET_STATUS)
-        created_at = generate_time_span()
-        assigned_at = generate_time_span(created_at, created_at + add_n_days(2))
-        estimated_duration = random.randint(1, 24)
+        # ✅ contractor must match vendor
+        valid_contractors = [
+            c for c in contractors if c["vendor_id"] == wo["assigned_vendor"]
+        ]
 
-        start_time = generate_time_span(sd=assigned_at, ed=assigned_at + add_n_days(3))
-        completed_at = (
-            fake.date_time_between(
-                start_date=start_time,
-                end_date=start_time + add_n_hours(estimated_duration),
+        if not valid_contractors:
+            continue
+
+        contractor = random.choice(valid_contractors)
+
+        # 🧠 TIMELINE LINKED TO WORK ORDER
+        created_at = between(wo["created_at"], wo["assigned_at"])
+        assigned_at = between(created_at, wo["estimated_start_date"])
+        start_time = between(assigned_at, wo["estimated_start_date"])
+
+        # ✅ enforce status consistency
+        if wo["current_status"] == "completed":
+            status = "completed"
+        elif wo["current_status"] == "in progress":
+            status = random.choice(["assigned", "in progress"])
+        else:
+            status = "assigned"
+
+        estimated_duration = random.randint(1, 48)
+
+        completed_at = None
+        if status == "completed":
+            completed_at = between(
+                start_time,
+                wo["completed_at"] or (start_time + timedelta(days=5))
             )
-            if status == "completed"
-            else None
-        )
-        due_date = generate_time_span(
-            sd=created_at + add_n_days(5), ed=created_at + add_n_days(15)
-        )
-        tickets.append(
-            {
-                "ticket_id": gen_id(),
-                "work_order_id": wo["work_order_id"],
-                "description": fake.text(max_nb_chars=200),
-                "assigned_contractor": contractor["contractor_id"],
-                "priority": random.choice(PRIORITY),
-                "status": status,
-                "vendor_id": contractor["vendor_id"],  # keep consistent
-                "start_time": start_time,
-                "due_date": due_date,
-                "assigned_at": assigned_at,
-                "completed_at": completed_at,
-                "estimated_duration": estimated_duration,
-                "notes": fake.text(max_nb_chars=100),
-                "contractor_start_location": f"{fake.latitude()},{fake.longitude()}",
-                "contractor_end_location": f"{fake.latitude()},{fake.longitude()}",
-                "estimated_quantity": random.randint(1, 100),
-                "unit": "hours",
-                "special_requirements": fake.sentence(),
-                "anomaly_flag": random.choice([True, False]),
-                "anomaly_reason": (
-                    fake.sentence() if random.choice([True, False]) else None
-                ),
-                "created_at": created_at,
-                "updated_at": now(),
-                "created_by": creator,
-                "updated_by": updater,
-                "additional_information": fake.json(),
-            }
-        )
+
+        due_date = wo["estimated_end_date"]
+
+        tickets.append({
+            "ticket_id": gen_id(),
+            "work_order_id": wo["work_order_id"],
+            "description": fake.text(max_nb_chars=200),
+            "assigned_contractor": contractor["contractor_id"],
+            "priority": random.choice(PRIORITY),
+            "status": status,
+            "vendor_id": contractor["vendor_id"],
+            "start_time": start_time,
+            "due_date": due_date,
+            "assigned_at": assigned_at,
+            "completed_at": completed_at,
+            "estimated_duration": estimated_duration,
+            "notes": fake.text(max_nb_chars=100),
+            "contractor_start_location": f"{fake.latitude()},{fake.longitude()}",
+            "contractor_end_location": f"{fake.latitude()},{fake.longitude()}",
+            "estimated_quantity": random.randint(1, 100),
+            "unit": "hours",
+            "special_requirements": fake.sentence(),
+            "anomaly_flag": random.choice([True, False]),
+            "anomaly_reason": fake.sentence() if random.choice([True, False]) else None,
+            "created_at": created_at,
+            "updated_at": now(),
+            "created_by": creator,
+            "updated_by": updater,
+            "additional_information": fake.json(),
+        })
 
     return tickets
 

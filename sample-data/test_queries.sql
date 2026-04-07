@@ -127,7 +127,7 @@
 -- select * from vendor
 -- limit 1;
 
--- Test Vendor: 3c0d000d-535b-4008-bf4a-7d351976d8cd
+-- Test Vendor: 99d37a94-dff8-4a1a-9144-2ed3c16fd181
 
 -- Contractor Performance
 
@@ -143,12 +143,14 @@
 -- from contractors c
 -- join user u
 -- using (user_id)
--- where vendor_id = '3c0d000d-535b-4008-bf4a-7d351976d8cd'
+-- where vendor_id = '99d37a94-dff8-4a1a-9144-2ed3c16fd181'
 -- ) as vc
 -- join contractor_performance cp
 -- using (contractor_id)
 -- group by 1
 -- order by 2 desc;
+
+-- select vendor_id from vendor limit 1;
 
 -- select v.company_name, round(cp.avg_rating, 2)
 -- from (
@@ -213,7 +215,7 @@
 
 -- Work Orders by Vendor
 
-select 
-    work_order_id, current_status, completed_at
-from work_orders
-where current_status = 'completed';
+-- select 
+--     work_order_id, current_status, completed_at
+-- from work_orders
+-- where current_status = 'completed';
