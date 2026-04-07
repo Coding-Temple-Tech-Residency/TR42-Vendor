@@ -28,7 +28,6 @@ def add_n_hours(n):
     one_day = timedelta(hours=1)
     return one_day * n
 
-
 def generate_time_span(sd='-1y', ed='now'):
     return fake.date_time_between(start_date=sd, end_date=ed)
 

@@ -162,34 +162,51 @@
 
 -- On time Delivery by Vendor
 
-select 
-    v.company_name,
-    round(avg(
-        case 
-            when (t.completed_at > t.due_date) or (t.completed_at is null and t.due_date < '2026-03-01')
-            then 0
-            else 1
-        end
-    ) * 100, 2) as on_time,
-    count(t.ticket_id) as ticket_count
-from ticket t
-join vendor v using (vendor_id)
-where t.created_at between '2025-11-01' and '2026-03-01'
-group by v.vendor_id
-order by on_time desc;
+-- select 
+--     v.company_name,
+--     round(avg(
+--         case 
+--             when (t.completed_at > t.due_date) or (t.completed_at is null and t.due_date < '2026-03-01')
+--             then 0
+--             else 1
+--         end
+--     ) * 100, 2) as on_time,
+--     count(t.ticket_id) as ticket_count
+-- from ticket t
+-- join vendor v using (vendor_id)
+-- where t.created_at between '2025-11-01' and '2026-03-01'
+-- group by v.vendor_id
+-- order by on_time desc;
 
-select 
-    v.company_name,
-    round(avg(
-        case 
-            when (t.completed_at > t.due_date) or (t.completed_at is null and t.due_date < date('now'))
-            then 0
-            else 1
-        end
-    ) * 100, 2) as on_time,
-    count(t.ticket_id) as ticket_count
-from ticket t
-join vendor v using (vendor_id)
-where t.created_at between '2025-11-01' and date('now')
-group by v.vendor_id
-order by on_time desc;
+-- select 
+--     v.company_name,
+--     round(avg(
+--         case 
+--             when (t.completed_at > t.due_date) or (t.completed_at is null and t.due_date < date('now'))
+--             then 0
+--             else 1
+--         end
+--     ) * 100, 2) as on_time,
+--     count(t.ticket_id) as ticket_count
+-- from ticket t
+-- join vendor v using (vendor_id)
+-- where t.created_at between '2025-11-01' and date('now')
+-- group by v.vendor_id
+-- order by on_time desc;
+
+-- Contractor Utilization Rate (across vendors)
+SELECT 
+    c.contractor_id, 
+    u.first_name || ' ' || u.last_name AS full_name, 
+    COUNT(t.ticket_id) AS ticket_count,
+    AVG(COUNT(t.ticket_id)) OVER () AS avg_ticket_per_contractor,
+    COUNT(t.ticket_id) * 1.0 / AVG(COUNT(t.ticket_id)) OVER () AS workload_ratio
+FROM ticket t
+JOIN contractors c
+    ON t.assigned_contractor = c.contractor_id
+JOIN user u
+    ON c.user_id = u.user_id
+GROUP BY c.contractor_id, u.first_name, u.last_name
+order by 5 desc;
+
+-- select * from ticket limit 10
