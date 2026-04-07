@@ -40,7 +40,7 @@ function RegisterForm() {
     // save data for step 2
     localStorage.setItem("registerData", JSON.stringify(form));
 
-    navigate("/profile-setup");
+    navigate("/vendor/profile-setup");
   }
 
   // store this once

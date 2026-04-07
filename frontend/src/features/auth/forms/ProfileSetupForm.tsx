@@ -70,7 +70,7 @@ function ProfileSetupForm() {
 
     localStorage.removeItem("registerData");
 
-    navigate("/success");
+    navigate("/vendor/success");
   }
 
   return (
