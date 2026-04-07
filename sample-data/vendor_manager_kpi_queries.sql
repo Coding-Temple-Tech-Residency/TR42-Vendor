@@ -19,6 +19,21 @@
 -- group by 1
 -- order by 2 desc;
 
-select ticket_id, completed_at, vendor_id
-from ticket
-where  status='completed';
+-- select 
+--     c.employee_number,
+--     sum(completed_at <= due_date),
+--     sum(completed_at <= due_date) * 1.0 / count(t.ticket_id),
+--     count(t.ticket_id)
+-- from ticket t
+-- join contractors c
+-- on t.assigned_contractor = c.contractor_id
+-- where t.status='completed' and t.completed_at > '2025-09-31' and t.vendor_id='99d37a94-dff8-4a1a-9144-2ed3c16fd181'
+-- group by c.contractor_id
+-- order by 3 desc;
+
+select t.ticket_id, t.completed_at
+from ticket t
+join contractors c
+on t.assigned_contractor = c.contractor_id
+where c.employee_number = 'EMP8417' and t.completed_at >= '2025-09-30';
+

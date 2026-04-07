@@ -254,8 +254,7 @@ def generate_work_orders(n, vendor_wells, users, wells):
 
         assigned_vendor = random.choice(valid_vendor_ids)
 
-        # 🧠 START TIMELINE (WIDER RANGE)
-        created_at = generate_time_span("-2y", "-30d")
+        created_at = generate_time_span("-2y", "now")
 
         assigned_at = after(created_at, max_days=14)
 
@@ -835,11 +834,11 @@ def main():
         "vendor": vendors,
         "vendor_user": vendor_users,
         "contractors": contractors,
-        "background_check": background_checks,  # ✅ NEW
-        "drug_test": drug_tests,  # ✅ NEW
-        "licenses": licenses,  # ✅ NEW
-        "certifications": certifications,  # ✅ NEW
-        "insurance": insurance,  # ✅ NEW
+        "background_check": background_checks,  
+        "drug_test": drug_tests, 
+        "licenses": licenses,  
+        "certifications": certifications,  
+        "insurance": insurance, 
         "well": wells,
         "well_location": well_locations,
         "vendor_well": vendor_wells,
