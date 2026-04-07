@@ -13,9 +13,8 @@ class ContractorPerformance(db.Model):
     on_time_rate = db.Column(db.Float) #percentage of tickets completed on time
     
     contractor_id = db.Column(db.String, db.ForeignKey('contractors.contractor_id'))
-    contractor = db.relationship('Contractor', back_populates='ratings')
+    contractor = db.relationship('Contractor', back_populates='contractor_performances')
     tickets_completed = db.Column(db.Integer)
     created_by = db.Column(db.String, db.ForeignKey('users.user_id')) #not sure well need this... but user_id of the person who created the rating
     updatetd_by = db.Column(db.String, db.ForeignKey('users.user_id')) #not sure well need this but..user_id of the person who last updated the rating
 
-    

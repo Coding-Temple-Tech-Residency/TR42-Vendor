@@ -6,7 +6,7 @@ from app.logging_config import setup_logging
 # from work_order import register_work_order
 # from ticket import register_ticket
 # from contractor import register_contractor
-# from ratings import register_rating
+# from contractor_performance import register_contractor_performance
 
 
 def create_app():
@@ -27,7 +27,7 @@ def create_app():
     from app.blueprints.user.model import User
     from app.blueprints.address.model import Address
     from app.blueprints.vendor.model import Vendor
-    from app.blueprints.ratings.model import Rating
+    from app.blueprints.contractor_performance.model import ContractorPerformance
 
         # try:
     #     from app.blueprints.vendor_users import register_vendor_user
@@ -65,11 +65,11 @@ def create_app():
     #     print(f"Contractor blueprint import failed: {e}")
     
     # try:
-    #     from app.blueprints.ratings import register_rating
+    #     from app.blueprints.contractor_performance import register_contractor_performance
 
-    #   app.register_blueprint(register_rating)
+    #   app.register_blueprint(register_contractor_performance)
     # except ImportError as e:
-    #     print(f"Rating blueprint import failed: {e}")
+    #     print(f"Contractor performance blueprint import failed: {e}")
     
 
     # Create tables AFTER all models are imported
@@ -84,13 +84,13 @@ def create_app():
     from app.blueprints.vendor.controller.routes import vendor_bp
     from app.blueprints.vendor.controller.registration_routes import vendor_registration_bp
     from app.blueprints.vendor_users.controller.routes import vendor_user_bp
-    from app.blueprints.ratings.controller.routes import ratings_bp
+    from app.blueprints.contractor_performance.controller.routes import contractor_performance_bp
 
     app.register_blueprint(user_bp, url_prefix="/users")
     app.register_blueprint(address_bp, url_prefix="/addresses")
     app.register_blueprint(vendor_bp, url_prefix="/vendors")
     app.register_blueprint(vendor_registration_bp, url_prefix="/vendors")
     app.register_blueprint(vendor_user_bp, url_prefix="/vendor_users")
-    app.register_blueprint(ratings_bp, url_prefix="/ratings")
+    app.register_blueprint(contractor_performance_bp, url_prefix="/contractor_performances")
 
     return app
