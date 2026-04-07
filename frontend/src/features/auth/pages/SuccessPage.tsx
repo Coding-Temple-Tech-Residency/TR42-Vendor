@@ -17,7 +17,7 @@ function SuccessPage() {
           Your account has been created successfully and is now ready for platform access.
         </p>
 
-        <Link to="/login">
+        <Link to="/vendor/login">
           <AuthButton>
             Go to Login
           </AuthButton>

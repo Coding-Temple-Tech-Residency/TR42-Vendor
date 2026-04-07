@@ -12,6 +12,8 @@ import FraudRisksPage from "../features/pages/FraudRisks";
 import MessagesPage from "../features/pages/MessagesPage";
 import AdminPage from "../features/pages/AdminPage";
 import SettingsPage from "../features/pages/SettingsPage";
+import LoginPage from "../features/auth/pages/LoginPage";
+import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
 
 function VendorLayout() {
   return <Outlet />;
@@ -25,6 +27,8 @@ export default function AppRouter() {
         <Route path="register" element={<RegisterPage />} />
         <Route path="profile-setup" element={<ProfileSetupPage />} />
         <Route path="success" element={<SuccessPage />} />
+        <Route path="login" element={<LoginPage />} />
+        <Route path="forgot-password" element={<ForgotPasswordPage />} />
 
         {/*App*/}
         <Route path="dashboard" element={<DashboardPage />} />
