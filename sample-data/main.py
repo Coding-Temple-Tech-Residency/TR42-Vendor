@@ -51,13 +51,13 @@ VENDOR_STATUS = ["active", "inactive"]
 COMPLIANCE_STATUS = ["expired", "incomplete", "complete"]
 ROLE_OPTIONS = ["user", "manager", "admin"]
 CONTRACTOR_STATUS = ["active", "inactive"]
-ORDER_STATUS = ["unassigned", "assigned", "in progress", "completed"]
+ORDER_STATUS = ["unassigned", "assigned", "in progress", "completed", "halted", "rejected"]
 PRIORITY = ["routine", "urgent", "emergency"]
 TICKET_STATUS = [
     "assigned",
     "in progress",
-    "completed",
-]  # need to add unassigned status
+    "completed"
+]  # need to add unassigned status after discussion with team
 INVOICE_STATUS = ["draft", "submitted", "approved", "paid", "rejected"]
 WELL_STATUS = ["active", "inactive", "plugged", "drilling"]
 WELL_TYPE = ["oil", "gas", "injection", "disposal"]
@@ -289,7 +289,7 @@ def generate_work_orders(n, vendor_wells, users, wells):
             "comments": fake.text(max_nb_chars=100),
             "location": fake.city(),
             "estimated_cost": round(random.uniform(500, 50000), 2),
-            "estimated_duration": timedelta(days=random.randint(1, 30)),
+            "estimated_duration": timedelta(days=random.randint(1, 3)),
             "priority": random.choice(PRIORITY),
             "well_id": well["well_id"],
             "created_at": created_at,

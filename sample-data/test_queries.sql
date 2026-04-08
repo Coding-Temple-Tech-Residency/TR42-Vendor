@@ -58,7 +58,7 @@
 -- from ticket t
 -- join vendor v
 -- using(vendor_id)
--- where t.completed_at >= datetime('now', '-30 days')
+-- where t.completed_at >= datetime('now', '-60 days')
 -- group by 1
 -- order by 2 desc;
 
@@ -235,10 +235,30 @@
 -- on v.vendor_id = m.vendor_id
 -- group by v.vendor_id, v.company_name;
 
-select work_order_id, current_status, cancellation_reason
-from cancelled_work_orders
-join work_orders
-using (work_order_id)
-limit 10;
+-- select work_order_id, current_status, cancellation_reason
+-- from cancelled_work_orders
+-- join work_orders
+-- using (work_order_id)
+-- limit 10;
 
 -- select * from msa;
+
+-- Start time to completion 
+-- select 
+--     v.company_name,
+--     avg(julianday(t.completed_at) - julianday(t.start_time)) as avg_ticket_completion_time
+-- from ticket t
+-- join vendor v
+-- using(vendor_id)
+-- where t.completed_at >= datetime('now', '-60 days')
+-- group by 1
+-- order by 2 desc;
+
+-- select distinct(vendor_id) from ticket;
+
+select 
+    completed_at, 
+    start_time, 
+    round(julianday(completed_at) - julianday(start_time), 2) 
+from ticket
+where vendor_id = '63cce387-ccdc-45da-b1b7-118fb636a479' and status='completed'
