@@ -1,4 +1,4 @@
-#This removes duplicate fields across every table
+# This removes duplicate fields across every table
 from app.extensions import db
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import DateTime, ForeignKey
@@ -9,7 +9,7 @@ from app.functions import utc_now
 class BaseModel(db.Model):
     __abstract__ = True
 
-        # ----------------------
+    # ----------------------
     # Audit Fields
     # ----------------------
     created_at: Mapped[datetime] = mapped_column(
@@ -24,12 +24,12 @@ class BaseModel(db.Model):
         onupdate=utc_now,
     )
 
-    created_by: Mapped[str] = mapped_column(
+    created_by_user_id: Mapped[str] = mapped_column(
         ForeignKey("user.user_id"),
         nullable=False,
     )
 
-    updated_by: Mapped[str | None] = mapped_column(
+    updated_by_user_id: Mapped[str | None] = mapped_column(
         ForeignKey("user.user_id"),
         nullable=True,
     )
