@@ -22,12 +22,12 @@ def create_app(config_object=None):
 
     # Import all models BEFORE blueprints to ensure they're registered with SQLAlchemy
     # Import in dependency order (models with no dependencies first)
-    from app.blueprints.address.model import Address
-    from app.blueprints.user.model import User
-    from app.blueprints.vendor.model import Vendor
-    from app.blueprints.well.model import Well
-    from app.blueprints.vendor_user.model import VendorUser
-    from app.blueprints.work_orders.model import WorkOrder
+    # from app.blueprints.address.model import Address
+    # from app.blueprints.user.model import User
+    # from app.blueprints.vendor.model import Vendor
+    # from app.blueprints.well.model import Well
+    # from app.blueprints.vendor_user.model import VendorUser
+    # from app.blueprints.work_orders.model import WorkOrder
 
     # Now import blueprints
     from app.blueprints.user.controller.user_routes import user_bp

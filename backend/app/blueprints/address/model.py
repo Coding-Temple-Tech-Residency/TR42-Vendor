@@ -3,8 +3,10 @@ from app.functions import generate_uuid, utc_now
 from sqlalchemy import DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.extensions import db
-from app.blueprints.vendor.model import Vendor
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from app.blueprints.vendor.model import Vendor
 
 class Address(db.Model):
     __tablename__ = "address"
