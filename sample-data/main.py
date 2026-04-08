@@ -61,7 +61,17 @@ TICKET_STATUS = [
 INVOICE_STATUS = ["draft", "submitted", "approved", "paid", "rejected"]
 WELL_STATUS = ["active", "inactive", "plugged", "drilling"]
 WELL_TYPE = ["oil", "gas", "injection", "disposal"]
-
+MSA_STATUSES = ["draft", "active", "expired", "terminated"]
+SERVICE_TYPES = [
+    "Water Delivery",
+    "Chemical Delivery",
+    "Inspection",
+    "Routine Maintenance",
+    "Equipment Repair",
+    "Site Cleanup",
+    "Pipeline Service",
+    "Well Intervention",
+]
 
 def generate_users(n=20):
     users = []
@@ -767,6 +777,275 @@ def generate_insurance(contractors, users):
 
     return insurance_records
 
+def generate_services(users):
+    services = []
+
+    for service_name in SERVICE_TYPES:
+        creator = random.choice(users)["user_id"]
+        updater = random.choice(users)["user_id"]
+
+        services.append({
+            "service_id": gen_id(),
+            "service": service_name,
+            "created_at": generate_time_span(),
+            "updated_at": now(),
+            "created_by": creator,
+            "updated_by": updater,
+        })
+
+    return services
+
+def generate_clients(n, users, addresses):
+    clients = []
+
+    for _ in range(n):
+        creator = random.choice(users)["user_id"]
+        updater = random.choice(users)["user_id"]
+        address = random.choice(addresses)["address_id"]
+
+        clients.append({
+            "client_id": gen_id(),
+            "client_name": fake.unique.company(),
+            "client_code": fake.unique.bothify(text="CL-####"),
+            "primary_contact_name": fake.name(),
+            "contact_email": fake.company_email(),
+            "contact_phone": fake.phone_number(),
+            "created_at": generate_time_span(),
+            "updated_at": now(),
+            "created_by": creator,
+            "updated_by": updater,
+            "address_id": address,
+        })
+
+    return clients
+
+def generate_client_users(users, clients, vendor_users, contractors, max_ratio=0.15):
+    client_users = []
+
+    vendor_user_ids = {vu["user_id"] for vu in vendor_users}
+    contractor_user_ids = {c["user_id"] for c in contractors}
+
+    unavailable_user_ids = vendor_user_ids | contractor_user_ids
+    available_users = [u for u in users if u["user_id"] not in unavailable_user_ids]
+
+    if not available_users:
+        return client_users
+
+    num_client_users = min(
+        len(available_users),
+        max(1, int(len(users) * max_ratio))
+    )
+    selected_users = random.sample(available_users, num_client_users)
+
+    for user in selected_users:
+        creator = random.choice(users)["user_id"]
+        updater = random.choice(users)["user_id"]
+
+        client_users.append({
+            "id": gen_id(),
+            "user_id": user["user_id"],   # FK -> user.user_id
+            "client_id": random.choice(clients)["client_id"],  # FK -> client.client_id
+            "role": random.choice(ROLE_OPTIONS),
+            "created_at": generate_time_span(),
+            "updated_at": now(),
+            "created_by": creator,
+            "updated_by": updater,
+        })
+
+    return client_users
+
+def generate_client_vendors(clients, vendors, users):
+    client_vendors = []
+    seen = set()
+
+    for client in clients:
+        num_vendors = random.randint(1, min(4, len(vendors)))
+        selected_vendors = random.sample(vendors, num_vendors)
+
+        for vendor in selected_vendors:
+            key = (client["client_id"], vendor["vendor_id"])
+            if key in seen:
+                continue
+
+            creator = random.choice(users)["user_id"]
+            updater = random.choice(users)["user_id"]
+
+            client_vendors.append({
+                "client_vendor_id": gen_id(),
+                "client_id": client["client_id"],
+                "vendor_id": vendor["vendor_id"],
+                "created_at": generate_time_span(),
+                "updated_at": now(),
+                "created_by": creator,
+                "updated_by": updater,
+            })
+
+            seen.add(key)
+
+    return client_vendors
+
+def generate_compliance_documents(vendors, users):
+    compliance_docs = []
+
+    for vendor in vendors:
+        num_docs = random.randint(1, 3)
+
+        for _ in range(num_docs):
+            creator = random.choice(users)["user_id"]
+            updater = random.choice(users)["user_id"]
+
+            is_compliant = random.choice([True, True, True, False])
+
+            compliance_docs.append({
+                "compliance_id": gen_id(),
+                "vendor_id": vendor["vendor_id"],
+                "compliance_document": None,  # blob placeholder
+                "compliance_status": is_compliant,
+                "expiration_date": fake.date_between(start_date="today", end_date="+3y") if is_compliant else fake.date_between(start_date="-1y", end_date="+6m"),
+                "created_at": generate_time_span(),
+                "updated_at": now(),
+                "created_by": creator,
+                "updated_by": updater,
+            })
+
+    return compliance_docs
+
+def generate_msas(vendors, users):
+    msas = []
+
+    for vendor in vendors:
+        num_versions = random.randint(1, 3)
+
+        base_date = fake.date_between(start_date="-5y", end_date="-1y")
+
+        for version_num in range(1, num_versions + 1):
+            creator = random.choice(users)["user_id"]
+            updater = random.choice(users)["user_id"]
+            uploader = random.choice(users)["user_id"]
+
+            effective_date = base_date + timedelta(days=(version_num - 1) * 365)
+            expiration_date = effective_date + timedelta(days=365)
+
+            status = "active" if version_num == num_versions else random.choice(["expired", "terminated"])
+
+            msas.append({
+                "msa_id": gen_id(),
+                "vendor_id": vendor["vendor_id"],
+                "version": f"v{version_num}.0",
+                "effective_date": effective_date,
+                "expiration_date": expiration_date,
+                "status": status,
+                "uploaded_by": uploader,
+                "created_at": generate_time_span(),
+                "updated_at": now(),
+                "created_by": creator,
+                "updated_by": updater,
+            })
+
+    return msas
+
+def generate_msa_requirements(msas, users):
+    requirement_categories = ["Insurance", "Safety", "Licensing", "Training", "Reporting"]
+    rule_types = ["minimum", "maximum", "required", "conditional"]
+
+    requirements = []
+
+    for msa in msas:
+        num_requirements = random.randint(3, 8)
+
+        for _ in range(num_requirements):
+            creator = random.choice(users)["user_id"]
+            updater = random.choice(users)["user_id"]
+
+            requirements.append({
+                "id": gen_id(),
+                "msa_id": msa["msa_id"],
+                "category": random.choice(requirement_categories),
+                "rule_type": random.choice(rule_types),
+                "description": fake.sentence(),
+                "value": str(random.randint(1, 100)),
+                "unit": random.choice(["days", "hours", "USD", "count", "%"]),
+                "source_field_id": fake.bothify(text="SRC-#####"),
+                "page_number": random.randint(1, 50),
+                "extracted_text": fake.text(max_nb_chars=150),
+                "confidence_score": round(random.uniform(0.70, 0.99), 2),
+                "metadata": json.dumps({
+                    "source": "parsed_msa",
+                    "reviewed": random.choice([True, False])
+                }),
+                "created_at": generate_time_span(),
+                "updated_at": now(),
+                "created_by": creator,
+                "updated_by": updater,
+            })
+
+    return requirements
+
+def generate_cancelled_work_orders(work_orders, users):
+    cancelled = []
+
+    cancellable_work_orders = [
+        wo for wo in work_orders
+        if wo["current_status"] in ["unassigned", "assigned", "in progress"]
+    ]
+
+    selected_work_orders = random.sample(
+        cancellable_work_orders,
+        k=min(len(cancellable_work_orders), max(1, int(len(work_orders) * 0.08)))
+    ) if cancellable_work_orders else []
+
+    for wo in selected_work_orders:
+        creator = random.choice(users)["user_id"]
+        updater = random.choice(users)["user_id"]
+
+        cancelled.append({
+            "id": gen_id(),
+            "work_order_id": wo["work_order_id"],
+            "vendor_id": wo["assigned_vendor"],
+            "cancellation_reason": random.choice([
+                "Client cancelled request",
+                "Weather delay",
+                "Resource unavailable",
+                "Duplicate order",
+                "Safety concern",
+            ]),
+            "created_at": generate_time_span(),
+            "updated_at": now(),
+            "created_by": creator,
+            "updated_by": updater,
+        })
+
+    return cancelled
+
+def generate_vendor_services(vendors, services, users):
+    vendor_services = []
+    seen = set()
+
+    for vendor in vendors:
+        num_services = random.randint(1, min(5, len(services)))
+        selected_services = random.sample(services, num_services)
+
+        for service in selected_services:
+            key = (vendor["vendor_id"], service["service_id"])
+            if key in seen:
+                continue
+
+            creator = random.choice(users)["user_id"]
+            updater = random.choice(users)["user_id"]
+
+            vendor_services.append({
+                "id": gen_id(),
+                "vendor_id": vendor["vendor_id"],
+                "service_id": service["service_id"],
+                "created_at": generate_time_span(),
+                "updated_at": now(),
+                "created_by": creator,
+                "updated_by": updater,
+            })
+
+            seen.add(key)
+
+    return vendor_services
 
 def serialize(value):
     if isinstance(value, datetime):
@@ -827,22 +1106,45 @@ def main():
     licenses = generate_licenses(contractors, vendors, users)
     certifications = generate_certifications(contractors, users)
     insurance = generate_insurance(contractors, users)
+    services = generate_services(users)
+
+    clients = generate_clients(25, users, addresses)
+    client_users = generate_client_users(users, clients, vendor_users, contractors, max_ratio=0.1)
+    client_vendors = generate_client_vendors(clients, vendors, users)
+
+    compliance_documents = generate_compliance_documents(vendors, users)
+
+    msas = generate_msas(vendors, users)
+    msa_requirements = generate_msa_requirements(msas, users)
+
+    vendor_services = generate_vendor_services(vendors, services, users)
+
+    cancelled_work_orders = generate_cancelled_work_orders(work_orders, users)
 
     data = {
         "user": users,
         "address": addresses,
+        "client": clients,
         "vendor": vendors,
+        "client_user": client_users,
         "vendor_user": vendor_users,
+        "client_vendor": client_vendors,
         "contractors": contractors,
-        "background_check": background_checks,  
-        "drug_test": drug_tests, 
-        "licenses": licenses,  
-        "certifications": certifications,  
-        "insurance": insurance, 
+        "background_check": background_checks,
+        "drug_test": drug_tests,
+        "licenses": licenses,
+        "certifications": certifications,
+        "insurance": insurance,
+        "compliance_document": compliance_documents,
+        "msa": msas,
+        "msa_requirements": msa_requirements,
+        "services": services,
+        "vendor_services": vendor_services,
         "well": wells,
         "well_location": well_locations,
         "vendor_well": vendor_wells,
         "work_orders": work_orders,
+        "cancelled_work_orders": cancelled_work_orders,
         "ticket": tickets,
         "invoice": invoices,
         "line_item": line_items,

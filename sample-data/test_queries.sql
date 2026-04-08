@@ -197,19 +197,19 @@
 -- order by on_time desc;
 
 -- Contractor Utilization Rate (across vendors)
-SELECT 
-    c.contractor_id, 
-    u.first_name || ' ' || u.last_name AS full_name, 
-    COUNT(t.ticket_id) AS ticket_count,
-    AVG(COUNT(t.ticket_id)) OVER () AS avg_ticket_per_contractor,
-    COUNT(t.ticket_id) * 1.0 / AVG(COUNT(t.ticket_id)) OVER () AS workload_ratio
-FROM ticket t
-JOIN contractors c
-    ON t.assigned_contractor = c.contractor_id
-JOIN user u
-    ON c.user_id = u.user_id
-GROUP BY c.contractor_id, u.first_name, u.last_name
-order by 5 desc;
+-- SELECT 
+--     c.contractor_id, 
+--     u.first_name || ' ' || u.last_name AS full_name, 
+--     COUNT(t.ticket_id) AS ticket_count,
+--     AVG(COUNT(t.ticket_id)) OVER () AS avg_ticket_per_contractor,
+--     COUNT(t.ticket_id) * 1.0 / AVG(COUNT(t.ticket_id)) OVER () AS workload_ratio
+-- FROM ticket t
+-- JOIN contractors c
+--     ON t.assigned_contractor = c.contractor_id
+-- JOIN user u
+--     ON c.user_id = u.user_id
+-- GROUP BY c.contractor_id, u.first_name, u.last_name
+-- order by 5 desc;
 
 -- select * from ticket limit 10
 
@@ -219,3 +219,26 @@ order by 5 desc;
 --     work_order_id, current_status, completed_at
 -- from work_orders
 -- where current_status = 'completed';
+
+-- Number of expired msa documents by vendor
+-- select 
+--     v.company_name,
+--     count(m.msa_id) as total_msas,
+--     count(
+--         case 
+--             when m.status in ('expired', 'terminated') 
+--             then 1 
+--         end
+--     ) as expired_or_terminated_msas
+-- from vendor v
+-- join msa m
+-- on v.vendor_id = m.vendor_id
+-- group by v.vendor_id, v.company_name;
+
+select work_order_id, current_status, cancellation_reason
+from cancelled_work_orders
+join work_orders
+using (work_order_id)
+limit 10;
+
+-- select * from msa;
