@@ -254,7 +254,7 @@ def generate_work_orders(n, vendor_wells, users, wells):
 
         assigned_vendor = random.choice(valid_vendor_ids)
 
-        created_at = generate_time_span("-2y", "now")
+        created_at = generate_time_span("-2y", "-30d")
 
         assigned_at = after(created_at, max_days=14)
 
@@ -303,7 +303,6 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
 
         wo = random.choice(work_orders)
 
-        # ✅ contractor must match vendor
         valid_contractors = [
             c for c in contractors if c["vendor_id"] == wo["assigned_vendor"]
         ]
@@ -313,12 +312,9 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
 
         contractor = random.choice(valid_contractors)
 
-        # 🧠 TIMELINE LINKED TO WORK ORDER
         created_at = between(wo["created_at"], wo["assigned_at"])
         assigned_at = between(created_at, wo["estimated_start_date"])
-        start_time = between(assigned_at, wo["estimated_start_date"])
 
-        # ✅ enforce status consistency
         if wo["current_status"] == "completed":
             status = "completed"
         elif wo["current_status"] == "in progress":
@@ -326,13 +322,17 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
         else:
             status = "assigned"
 
-        estimated_duration = random.randint(1, 48)
+        start_time = None
+        if status in ["in progress", "completed"]:
+            start_time = between(assigned_at, wo["estimated_start_date"])
 
+        estimated_duration = wo["estimated_duration"]
         completed_at = None
+
         if status == "completed":
             completed_at = between(
                 start_time,
-                wo["completed_at"] or (start_time + timedelta(days=5))
+                wo["completed_at"] or wo["estimated_end_date"]
             )
 
         due_date = wo["estimated_end_date"]
@@ -340,11 +340,11 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
         tickets.append({
             "ticket_id": gen_id(),
             "work_order_id": wo["work_order_id"],
-            "description": fake.text(max_nb_chars=200),
+            "description": wo["description"],
             "assigned_contractor": contractor["contractor_id"],
-            "priority": random.choice(PRIORITY),
+            "priority": wo["priority"],
             "status": status,
-            "vendor_id": contractor["vendor_id"],
+            "vendor_id": wo["assigned_vendor"],
             "start_time": start_time,
             "due_date": due_date,
             "assigned_at": assigned_at,
@@ -436,7 +436,7 @@ def generate_line_items(invoices, users):
                 }
             )
 
-        # ✅ update invoice total AFTER items are created
+        
         invoice["total_amount"] = round(total, 2)
 
     return line_items
@@ -459,7 +459,7 @@ def generate_wells(n, users):
                 "well_name": f"{fake.last_name()} {fake.random_letter()}-{random.randint(1, 99)}",
                 "operator": random.randint(
                     1000, 9999
-                ),  # could later FK to company table
+                ),  # could later FK to company/client table
                 "status": random.choice(WELL_STATUS),
                 "type": random.choice(WELL_TYPE),
                 "range": fake.bothify("##"),
@@ -491,7 +491,7 @@ def generate_well_locations(wells, users):
         surface_lat = float(fake.latitude())
         surface_lon = float(fake.longitude())
 
-        # simulate slight deviation for bottom hole
+        
         bottom_lat = surface_lat + random.uniform(-0.01, 0.01)
         bottom_lon = surface_lon + random.uniform(-0.01, 0.01)
 
@@ -558,13 +558,13 @@ def generate_contractor_performance(tickets, contractors, users):
     contractor_lookup = {c["contractor_id"]: c for c in contractors}
 
     for ticket in tickets:
-        # ✅ only rate completed work
+        
         if ticket["status"] != "completed":
             continue
 
         contractor_id = ticket["assigned_contractor"]
 
-        # safety check (should always pass if your data is good)
+        
         if contractor_id not in contractor_lookup:
             continue
 
@@ -574,8 +574,8 @@ def generate_contractor_performance(tickets, contractors, users):
         performance.append(
             {
                 "rating_id": gen_id(),
-                "contractor_id": contractor_id,  # ✅ tied to ticket
-                "ticket_id": ticket["ticket_id"],  # ✅ correct FK
+                "contractor_id": contractor_id,  
+                "ticket_id": ticket["ticket_id"],  
                 "rating": random.randint(1, 5),
                 "comments": fake.sentence(),
                 "created_at": now(),
@@ -612,7 +612,7 @@ def generate_background_checks(contractors, users):
             }
         )
 
-        # ✅ attach to contractor
+        
         contractor["background_check_id"] = check_id
 
     return checks
@@ -639,7 +639,7 @@ def generate_drug_tests(contractors, users):
             }
         )
 
-        # ✅ attach to contractor
+       
         contractor["drug_test_id"] = test_id
 
     return tests
@@ -801,7 +801,7 @@ def main():
     vendor_users = generate_vendor_users(users, vendors, max_ratio=0.3)
 
     contractors = generate_contractors(
-        n=200,
+        n=100,
         vendors=vendors,
         users=users,
         addresses=addresses,
@@ -815,7 +815,7 @@ def main():
     work_orders = generate_work_orders(1000, vendor_wells, users, wells)
     tickets = generate_tickets(5000, work_orders, contractors, vendors, users)
 
-    invoices = generate_invoices(300, work_orders, tickets, users)
+    invoices = generate_invoices(500, work_orders, tickets, users)
     line_items = generate_line_items(invoices, users)
 
     contractor_performance = generate_contractor_performance(

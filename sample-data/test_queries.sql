@@ -197,19 +197,19 @@
 -- order by on_time desc;
 
 -- Contractor Utilization Rate (across vendors)
--- SELECT 
---     c.contractor_id, 
---     u.first_name || ' ' || u.last_name AS full_name, 
---     COUNT(t.ticket_id) AS ticket_count,
---     AVG(COUNT(t.ticket_id)) OVER () AS avg_ticket_per_contractor,
---     COUNT(t.ticket_id) * 1.0 / AVG(COUNT(t.ticket_id)) OVER () AS workload_ratio
--- FROM ticket t
--- JOIN contractors c
---     ON t.assigned_contractor = c.contractor_id
--- JOIN user u
---     ON c.user_id = u.user_id
--- GROUP BY c.contractor_id, u.first_name, u.last_name
--- order by 5 desc;
+SELECT 
+    c.contractor_id, 
+    u.first_name || ' ' || u.last_name AS full_name, 
+    COUNT(t.ticket_id) AS ticket_count,
+    AVG(COUNT(t.ticket_id)) OVER () AS avg_ticket_per_contractor,
+    COUNT(t.ticket_id) * 1.0 / AVG(COUNT(t.ticket_id)) OVER () AS workload_ratio
+FROM ticket t
+JOIN contractors c
+    ON t.assigned_contractor = c.contractor_id
+JOIN user u
+    ON c.user_id = u.user_id
+GROUP BY c.contractor_id, u.first_name, u.last_name
+order by 5 desc;
 
 -- select * from ticket limit 10
 
