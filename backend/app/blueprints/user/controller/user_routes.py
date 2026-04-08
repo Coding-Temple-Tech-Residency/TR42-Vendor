@@ -115,6 +115,7 @@ def get_logged_in_user(user, user_role):
         logger.exception("Failed to fetch logged-in user")
         return jsonify({"error": str(e)}), 500
 
+
 # -----------------------
 # GET ALL USERS
 # -----------------------

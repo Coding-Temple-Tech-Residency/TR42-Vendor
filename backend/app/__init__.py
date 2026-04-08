@@ -1,6 +1,7 @@
 from flask import Flask
 from sqlalchemy import text
 import time
+from flask_cors import CORS
 
 from app.extensions import db, ma
 from app.config import Config
@@ -9,6 +10,10 @@ from app.logging_config import setup_logging
 
 def create_app(config_object=None):
     app = Flask(__name__)
+    CORS(
+        app,
+        resources={r"/*": {"origins": "http://localhost:5173"}},
+    )
 
     if config_object:
         app.config.from_object(config_object)

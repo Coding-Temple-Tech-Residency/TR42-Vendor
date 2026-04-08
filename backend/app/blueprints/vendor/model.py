@@ -9,6 +9,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+
 import enum
 
 from app.base import BaseModel
@@ -39,11 +40,12 @@ class Vendor(BaseModel):
 
     company_code: Mapped[str] = mapped_column(String, nullable=True)
 
-    # this is going to have to connect to the user in the create user step
     primary_contact_name: Mapped[str] = mapped_column(String)
 
     company_email: Mapped[str] = mapped_column(String, nullable=False)
     company_phone: Mapped[str] = mapped_column(String, nullable=False)
+
+    service_type: Mapped[str] = mapped_column(String, nullable=False)
 
     status: Mapped[VendorStatus] = mapped_column(
         Enum(VendorStatus, name="vendor_status"),
@@ -68,7 +70,7 @@ class Vendor(BaseModel):
 
     # relationships
 
-    address: Mapped["Address"] = relationship(back_populates="vendor")  # type: ignore
+    address: Mapped["Address"] = relationship(back_populates="vendor")
 
     vendor_links: Mapped[list["VendorUser"]] = relationship(
         back_populates="vendor", cascade="all, delete-orphan"
