@@ -15,7 +15,7 @@ registration_bp = Blueprint(
 )
 
 
-@registration_bp.post("/register")
+@registration_bp.post("")
 def register():
     data = request.get_json(silent=True) or {}
     logger.debug("Registering a new vendor")

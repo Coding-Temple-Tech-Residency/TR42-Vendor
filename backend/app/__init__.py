@@ -1,15 +1,21 @@
 from flask import Flask
 from sqlalchemy import text
 import time
+from flask_cors import CORS
 
 from app.extensions import db, ma
 from app.config import Config
 from app.logging_config import setup_logging
+
 import app.models
 
 
 def create_app(config_object=None):
     app = Flask(__name__)
+    CORS(
+        app,
+        resources={r"/*": {"origins": "http://localhost:5173"}},
+    )
 
     if config_object:
         app.config.from_object(config_object)
@@ -20,6 +26,20 @@ def create_app(config_object=None):
 
     db.init_app(app)
     ma.init_app(app)
+
+    from app.blueprints.user.controller.user_routes import user_bp
+    from app.blueprints.address.controller.address_routes import address_bp
+    from app.blueprints.vendor.controller.vendor_routes import vendor_bp
+    from app.blueprints.registration.controller.registration_routes import (
+        registration_bp,
+    )
+    from app.blueprints.vendor_user.controller.vendor_user_routes import vendor_user_bp
+
+    app.register_blueprint(user_bp, url_prefix="/api/users")
+    app.register_blueprint(address_bp, url_prefix="/api/addresses")
+    app.register_blueprint(vendor_bp, url_prefix="/api/vendors")
+    app.register_blueprint(registration_bp, url_prefix="/api/registration")
+    app.register_blueprint(vendor_user_bp, url_prefix="/api/vendor_users")
 
     with app.app_context():
         if not app.config.get("TESTING"):
@@ -36,19 +56,5 @@ def create_app(config_object=None):
                 raise RuntimeError("Database was not ready after multiple attempts")
 
         db.create_all()
-
-    from app.blueprints.user.controller.user_routes import user_bp
-    from app.blueprints.address.controller.address_routes import address_bp
-    from app.blueprints.vendor.controller.vendor_routes import vendor_bp
-    from app.blueprints.registration.controller.registration_routes import (
-        registration_bp,
-    )
-    from app.blueprints.vendor_user.controller.vendor_user_routes import vendor_user_bp
-
-    app.register_blueprint(user_bp, url_prefix="/users")
-    app.register_blueprint(address_bp, url_prefix="/addresses")
-    app.register_blueprint(vendor_bp, url_prefix="/vendors")
-    app.register_blueprint(registration_bp, url_prefix="/registration")
-    app.register_blueprint(vendor_user_bp, url_prefix="/vendor_users")
 
     return app

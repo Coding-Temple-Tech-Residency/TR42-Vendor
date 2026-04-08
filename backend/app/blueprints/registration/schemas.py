@@ -15,7 +15,7 @@ class UserRegistrationSchema(ma.Schema):
     email = fields.Email(required=True)
     username = fields.String(required=True)
     password = fields.String(required=True, load_only=True)
-    confirm_password = fields.String(required=True, load_only=True)
+    # confirm_password = fields.String(required=True, load_only=True)
 
     @pre_load
     def preprocess(self, data, **kwargs):
@@ -42,10 +42,10 @@ class UserRegistrationSchema(ma.Schema):
     def check_password(self, value, **kwargs):
         return validate_password(value, min_length=6)
 
-    @validates_schema
-    def validate_password_match(self, data, **kwargs):
-        if data.get("password") != data.get("confirm_password"):
-            raise ValidationError({"confirm_password": ["Passwords do not match."]})
+    # @validates_schema
+    # def validate_password_match(self, data, **kwargs):
+    #     if data.get("password") != data.get("confirm_password"):
+    #         raise ValidationError({"confirm_password": ["Passwords do not match."]})
 
 
 user_registration_schema = UserRegistrationSchema()
@@ -60,7 +60,7 @@ class VendorRegistrationSchema(ma.Schema):
     company_email = fields.Email(required=True)
     company_phone = fields.String(required=True)
     primary_contact_name = fields.String(required=True)
-    # service_type = fields.String(required=True)
+    service_type = fields.String(required=True)
 
     @pre_load
     def preprocess(self, data, **kwargs):
@@ -102,10 +102,10 @@ class VendorRegistrationSchema(ma.Schema):
         if not value or not value.strip():
             raise ValidationError("Zip code is required.")
 
-    # @validates("service_type")
-    # def validate_service_type(self, value, **kwargs):
-    #     if not value or not value.strip():
-    #         raise ValidationError("Select a service type.")
+    @validates("service_type")
+    def validate_service_type(self, value, **kwargs):
+        if not value or not value.strip():
+            raise ValidationError("Select a service type.")
 
 
 class CombinedRegistrationSchema(ma.Schema):

@@ -7,7 +7,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.auth.passwords import hash_password, verify_password
 
 from app.extensions import db
-from app.blueprints.vendor_user.model import VendorUser
 
 
 class UserType(enum.Enum):
@@ -60,7 +59,7 @@ class User(db.Model):
     last_name: Mapped[str] = mapped_column(String(50), nullable=False)
 
     vendor_links: Mapped[list["VendorUser"]] = relationship(
-        VendorUser,
+        "VendorUser",
         back_populates="user",
         foreign_keys="VendorUser.user_id",
         cascade="all, delete-orphan",
