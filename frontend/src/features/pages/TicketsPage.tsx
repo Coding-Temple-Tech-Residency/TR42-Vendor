@@ -1,5 +1,5 @@
 import AppLayout from "../components/layout/AppLayout";
-import Sidebar from "../components/layout/SideBar";
+import Sidebar from "../components/layout/Sidebar";
 import Topbar from "../components/layout/Topbar";
 import PageHeader from "../components/UI/PageHeader";
 import SectionCard from "../components/UI/SectionCard";
