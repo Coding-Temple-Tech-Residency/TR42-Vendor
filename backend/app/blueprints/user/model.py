@@ -1,13 +1,16 @@
 from datetime import datetime
 import enum
 from app.functions import generate_uuid, utc_now
-
+from typing import TYPE_CHECKING
 from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Integer, LargeBinary, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.auth.passwords import hash_password, verify_password
 
 from app.extensions import db
 
+if TYPE_CHECKING:
+    from app.blueprints.address.model import Address
+    from app.blueprints.vendor_user.model import VendorUser
 
 class UserType(enum.Enum):
     OPERATOR = "operator"

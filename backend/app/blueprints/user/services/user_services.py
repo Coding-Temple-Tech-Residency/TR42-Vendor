@@ -6,7 +6,7 @@ from app.blueprints.user.model import User
 from app.blueprints.user.repositories.user_repositories import UserRepository
 from app.blueprints.user.schemas import users_schema
 
-from app.auth.passwords import verify_password
+from app.auth.passwords import hash_password, verify_password
 from app.auth.tokens import encode_token
 
 from logging import getLogger
