@@ -1,12 +1,35 @@
 #This removes duplicate fields across every table
 from app.extensions import db
-from sqlalchemy.sql import func
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import DateTime, ForeignKey
+from datetime import datetime
+from app.functions import utc_now
+
 
 class BaseModel(db.Model):
     __abstract__ = True
 
-    created_at = db.Column(db.DateTime, server_default=func.now())
-    updated_at = db.Column(db.DateTime, onupdate=func.now())
+        # ----------------------
+    # Audit Fields
+    # ----------------------
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        nullable=False,
+        default=utc_now,
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        nullable=False,
+        default=utc_now,
+        onupdate=utc_now,
+    )
 
-    created_by = db.Column(db.String, db.ForeignKey('user.user_id'), nullable=False)
-    updated_by = db.Column(db.String, db.ForeignKey('user.user_id'))
+    created_by: Mapped[str] = mapped_column(
+        ForeignKey("user.user_id"),
+        nullable=False,
+    )
+
+    updated_by: Mapped[str | None] = mapped_column(
+        ForeignKey("user.user_id"),
+        nullable=True,
+    )

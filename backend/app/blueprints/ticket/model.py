@@ -1,6 +1,6 @@
 from app.extensions import db
 from sqlalchemy import func
-from app.models.base import BaseModel
+from app.base import BaseModel
 
 class Ticket(BaseModel):
     __tablename__ = 'ticket'
