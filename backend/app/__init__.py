@@ -53,6 +53,8 @@ def create_app(config_object=None):
     )
     from app.blueprints.vendor_user.controller.vendor_user_routes import vendor_user_bp
     from app.blueprints.work_orders.controller.work_order_routes import work_order_bp
+    from app.blueprints.invoices.controller.invoice_routes import invoice_bp
+    from app.blueprints.invoices.controller.lineitem_routes import lineItem_bp
 
     app.register_blueprint(user_bp, url_prefix="/users")
     app.register_blueprint(address_bp, url_prefix="/addresses")
@@ -60,5 +62,7 @@ def create_app(config_object=None):
     app.register_blueprint(registration_bp, url_prefix="/registration")
     app.register_blueprint(vendor_user_bp, url_prefix="/vendor_users")
     app.register_blueprint(work_order_bp, url_prefix="/work_orders")
+    app.register_blueprint(invoice_bp, url_prefix="/invoices")
+    app.register_blueprint(lineItem_bp, url_prefix="/line_items")
 
     return app
