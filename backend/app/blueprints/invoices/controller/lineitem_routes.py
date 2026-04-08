@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from werkzeug.exceptions import BadRequest, NotFound
-from app.blueprints.invoices.services.invoice_services import LineItemService
+from app.blueprints.invoices.services.lineitem_services import LineItemService
 
 lineItem_bp = Blueprint('lineItem_bp', __name__)
 

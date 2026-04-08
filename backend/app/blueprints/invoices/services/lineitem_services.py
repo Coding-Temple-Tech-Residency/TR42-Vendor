@@ -1,4 +1,4 @@
-from app.blueprints.invoices.repositories.invoice_repositories import LineItemRepository
+from app.blueprints.invoices.repositories.lineitem_repository import LineItemRepository
 from app.blueprints.invoices.model import LineItem
 from app.blueprints.invoices.schemas import line_item_schema, line_items_schema
 from werkzeug.exceptions import NotFound, BadRequest
