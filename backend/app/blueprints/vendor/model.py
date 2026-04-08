@@ -1,6 +1,6 @@
 from app.extensions import db
 from app.functions import generate_uuid
-
+from typing import TYPE_CHECKING
 from sqlalchemy import (
     Boolean,
     Enum,
@@ -11,6 +11,11 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 import enum
 
+from app.base import BaseModel
+
+if TYPE_CHECKING:
+    from app.blueprints.address.model import Address
+    from app.blueprints.vendor_user.model import VendorUser
 
 class VendorStatus(enum.Enum):
     ACTIVE = "active"
@@ -23,7 +28,7 @@ class ComplianceStatus(enum.Enum):
     COMPLETE = "complete"
 
 
-class Vendor(db.Model):
+class Vendor(BaseModel):
     __tablename__ = "vendor"
 
     vendor_id: Mapped[str] = mapped_column(
