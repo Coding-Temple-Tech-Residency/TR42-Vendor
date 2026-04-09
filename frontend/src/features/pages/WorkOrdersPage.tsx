@@ -8,9 +8,9 @@ import EmptyState from "../components/UI/EmptyState";
 
 // Reusable UI components
 import DonutChart from "../components/UI/DonutChart";
-import OpenWorkOrdersTable from "../components/UI/OpenWorkOrdersTable";
-import AssignContractorTable from "../components/UI/AssignContractorTable";
-import FraudReviewTable from "../components/UI/FraudReviewTable";
+import OpenWorkOrdersTable from "../dashboard/components/OpenWorkOrdersTable";
+import AssignContractorTable from "../dashboard/components/AssignContractorTable";
+import FraudReviewTable from "../dashboard/components/FraudReviewTable";
 
 import {
   BarChart,

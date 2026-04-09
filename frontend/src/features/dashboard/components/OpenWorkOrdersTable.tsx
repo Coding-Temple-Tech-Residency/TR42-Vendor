@@ -1,4 +1,4 @@
-import DataTable from "./DataTable";
+import DataTable from "../../components/UI/DataTable";
 
 function OpenWorkOrdersTable() {
   // Dummy data for now (backend will replace this later)

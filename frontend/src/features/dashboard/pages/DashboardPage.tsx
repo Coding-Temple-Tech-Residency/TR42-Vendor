@@ -1,10 +1,10 @@
-import AppLayout from "../components/layout/AppLayout";
-import Sidebar from "../components/layout/Sidebar";
-import Topbar from "../components/layout/Topbar";
+import AppLayout from "../../components/layout/AppLayout";
+import Sidebar from "../../components/layout/Sidebar";
+import Topbar from "../../components/layout/Topbar";
 
-import PageHeader from "../components/UI/PageHeader";
-import SectionCard from "../components/UI/SectionCard";
-import EmptyState from "../components/UI/EmptyState";
+import PageHeader from "../../components/UI/PageHeader";
+import SectionCard from "../../components/UI/SectionCard";
+import EmptyState from "../../components/UI/EmptyState";
 
 // import {
 //   UserPlusIcon,
@@ -13,12 +13,12 @@ import EmptyState from "../components/UI/EmptyState";
 // } from "@heroicons/react/24/outline";
 
 // Reusable UI components
-import DonutChart from "../components/UI/DonutChart";
-import FraudGauge from "../components/UI/FraudGauge";
-import OpenWorkOrdersTable from "../components/UI/OpenWorkOrdersTable";
-import AssignContractorTable from "../components/UI/AssignContractorTable";
-import FraudReviewTable from "../components/UI/FraudReviewTable";
-import LineChart from "../components/UI/LineChart";
+import DonutChart from "../../components/UI/DonutChart";
+import FraudGauge from "../components/FraudGauge";
+import OpenWorkOrdersTable from "../components/OpenWorkOrdersTable";
+import AssignContractorTable from "../components/AssignContractorTable";
+import FraudReviewTable from "../components/FraudReviewTable";
+import LineChart from "../../components/UI/LineChart";
 
 function DashboardPage() {
 

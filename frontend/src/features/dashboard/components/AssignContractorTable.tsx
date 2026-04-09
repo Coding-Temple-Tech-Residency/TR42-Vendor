@@ -1,4 +1,4 @@
-import DataTable from "./DataTable";
+import DataTable from "../../components/UI/DataTable";
 
 function AssignContractorTable() {
   // Dummy data (backend will replace this later)
