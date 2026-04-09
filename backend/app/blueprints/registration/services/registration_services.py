@@ -74,7 +74,7 @@ class RegistrationService:
                 company_email=vendor_data["company_email"],
                 company_phone=vendor_data["company_phone"],
                 primary_contact_name=vendor_data["primary_contact_name"],
-                # service_type=vendor_data["service_type"],
+                service_type=vendor_data["service_type"],
                 address_id=address.address_id,
             )
             VendorRepository.create(vendor)

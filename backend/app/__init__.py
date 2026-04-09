@@ -1,15 +1,19 @@
 from flask import Flask
 from sqlalchemy import text
 import time
+from flask_cors import CORS
 
 from app.extensions import db, ma
 from app.config import Config
 from app.logging_config import setup_logging
-import app.models
 
 
 def create_app(config_object=None):
     app = Flask(__name__)
+    CORS(
+        app,
+        resources={r"/*": {"origins": "http://localhost:5173"}},
+    )
 
     if config_object:
         app.config.from_object(config_object)
@@ -20,6 +24,9 @@ def create_app(config_object=None):
 
     db.init_app(app)
     ma.init_app(app)
+
+    # Import all models BEFORE blueprints to ensure they're registered with SQLAlchemy
+    from app import models
 
     with app.app_context():
         if not app.config.get("TESTING"):
@@ -37,6 +44,7 @@ def create_app(config_object=None):
 
         db.create_all()
 
+        # Now import blueprints
     from app.blueprints.user.controller.user_routes import user_bp
     from app.blueprints.address.controller.address_routes import address_bp
     from app.blueprints.vendor.controller.vendor_routes import vendor_bp
@@ -44,11 +52,13 @@ def create_app(config_object=None):
         registration_bp,
     )
     from app.blueprints.vendor_user.controller.vendor_user_routes import vendor_user_bp
+    from app.blueprints.work_orders.controller.work_order_routes import work_order_bp
 
     app.register_blueprint(user_bp, url_prefix="/users")
     app.register_blueprint(address_bp, url_prefix="/addresses")
     app.register_blueprint(vendor_bp, url_prefix="/vendors")
     app.register_blueprint(registration_bp, url_prefix="/registration")
     app.register_blueprint(vendor_user_bp, url_prefix="/vendor_users")
+    app.register_blueprint(work_order_bp, url_prefix="/work_orders")
 
     return app
