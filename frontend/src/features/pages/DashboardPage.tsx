@@ -5,7 +5,6 @@ import PageHeader from "../components/UI/PageHeader";
 import SectionCard from "../components/UI/SectionCard";
 import EmptyState from "../components/UI/EmptyState";
 
-
 function DashboardPage() {
   return (
     <AppLayout
