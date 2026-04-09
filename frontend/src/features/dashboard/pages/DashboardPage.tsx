@@ -48,10 +48,10 @@ function DashboardPage() {
   const fraudRiskValue = 57;
 
   // EMPTY ARRAYS (backend will replace later)
-  const openWorkOrders = [];
-  const contractors = [];
-  const pendingInvoices = [];
-  const fraudReview = [];
+  const openWorkOrders: any[] = [];
+  const contractors: any[] = [];
+  const pendingInvoices: any[] = [];
+  const fraudReview: any[] = [];
 
   // KPI COLOR HELPER
   const getKpiColor = (value) => {
@@ -77,22 +77,21 @@ function DashboardPage() {
           title="Unassigned Work Orders"
           subtitle="Jobs needing assignment"
         >
-          {/* <div className={`text-3xl font-bold ${getKpiColor(kpiData.unassigned)}`}> */}
-          <div className="text-3xl font-bold text-red-600">
+          <div className={`text-3xl font-bold ${getKpiColor(kpiData.unassigned)}`}>
             {kpiData.unassigned}
           </div>
         </SectionCard>
 
         <SectionCard title="Pending Jobs" subtitle="Jobs awaiting action">
-          {/* <div className={`text-3xl font-bold ${getKpiColor(kpiData.pending)}`}> */}
-          <div className="text-3xl font-bold text-yellow-600">
+          <div className={`text-3xl font-bold ${getKpiColor(kpiData.pending)}`}>
+          {/* <div className="text-3xl font-bold text-yellow-600"> */}
             {kpiData.pending}
           </div>
         </SectionCard>
 
         <SectionCard title="Open Invoices" subtitle="Invoices requiring review">
-          {/* <div className={`text-3xl font-bold ${getKpiColor(kpiData.openInvoices)}`}> */}
-          <div className="text-3xl font-bold text-green-600">
+          <div className={`text-3xl font-bold ${getKpiColor(kpiData.openInvoices)}`}>
+          {/* <div className="text-3xl font-bold text-green-600"> */}
             {kpiData.openInvoices}
           </div>
         </SectionCard>
@@ -122,7 +121,7 @@ function DashboardPage() {
                 description="Work order details will appear here."
               />
             ) : (
-              <OpenWorkOrdersTable />
+              <OpenWorkOrdersTable data={openWorkOrders} />
             )}
           </SectionCard>
 
@@ -134,7 +133,7 @@ function DashboardPage() {
                 description="Contractor availability will appear here."
               />
             ) : (
-              <AssignContractorTable />
+              <AssignContractorTable data={contractors} />
             )}
           </SectionCard>
         </div>
@@ -215,7 +214,7 @@ function DashboardPage() {
                   description="Invoices that need fraud review will appear here."
                 />
               ) : (
-                <FraudReviewTable />
+                <FraudReviewTable data={fraudReview} />
               )}
             </div>
           </SectionCard>
