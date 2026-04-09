@@ -256,9 +256,14 @@
 
 -- select distinct(vendor_id) from ticket;
 
-select 
-    completed_at, 
-    start_time, 
-    round(julianday(completed_at) - julianday(start_time), 2) 
-from ticket
-where vendor_id = '63cce387-ccdc-45da-b1b7-118fb636a479' and status='completed'
+-- completion time testing
+-- select 
+--     completed_at, 
+--     start_time, 
+--     round(julianday(completed_at) - julianday(start_time), 2) 
+-- from ticket
+-- where vendor_id = '63cce387-ccdc-45da-b1b7-118fb636a479' and status='completed'
+
+select *
+from work_orders
+where current_status='unassigned';
