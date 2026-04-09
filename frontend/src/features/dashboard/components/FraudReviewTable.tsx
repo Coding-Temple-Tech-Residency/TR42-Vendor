@@ -1,6 +1,10 @@
 import DataTable from "../../components/UI/DataTable";
 
-function FraudReviewTable() {
+type Props = {
+  data: any[];
+};
+
+function FraudReviewTable({ data }: Props) {
   // Dummy data — backend will replace this later
   const columns = [
     { key: "caseId", label: "Case ID" },
@@ -8,30 +12,6 @@ function FraudReviewTable() {
     { key: "flag", label: "Flag Type" },
     { key: "score", label: "Risk Score" },
     { key: "status", label: "Status" },
-  ];
-
-  const data = [
-    {
-      caseId: "FR-3011",
-      vendor: "ACME Plumbing",
-      flag: "Duplicate Invoice",
-      score: 82,
-      status: "High Risk",
-    },
-    {
-      caseId: "FR-3012",
-      vendor: "Lone Star HVAC",
-      flag: "Unusual Labor Hours",
-      score: 57,
-      status: "Medium Risk",
-    },
-    {
-      caseId: "FR-3013",
-      vendor: "Metro Electric",
-      flag: "Missing Documentation",
-      score: 22,
-      status: "Low Risk",
-    },
   ];
 
   // Risk color logic
@@ -66,4 +46,5 @@ function FraudReviewTable() {
     </div>
   );
 }
+
 export default FraudReviewTable;

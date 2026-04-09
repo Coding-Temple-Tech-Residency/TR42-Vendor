@@ -7,9 +7,15 @@ import {
 
 interface FraudGaugeProps {
   value: number;
+  label?: string;
+  subLabel?: string;
 }
 
-function FraudGauge({ value }: FraudGaugeProps) {
+function FraudGauge({
+  value,
+  label = "Risk Score",
+  subLabel = "Fraud Risk",
+}: FraudGaugeProps) {
   const safeValue = Math.max(0, Math.min(100, value));
   const angle = (safeValue / 100) * 180;
 
@@ -66,7 +72,7 @@ function FraudGauge({ value }: FraudGaugeProps) {
 
           {/* Center text */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-xs text-gray-500">Risk Score</span>
+            <span className="text-xs text-gray-500">{label}</span>
             <span className="text-2xl font-bold text-gray-900">
               {safeValue}%
             </span>
@@ -78,7 +84,7 @@ function FraudGauge({ value }: FraudGaugeProps) {
           className="mt-4 text-sm font-semibold"
           style={{ color: getRiskColor() }}
         >
-          Fraud Risk: {safeValue}%
+          {subLabel}: {safeValue}%
         </p>
 
       </div>

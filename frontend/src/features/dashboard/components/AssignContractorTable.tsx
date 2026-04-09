@@ -1,6 +1,10 @@
 import DataTable from "../../components/UI/DataTable";
 
-function AssignContractorTable() {
+type Props = {
+  data: any[];
+};
+
+function AssignContractorTable({ data }: Props) {
   // Dummy data (backend will replace this later)
   const columns = [
     { key: "ticketId", label: "Ticket ID" },
@@ -8,30 +12,6 @@ function AssignContractorTable() {
     { key: "priority", label: "Priority" },
     { key: "assignedTo", label: "Assigned To" },
     { key: "status", label: "Status" },
-  ];
-
-  const data = [
-    {
-      ticketId: "TCK-2041",
-      issue: "HVAC not cooling",
-      priority: "High",
-      assignedTo: "Unassigned",
-      status: "Pending Assignment",
-    },
-    {
-      ticketId: "TCK-2042",
-      issue: "Leaking pipe",
-      priority: "Medium",
-      assignedTo: "Michael Brown",
-      status: "In Progress",
-    },
-    {
-      ticketId: "TCK-2043",
-      issue: "Electrical outage",
-      priority: "High",
-      assignedTo: "Unassigned",
-      status: "Pending Assignment",
-    },
   ];
 
   return (
@@ -44,4 +24,5 @@ function AssignContractorTable() {
     </div>
   );
 }
+
 export default AssignContractorTable;
