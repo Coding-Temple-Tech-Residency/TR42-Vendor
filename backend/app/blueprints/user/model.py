@@ -9,8 +9,8 @@ from app.auth.passwords import hash_password, verify_password
 from app.extensions import db
 
 if TYPE_CHECKING:
-    from app.blueprints.address.model import Address
     from app.blueprints.vendor_user.model import VendorUser
+
 
 class UserType(enum.Enum):
     OPERATOR = "operator"
