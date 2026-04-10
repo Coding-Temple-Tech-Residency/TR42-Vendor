@@ -264,6 +264,24 @@
 -- from ticket
 -- where vendor_id = '63cce387-ccdc-45da-b1b7-118fb636a479' and status='completed'
 
-select *
-from work_orders
-where current_status='unassigned';
+-- Work Orders with Unassigned Tickets
+-- select wo.work_order_id, count(t.ticket_id)
+-- from ticket t
+-- join work_orders wo
+-- using (work_order_id)
+-- where wo.current_status='unassigned'
+-- group by 1;
+
+select DISTINCT(vendor_id) from vendor;
+
+-- Test Vendor: 11c653b3-219e-4d98-9b42-7d6f683ea5c6
+-- Work Orders with unassigned Tickets for a vendor
+select work_order_id, count(*) as "unassigned tickets"
+from ticket t
+join work_orders wo
+using (work_order_id)
+where t.status = 'unassigned' and wo.assigned_vendor = '65242d3c-bb96-4d7f-8e0d-e8aa76d6d2d5'
+group by 1;
+
+-- select * from work_orders
+-- where assigned_vendor = '11c653b3-219e-4d98-9b42-7d6f683ea5c6'

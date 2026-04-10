@@ -11,6 +11,7 @@ from faker import Faker
 from datetime import datetime, timedelta
 import json
 
+Faker.seed(42)
 fake = Faker()
 
 
@@ -327,11 +328,11 @@ def generate_work_orders(n, vendor_wells, users, wells, vendor_services):
 
         service_type = random.choice(valid_service_ids)
 
-        created_at = generate_time_span("-2y", "-30d")
-        assigned_at = after(created_at, max_days=14)
+        created_at = generate_time_span("-2y", "-3d")
+        assigned_at = after(created_at, max_days=3)
 
-        est_start = after(assigned_at, max_days=14)
-        est_end = est_start + timedelta(days=random.randint(1, 30))
+        est_start = after(assigned_at, max_days=2)
+        est_end = est_start + timedelta(days=random.randint(1, 5))
 
         status = random.choice(ORDER_STATUS)
 
@@ -340,9 +341,9 @@ def generate_work_orders(n, vendor_wells, users, wells, vendor_services):
         cancellation_reason = None
 
         if status == "completed":
-            completed_at = after(est_end, max_days=30)
+            completed_at = after(est_end, max_days=2)
         elif status == "cancelled":
-            cancelled_at = after(assigned_at, max_days=30)
+            cancelled_at = after(assigned_at, max_days=2)
             cancellation_reason = random.choice([
                 "Client cancelled request",
                 "Weather delay",
