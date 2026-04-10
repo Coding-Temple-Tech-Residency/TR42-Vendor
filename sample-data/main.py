@@ -51,17 +51,51 @@ VENDOR_STATUS = ["active", "inactive"]
 COMPLIANCE_STATUS = ["expired", "incomplete", "complete"]
 ROLE_OPTIONS = ["user", "manager", "admin"]
 CONTRACTOR_STATUS = ["active", "inactive"]
-ORDER_STATUS = ["unassigned", "assigned", "in progress", "completed", "halted", "rejected"]
-PRIORITY = ["routine", "urgent", "emergency"]
-TICKET_STATUS = [
+
+ORDER_STATUS = [
+    "unassigned",
     "assigned",
     "in progress",
-    "completed"
-]  # need to add unassigned status after discussion with team
+    "completed",
+    "halted",
+    "rejected",
+    "cancelled",
+    "closed",
+]
+
+PRIORITY = ["LOW", "MEDIUM", "HIGH"]
+
+TICKET_STATUS = [
+    "unassigned",
+    "assigned",
+    "in progress",
+    "completed",
+]
+
 INVOICE_STATUS = ["draft", "submitted", "approved", "paid", "rejected"]
-WELL_STATUS = ["active", "inactive", "plugged", "drilling"]
-WELL_TYPE = ["oil", "gas", "injection", "disposal"]
-MSA_STATUSES = ["draft", "active", "expired", "terminated"]
+
+WELL_STATUS = [
+    "Active",
+    "Drilling",
+    "Completed",
+    "Inactive",
+    "Suspended",
+    "Abandoned",
+    "Plugged",
+]
+
+WELL_TYPE = [
+    "Oil",
+    "Gas",
+    "Oil & Gas",
+    "Injection",
+    "Water Disposal",
+    "Observation",
+]
+
+LOCATION_TYPES = ["WELL", "GPS", "ADDRESS"]
+FREQUENCY_TYPES = ["ONE_TIME", "DAILY", "WEEKLY", "MONTHLY"]
+
 SERVICE_TYPES = [
     "Water Delivery",
     "Chemical Delivery",
@@ -73,19 +107,19 @@ SERVICE_TYPES = [
     "Well Intervention",
 ]
 
-def generate_users(n=20):
+def generate_users(n=20, addresses=None):
     users = []
+    addresses = addresses or []
 
     for i in range(n):
         user_id = gen_id()
+        address_id = random.choice(addresses)["address_id"] if addresses else None
 
         users.append(
             {
                 "user_id": user_id,
                 "username": fake.unique.user_name(),
-                "password": fake.password(
-                    length=12
-                ),  # bcrypt.hashpw(default_password, salt),
+                "password": fake.password(length=12),
                 "email": fake.unique.email(),
                 "first_name": fake.first_name(),
                 "last_name": fake.last_name(),
@@ -100,12 +134,11 @@ def generate_users(n=20):
                 "profile_photo": None,
                 "created_at": generate_time_span(),
                 "updated_at": now(),
-                "created_by": user_id,  # may need to change to be created_by the system
-                "updated_by": user_id,  # may need to change to be updated_by the system to begin
+                "created_by": user_id,
+                "updated_by": user_id,
+                "address_id": address_id,
             }
         )
-
-        # print(f"User: {i} created")
 
     return users
 
@@ -195,10 +228,9 @@ def generate_vendor_users(users, vendors, max_ratio=0.6):
     return vendor_users
 
 
-def generate_contractors(n, vendors, users, addresses, vendor_users):
+def generate_contractors(n, vendors, users, vendor_users):
     contractors = []
 
-    # ❗ avoid reusing users already tied to vendor_user
     used_user_ids = {vu["user_id"] for vu in vendor_users}
     available_users = [u for u in users if u["user_id"] not in used_user_ids]
 
@@ -221,6 +253,8 @@ def generate_contractors(n, vendors, users, addresses, vendor_users):
                 "user_id": user["user_id"],
                 "role": random.choice(ROLE_OPTIONS),
                 "status": random.choice(CONTRACTOR_STATUS),
+                "tickets_completed": 0,
+                "tickets_open": 0,
                 "biometric_enrolled": random.choice([True, False]),
                 "is_onboarded": random.choice([True, False]),
                 "is_subcontractor": random.choice([True, False]),
@@ -228,7 +262,6 @@ def generate_contractors(n, vendors, users, addresses, vendor_users):
                 "is_licensed": random.choice([True, False]),
                 "is_insured": random.choice([True, False]),
                 "is_certified": random.choice([True, False]),
-                "address_id": random.choice(addresses)["address_id"],
                 "average_rating": round(random.uniform(1, 5), 2),
                 "years_experience": random.randint(0, 40),
                 "background_check_id": None,
@@ -243,9 +276,33 @@ def generate_contractors(n, vendors, users, addresses, vendor_users):
 
     return contractors
 
+def update_contractor_ticket_counts(contractors, tickets):
+    counts = {
+        c["contractor_id"]: {"tickets_completed": 0, "tickets_open": 0}
+        for c in contractors
+    }
 
-def generate_work_orders(n, vendor_wells, users, wells):
+    for ticket in tickets:
+        contractor_id = ticket.get("assigned_contractor")
+        if not contractor_id or contractor_id not in counts:
+            continue
+
+        if ticket["status"] == "completed":
+            counts[contractor_id]["tickets_completed"] += 1
+        elif ticket["status"] in ["unassigned", "assigned", "in progress"]:
+            counts[contractor_id]["tickets_open"] += 1
+
+    for contractor in contractors:
+        cid = contractor["contractor_id"]
+        contractor["tickets_completed"] = counts[cid]["tickets_completed"]
+        contractor["tickets_open"] = counts[cid]["tickets_open"]
+
+def generate_work_orders(n, vendor_wells, users, wells, vendor_services):
     work_orders = []
+
+    vendor_service_map = {}
+    for vs in vendor_services:
+        vendor_service_map.setdefault(vs["vendor_id"], []).append(vs["service_id"])
 
     for _ in range(n):
         creator = random.choice(users)["user_id"]
@@ -264,8 +321,13 @@ def generate_work_orders(n, vendor_wells, users, wells):
 
         assigned_vendor = random.choice(valid_vendor_ids)
 
-        created_at = generate_time_span("-2y", "-30d")
+        valid_service_ids = vendor_service_map.get(assigned_vendor, [])
+        if not valid_service_ids:
+            continue
 
+        service_type = random.choice(valid_service_ids)
+
+        created_at = generate_time_span("-2y", "-30d")
         assigned_at = after(created_at, max_days=14)
 
         est_start = after(assigned_at, max_days=14)
@@ -274,12 +336,29 @@ def generate_work_orders(n, vendor_wells, users, wells):
         status = random.choice(ORDER_STATUS)
 
         completed_at = None
+        cancelled_at = None
+        cancellation_reason = None
+
         if status == "completed":
             completed_at = after(est_end, max_days=30)
+        elif status == "cancelled":
+            cancelled_at = after(assigned_at, max_days=30)
+            cancellation_reason = random.choice([
+                "Client cancelled request",
+                "Weather delay",
+                "Resource unavailable",
+                "Duplicate order",
+                "Safety concern",
+            ])
+
+        location_type = random.choice(LOCATION_TYPES)
+        is_recurring = random.choice([True, False])
+        recurrence_type = random.choice(FREQUENCY_TYPES) if is_recurring else None
 
         work_orders.append({
             "work_order_id": gen_id(),
             "assigned_vendor": assigned_vendor,
+            "client_id": well["client_id"],
             "assigned_at": assigned_at,
             "completed_at": completed_at,
             "description": fake.text(max_nb_chars=200),
@@ -288,10 +367,20 @@ def generate_work_orders(n, vendor_wells, users, wells):
             "current_status": status,
             "comments": fake.text(max_nb_chars=100),
             "location": fake.city(),
+            "location_type": location_type,
+            "latitude": float(fake.latitude()),
+            "longitude": float(fake.longitude()),
             "estimated_cost": round(random.uniform(500, 50000), 2),
             "estimated_duration": timedelta(days=random.randint(1, 3)),
             "priority": random.choice(PRIORITY),
             "well_id": well["well_id"],
+            "service_type": service_type,
+            "estimated_quantity": round(random.uniform(1, 100), 2),
+            "units": random.choice(["hours", "gallons", "loads", "visits", "days"]),
+            "is_recurring": is_recurring,
+            "recurrence_type": recurrence_type,
+            "cancelled_at": cancelled_at,
+            "cancellation_reason": cancellation_reason,
             "created_at": created_at,
             "updated_at": now(),
             "created_by": creator,
@@ -304,7 +393,7 @@ def generate_work_orders(n, vendor_wells, users, wells):
 # TODO:
 # continue working on making tickets realistic.
 # - Add business hour limits for creation, assignment, and completion.
-def generate_tickets(n, work_orders, contractors, vendors, users):
+def generate_tickets(n, work_orders, contractors, users):
     tickets = []
 
     for _ in range(n):
@@ -317,41 +406,82 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
             c for c in contractors if c["vendor_id"] == wo["assigned_vendor"]
         ]
 
-        if not valid_contractors:
+        if wo["current_status"] == "unassigned":
+            contractor = None
+            status = "unassigned"
+            assigned_at = None
+            start_time = None
+            completed_at = None
+        else:
+            if not valid_contractors:
+                continue
+
+            contractor = random.choice(valid_contractors)
+
+            created_at = between(wo["created_at"], wo["assigned_at"])
+
+            if wo["current_status"] == "completed":
+                status = "completed"
+            elif wo["current_status"] == "in progress":
+                status = random.choice(["assigned", "in progress"])
+            elif wo["current_status"] in ["cancelled", "rejected", "halted", "closed"]:
+                status = random.choice(["assigned", "in progress"])
+            else:
+                status = "assigned"
+
+            assigned_at = between(created_at, wo["estimated_start_date"])
+
+            start_time = None
+            if status in ["in progress", "completed"]:
+                start_time = between(assigned_at, wo["estimated_start_date"])
+
+            completed_at = None
+            if status == "completed":
+                completed_at = between(
+                    start_time,
+                    wo["completed_at"] or wo["estimated_end_date"]
+                )
+
+            due_date = wo["estimated_end_date"]
+
+            tickets.append({
+                "ticket_id": gen_id(),
+                "work_order_id": wo["work_order_id"],
+                "description": wo["description"],
+                "assigned_contractor": contractor["contractor_id"],
+                "priority": wo["priority"],
+                "status": status,
+                "vendor_id": wo["assigned_vendor"],
+                "start_time": start_time,
+                "due_date": due_date,
+                "assigned_at": assigned_at,
+                "completed_at": completed_at,
+                "estimated_duration": wo["estimated_duration"],
+                "service_type": wo["service_type"],
+                "notes": fake.text(max_nb_chars=100),
+                "contractor_start_location": f"{fake.latitude()},{fake.longitude()}",
+                "contractor_end_location": f"{fake.latitude()},{fake.longitude()}",
+                "estimated_quantity": random.randint(1, 100),
+                "unit": "hours",
+                "special_requirements": fake.sentence(),
+                "anomaly_flag": random.choice([True, False]),
+                "anomaly_reason": fake.sentence() if random.choice([True, False]) else None,
+                "created_at": created_at,
+                "updated_at": now(),
+                "created_by": creator,
+                "updated_by": updater,
+                "additional_information": fake.json(),
+            })
             continue
 
-        contractor = random.choice(valid_contractors)
-
-        created_at = between(wo["created_at"], wo["assigned_at"])
-        assigned_at = between(created_at, wo["estimated_start_date"])
-
-        if wo["current_status"] == "completed":
-            status = "completed"
-        elif wo["current_status"] == "in progress":
-            status = random.choice(["assigned", "in progress"])
-        else:
-            status = "assigned"
-
-        start_time = None
-        if status in ["in progress", "completed"]:
-            start_time = between(assigned_at, wo["estimated_start_date"])
-
-        estimated_duration = wo["estimated_duration"]
-        completed_at = None
-
-        if status == "completed":
-            completed_at = between(
-                start_time,
-                wo["completed_at"] or wo["estimated_end_date"]
-            )
-
+        created_at = wo["created_at"]
         due_date = wo["estimated_end_date"]
 
         tickets.append({
             "ticket_id": gen_id(),
             "work_order_id": wo["work_order_id"],
             "description": wo["description"],
-            "assigned_contractor": contractor["contractor_id"],
+            "assigned_contractor": None,
             "priority": wo["priority"],
             "status": status,
             "vendor_id": wo["assigned_vendor"],
@@ -359,10 +489,11 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
             "due_date": due_date,
             "assigned_at": assigned_at,
             "completed_at": completed_at,
-            "estimated_duration": estimated_duration,
+            "estimated_duration": wo["estimated_duration"],
+            "service_type": wo["service_type"],
             "notes": fake.text(max_nb_chars=100),
-            "contractor_start_location": f"{fake.latitude()},{fake.longitude()}",
-            "contractor_end_location": f"{fake.latitude()},{fake.longitude()}",
+            "contractor_start_location": None,
+            "contractor_end_location": None,
             "estimated_quantity": random.randint(1, 100),
             "unit": "hours",
             "special_requirements": fake.sentence(),
@@ -381,14 +512,30 @@ def generate_tickets(n, work_orders, contractors, vendors, users):
 def generate_invoices(n, work_orders, tickets, users):
     invoices = []
 
+    work_order_lookup = {wo["work_order_id"]: wo for wo in work_orders}
+
     for _ in range(n):
         creator = random.choice(users)["user_id"]
         updater = random.choice(users)["user_id"]
 
         ticket = random.choice(tickets)
+        work_order = work_order_lookup[ticket["work_order_id"]]
 
         invoice_date = fake.date_time_between(start_date="-30d", end_date="now")
         due_date = fake.date_time_between(start_date=invoice_date, end_date="+30d")
+        invoice_status = random.choice(INVOICE_STATUS)
+
+        approved_at = None
+        paid_at = None
+        rejected_at = None
+
+        if invoice_status == "approved":
+            approved_at = fake.date_time_between(start_date=invoice_date, end_date="now")
+        elif invoice_status == "paid":
+            approved_at = fake.date_time_between(start_date=invoice_date, end_date="now")
+            paid_at = fake.date_time_between(start_date=approved_at, end_date="now")
+        elif invoice_status == "rejected":
+            rejected_at = fake.date_time_between(start_date=invoice_date, end_date="now")
 
         invoices.append(
             {
@@ -396,14 +543,18 @@ def generate_invoices(n, work_orders, tickets, users):
                 "work_order_id": ticket["work_order_id"],
                 "ticket_id": ticket["ticket_id"],
                 "vendor_id": ticket["vendor_id"],
+                "client_id": work_order["client_id"],
                 "invoice_date": invoice_date,
                 "due_date": due_date,
                 "period_start": fake.date_time_between(
                     start_date="-60d", end_date=invoice_date
                 ),
                 "period_end": invoice_date,
-                "total_amount": 0,  # will update after line items
-                "invoice_status": random.choice(INVOICE_STATUS),
+                "total_amount": 0,
+                "invoice_status": invoice_status,
+                "paid_at": paid_at,
+                "approved_at": approved_at,
+                "rejected_at": rejected_at,
                 "created_at": generate_time_span(),
                 "updated_at": now(),
                 "created_by": creator,
@@ -452,12 +603,13 @@ def generate_line_items(invoices, users):
     return line_items
 
 
-def generate_wells(n, users):
+def generate_wells(n, users, clients):
     wells = []
 
     for _ in range(n):
         creator = random.choice(users)["user_id"]
         updater = random.choice(users)["user_id"]
+        client = random.choice(clients)
 
         spud_date = fake.date_time_between(start_date="-10y", end_date="-1y")
         completion_date = fake.date_time_between(start_date=spud_date, end_date="now")
@@ -467,9 +619,7 @@ def generate_wells(n, users):
                 "well_id": gen_id(),
                 "api_number": fake.bothify("##-###-#####"),
                 "well_name": f"{fake.last_name()} {fake.random_letter()}-{random.randint(1, 99)}",
-                "operator": random.randint(
-                    1000, 9999
-                ),  # could later FK to company/client table
+                "client_id": client["client_id"],
                 "status": random.choice(WELL_STATUS),
                 "type": random.choice(WELL_TYPE),
                 "range": fake.bothify("##"),
@@ -489,7 +639,6 @@ def generate_wells(n, users):
         )
 
     return wells
-
 
 def generate_well_locations(wells, users):
     locations = []
@@ -981,41 +1130,41 @@ def generate_msa_requirements(msas, users):
 
     return requirements
 
-def generate_cancelled_work_orders(work_orders, users):
-    cancelled = []
+# def generate_cancelled_work_orders(work_orders, users):
+#     cancelled = []
 
-    cancellable_work_orders = [
-        wo for wo in work_orders
-        if wo["current_status"] in ["unassigned", "assigned", "in progress"]
-    ]
+#     cancellable_work_orders = [
+#         wo for wo in work_orders
+#         if wo["current_status"] in ["unassigned", "assigned", "in progress"]
+#     ]
 
-    selected_work_orders = random.sample(
-        cancellable_work_orders,
-        k=min(len(cancellable_work_orders), max(1, int(len(work_orders) * 0.08)))
-    ) if cancellable_work_orders else []
+#     selected_work_orders = random.sample(
+#         cancellable_work_orders,
+#         k=min(len(cancellable_work_orders), max(1, int(len(work_orders) * 0.08)))
+#     ) if cancellable_work_orders else []
 
-    for wo in selected_work_orders:
-        creator = random.choice(users)["user_id"]
-        updater = random.choice(users)["user_id"]
+#     for wo in selected_work_orders:
+#         creator = random.choice(users)["user_id"]
+#         updater = random.choice(users)["user_id"]
 
-        cancelled.append({
-            "id": gen_id(),
-            "work_order_id": wo["work_order_id"],
-            "vendor_id": wo["assigned_vendor"],
-            "cancellation_reason": random.choice([
-                "Client cancelled request",
-                "Weather delay",
-                "Resource unavailable",
-                "Duplicate order",
-                "Safety concern",
-            ]),
-            "created_at": generate_time_span(),
-            "updated_at": now(),
-            "created_by": creator,
-            "updated_by": updater,
-        })
+#         cancelled.append({
+#             "id": gen_id(),
+#             "work_order_id": wo["work_order_id"],
+#             "vendor_id": wo["assigned_vendor"],
+#             "cancellation_reason": random.choice([
+#                 "Client cancelled request",
+#                 "Weather delay",
+#                 "Resource unavailable",
+#                 "Duplicate order",
+#                 "Safety concern",
+#             ]),
+#             "created_at": generate_time_span(),
+#             "updated_at": now(),
+#             "created_by": creator,
+#             "updated_by": updater,
+#         })
 
-    return cancelled
+#     return cancelled
 
 def generate_vendor_services(vendors, services, users):
     vendor_services = []
@@ -1074,25 +1223,42 @@ def export_to_csv(data_dict, folder="data"):
 
 
 def main():
-    users = generate_users(1000)
-    addresses = generate_addresses(30, users)
+    # create addresses first so users can reference them
+    system_users = generate_users(5)
+    addresses = generate_addresses(30, system_users)
+
+    users = generate_users(1000, addresses)
     vendors = generate_vendors(10, users, addresses)
+
+    clients = generate_clients(25, users, addresses)
+
+    services = generate_services(users)
+    vendor_services = generate_vendor_services(vendors, services, users)
+
     vendor_users = generate_vendor_users(users, vendors, max_ratio=0.3)
 
     contractors = generate_contractors(
         n=100,
         vendors=vendors,
         users=users,
-        addresses=addresses,
         vendor_users=vendor_users,
     )
 
-    wells = generate_wells(50, users)
+    client_users = generate_client_users(
+        users, clients, vendor_users, contractors, max_ratio=0.1
+    )
+    client_vendors = generate_client_vendors(clients, vendors, users)
+
+    wells = generate_wells(50, users, clients)
     well_locations = generate_well_locations(wells, users)
     vendor_wells = generate_vendor_wells(vendors, wells, users)
 
-    work_orders = generate_work_orders(1000, vendor_wells, users, wells)
-    tickets = generate_tickets(5000, work_orders, contractors, vendors, users)
+    work_orders = generate_work_orders(
+        1000, vendor_wells, users, wells, vendor_services
+    )
+    tickets = generate_tickets(5000, work_orders, contractors, users)
+
+    update_contractor_ticket_counts(contractors, tickets)
 
     invoices = generate_invoices(500, work_orders, tickets, users)
     line_items = generate_line_items(invoices, users)
@@ -1106,20 +1272,11 @@ def main():
     licenses = generate_licenses(contractors, vendors, users)
     certifications = generate_certifications(contractors, users)
     insurance = generate_insurance(contractors, users)
-    services = generate_services(users)
-
-    clients = generate_clients(25, users, addresses)
-    client_users = generate_client_users(users, clients, vendor_users, contractors, max_ratio=0.1)
-    client_vendors = generate_client_vendors(clients, vendors, users)
 
     compliance_documents = generate_compliance_documents(vendors, users)
 
     msas = generate_msas(vendors, users)
     msa_requirements = generate_msa_requirements(msas, users)
-
-    vendor_services = generate_vendor_services(vendors, services, users)
-
-    cancelled_work_orders = generate_cancelled_work_orders(work_orders, users)
 
     data = {
         "user": users,
@@ -1144,7 +1301,6 @@ def main():
         "well_location": well_locations,
         "vendor_well": vendor_wells,
         "work_orders": work_orders,
-        "cancelled_work_orders": cancelled_work_orders,
         "ticket": tickets,
         "invoice": invoices,
         "line_item": line_items,
@@ -1152,7 +1308,6 @@ def main():
     }
 
     export_to_csv(data)
-
 
 if __name__ == "__main__":
     main()
