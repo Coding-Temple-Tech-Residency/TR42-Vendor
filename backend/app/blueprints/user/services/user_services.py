@@ -19,26 +19,27 @@ class UserService:
 
     @staticmethod
     def login(data: dict):
-        logger.info("Attempting login for user: %s", data.get("email"))
 
         email = data.get("email")
         password = data.get("password")
 
+        logger.info("Login attempt received")
+
         if not email or not password:
-            logger.warning("Login failed: Missing username or password")
-            raise BadRequest("Username and password are required")
+            logger.warning("Login failed: missing email or password")
+            raise BadRequest("Email and password are required")
 
         user = UserRepository.get_by_email(email)
         if not user:
-            logger.warning("Login failed: user not found: %s", email)
-            raise BadRequest("Invalid email or password")
+            logger.warning("Authentication failed")
+            raise BadRequest("Invalid credentials")
 
         if not verify_password(password, user.password_hash):
-            logger.warning("Login failed: Incorrect password for user: %s", username)
-            raise BadRequest("Invalid username or password")
+            logger.warning("Authentication failed")
+            raise BadRequest("Invalid credentials")
 
         token = encode_token(user)
-        logger.info("Login successful for user: %s", email)
+        logger.info("Login successful for user_id=%s", user.user_id)
 
         return {
             "message": "Login successful",

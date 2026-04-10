@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import TextInput from "../components/TextInput";
-import PasswordInput from "../components/PasswordInput";
 import AuthButton from "../components/AuthButton";
-import { getPasswordChecks, validateRegisterForm } from "../utils/authValidation";
+import PasswordInput from "../components/PasswordInput";
+import TextInput from "../components/TextInput";
+import type { User } from "../types/types";
+import {
+  getPasswordChecks,
+  validateRegisterForm,
+} from "../utils/authValidation";
 
 function RegisterForm() {
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<User>({
     firstName: "",
     lastName: "",
     email: "",
@@ -21,10 +25,17 @@ function RegisterForm() {
   const [errors, setErrors] = useState<any>({});
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
 
-    // clear error for that field
-    setErrors({ ...errors, [e.target.name]: "" });
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    setErrors((prev: any) => ({
+      ...prev,
+      [name]: "",
+    }));
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -43,12 +54,11 @@ function RegisterForm() {
     navigate("/vendor/profile-setup");
   }
 
-  // store this once
-  const checks = getPasswordChecks(form.password);
+  const checks = getPasswordChecks(form.password, form);
+  const passwordValid = Object.values(checks).every(Boolean);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-
       {/* First + Last Name */}
       <div className="grid grid-cols-2 gap-5">
         <div>
@@ -85,9 +95,7 @@ function RegisterForm() {
           value={form.email}
           onChange={handleChange}
         />
-        {errors.email && (
-          <p className="text-red-500 text-sm">{errors.email}</p>
-        )}
+        {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
       </div>
 
       {/* Username */}
@@ -118,12 +126,58 @@ function RegisterForm() {
 
         {/* password checklist */}
         {form.password && (
-          <div className="text-sm mt-1 space-y-1">
-            <p className={checks.length ? "text-green-600" : "text-gray-400"}>
-              {checks.length ? "✓" : "•"} At least 6 characters
+          <div className="text-sm mt-2 space-y-1">
+            <p
+              className={checks.minLength ? "text-green-600" : "text-gray-400"}
+            >
+              {checks.minLength ? "✓" : "•"} At least 12 characters
             </p>
-            <p className={checks.number ? "text-green-600" : "text-gray-400"}>
-              {checks.number ? "✓" : "•"} Includes a number
+            <p
+              className={
+                checks.hasLowercase ? "text-green-600" : "text-gray-400"
+              }
+            >
+              {checks.hasLowercase ? "✓" : "•"} Includes a lowercase letter
+            </p>
+            <p
+              className={
+                checks.hasUppercase ? "text-green-600" : "text-gray-400"
+              }
+            >
+              {checks.hasUppercase ? "✓" : "•"} Includes an uppercase letter
+            </p>
+            <p className={checks.hasDigit ? "text-green-600" : "text-gray-400"}>
+              {checks.hasDigit ? "✓" : "•"} Includes a number
+            </p>
+            <p
+              className={checks.hasSpecial ? "text-green-600" : "text-gray-400"}
+            >
+              {checks.hasSpecial ? "✓" : "•"} Includes a special character
+            </p>
+            <p
+              className={
+                checks.noTripleRepeat ? "text-green-600" : "text-gray-400"
+              }
+            >
+              {checks.noTripleRepeat ? "✓" : "•"} No 3 repeated characters in a
+              row
+            </p>
+            <p
+              className={checks.noUsername ? "text-green-600" : "text-gray-400"}
+            >
+              {checks.noUsername ? "✓" : "•"} Does not contain username
+            </p>
+            <p
+              className={
+                checks.noFirstName ? "text-green-600" : "text-gray-400"
+              }
+            >
+              {checks.noFirstName ? "✓" : "•"} Does not contain first name
+            </p>
+            <p
+              className={checks.noLastName ? "text-green-600" : "text-gray-400"}
+            >
+              {checks.noLastName ? "✓" : "•"} Does not contain last name
             </p>
           </div>
         )}
@@ -143,10 +197,9 @@ function RegisterForm() {
       </div>
 
       {/* Button */}
-      <AuthButton type="submit">
+      <AuthButton type="submit" disabled={!passwordValid}>
         Next
       </AuthButton>
-
     </form>
   );
 }

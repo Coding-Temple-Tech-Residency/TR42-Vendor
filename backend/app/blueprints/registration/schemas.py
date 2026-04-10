@@ -2,6 +2,7 @@ from marshmallow import ValidationError, fields, pre_load, validates, validates_
 from app.extensions import ma
 from app.functions import (
     strip_input,
+    validate_address,
     validate_email_format,
     validate_name,
     validate_password,
@@ -23,15 +24,15 @@ class UserRegistrationSchema(ma.Schema):
 
     @validates("first_name")
     def check_first_name(self, value, **kwargs):
-        return validate_name(value, field_name="First name")
+        validate_name(value, field_name="First name")
 
     @validates("last_name")
     def check_last_name(self, value, **kwargs):
-        return validate_name(value, field_name="Last name")
+        validate_name(value, field_name="Last name")
 
     @validates("email")
     def check_email(self, value, **kwargs):
-        return validate_email_format(value)
+        validate_email_format(value)
 
     @validates("username")
     def check_username(self, value, **kwargs):
@@ -40,15 +41,32 @@ class UserRegistrationSchema(ma.Schema):
 
     @validates("password")
     def check_password(self, value, **kwargs):
-        return validate_password(value, min_length=6)
+        validate_password(value)
+
+    @validates_schema
+    def validate_password_content(self, data, **kwargs):
+        password = data.get("password", "")
+        username = data.get("username", "")
+        first_name = data.get("first_name", "")
+        last_name = data.get("last_name", "")
+
+        password_lower = password.lower()
+
+        for label, field_value in {
+            "username": username,
+            "first name": first_name,
+            "last name": last_name,
+        }.items():
+            cleaned = (field_value or "").strip().lower()
+            if len(cleaned) >= 4 and cleaned in password_lower:
+                raise ValidationError(
+                    {"password": [f"Password must not contain the user's {label}."]}
+                )
 
     # @validates_schema
     # def validate_password_match(self, data, **kwargs):
     #     if data.get("password") != data.get("confirm_password"):
     #         raise ValidationError({"confirm_password": ["Passwords do not match."]})
-
-
-user_registration_schema = UserRegistrationSchema()
 
 
 class VendorRegistrationSchema(ma.Schema):
@@ -83,9 +101,8 @@ class VendorRegistrationSchema(ma.Schema):
         return validate_phone_format(value)
 
     @validates("address")
-    def validate_address(self, value, **kwargs):
-        if not value or not value.strip():
-            raise ValidationError("Address is required.")
+    def validate_address_field(self, value, **kwargs):
+        return validate_address(value)
 
     @validates("city")
     def validate_city(self, value, **kwargs):

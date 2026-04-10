@@ -1,27 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthButton from "../components/AuthButton";
 import TextInput from "../components/TextInput";
+import type { User, Vendor } from "../types/types";
 import {
   formatPhoneNumber,
+  toBackendPhoneFormat,
   validateProfileForm,
 } from "../utils/authValidation";
 
 function ProfileSetupForm() {
   const navigate = useNavigate();
 
-  // Get step 1 data from localStorage
-  let userData: any = null;
-
-  try {
-    const saved = localStorage.getItem("registerData");
-    userData = saved ? JSON.parse(saved) : null;
-  } catch (err) {
-    console.log("Error reading localStorage");
-  }
+  const [userData, setUserData] = useState<User | null>(null);
+  const [isLoadingUserData, setIsLoadingUserData] = useState(true);
 
   // Form state
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<Vendor>({
     companyName: "",
     address: "",
     primaryContactName: "",
@@ -36,6 +31,25 @@ function ProfileSetupForm() {
   // Store errors
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("registerData");
+      const parsed = saved ? JSON.parse(saved) : null;
+
+      if (!parsed) {
+        navigate("/vendor/register");
+        return;
+      }
+
+      setUserData(parsed);
+    } catch (err) {
+      console.log("Error reading localStorage");
+      navigate("/vendor/register");
+    } finally {
+      setIsLoadingUserData(false);
+    }
+  }, [navigate]);
+
   // Handle input changes
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -44,11 +58,10 @@ function ProfileSetupForm() {
     const value = e.target.value;
 
     // Format phone number
-    if (name === "companyPhone") {
-      setForm({ ...form, [name]: formatPhoneNumber(value) });
-    } else {
-      setForm({ ...form, [name]: value });
-    }
+    setForm((prev) => ({
+      ...prev,
+      [name]: name === "companyPhone" ? formatPhoneNumber(value) : value,
+    }));
 
     // Clear error for that field
     setErrors((prev) => ({
@@ -70,41 +83,31 @@ function ProfileSetupForm() {
     }
     if (!userData) {
       console.log("Missing registration data. Please start again.");
+      navigate("/vendor/register");
       return;
     }
 
-    console.log("Step 1 data:", userData);
-
-    const cleanedPhone = form.companyPhone.replace(/\D/g, "");
-    const formattedPhone =
-      cleanedPhone.slice(0, 3) +
-      "-" +
-      cleanedPhone.slice(3, 6) +
-      "-" +
-      cleanedPhone.slice(6);
-
     const payload = {
       user: {
-        first_name: userData.firstName,
-        last_name: userData.lastName,
-        email: userData.email,
-        username: userData.username,
+        first_name: userData.firstName.trim(),
+        last_name: userData.lastName.trim(),
+        email: userData.email.trim(),
+        username: userData.username.trim(),
         password: userData.password,
       },
       vendor: {
-        company_name: form.companyName,
-        company_email: form.companyEmail,
-        company_phone: formattedPhone,
-        primary_contact_name: form.primaryContactName,
-        service_type: form.serviceType,
-        address: form.address,
-        city: form.city,
-        state: form.state,
-        zipcode: form.zip,
+        company_name: form.companyName.trim(),
+        company_email: form.companyEmail.trim(),
+        company_phone: toBackendPhoneFormat(form.companyPhone),
+        primary_contact_name: form.primaryContactName.trim(),
+        service_type: form.serviceType.trim(),
+        address: form.address.trim(),
+        city: form.city.trim(),
+        state: form.state.trim(),
+        zipcode: form.zip.trim(),
       },
     };
-    console.log(payload);
-    console.log("Step 2 data:", form);
+
     try {
       const response = await fetch("/api/registration", {
         method: "POST",
@@ -115,7 +118,6 @@ function ProfileSetupForm() {
       });
 
       const result = await response.json();
-      console.log(result);
 
       if (!response.ok) {
         throw result;
@@ -124,9 +126,13 @@ function ProfileSetupForm() {
       localStorage.removeItem("registerData");
 
       navigate("/vendor/success");
-    } catch {
-      console.log("Request failed");
+    } catch (err) {
+      console.log("error", err);
     }
+  }
+
+  if (isLoadingUserData) {
+    return null;
   }
 
   return (

@@ -6,7 +6,17 @@ import uuid
 PHONE_REGEX = re.compile(r"^\d{3}-\d{3}-\d{4}$")
 ADDRESS_REGEX = re.compile(r"^[A-Za-z0-9\s.'#,-]{5,120}$")
 EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-PASSOWRD_REGEX = re.compile(r"^(?=.*\d).{6,}$")
+PASSWORD_REGEX = re.compile(
+    r"""
+    ^(?=.*[a-z])              # lowercase
+    (?=.*[A-Z])               # uppercase
+    (?=.*\d)                  # digit
+    (?=.*[^A-Za-z0-9])        # special char
+    (?!.*(.)\1{2,})           # no 3 repeating chars
+    .{12,}$                   # min length 12
+    """,
+    re.VERBOSE,
+)
 
 
 def strip_strings(data):
@@ -32,10 +42,14 @@ def validate_address(value, **kwargs):
         raise ValidationError("Enter a valid street address (e.g., '123 Main St')")
 
 
-def validate_password(value, min_length=6, **kwargs):
-    if not PASSOWRD_REGEX.match(value):
+def validate_password(value: str) -> None:
+    if not value:
+        raise ValidationError("Password is required.")
+
+    if not PASSWORD_REGEX.match(value):
         raise ValidationError(
-            f"Password must be longer than {min_length} and include a number."
+            "Password must be at least 12 characters long and include uppercase, lowercase, number, and special character, "
+            "and must not contain more than 2 identical characters in a row."
         )
 
 
