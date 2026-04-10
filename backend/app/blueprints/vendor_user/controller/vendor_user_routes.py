@@ -3,6 +3,7 @@ from marshmallow import ValidationError
 from app.blueprints.vendor_user.services.vendor_user_services import VendorUserService
 from app.blueprints.vendor_user.schemas import vendor_user_schema, vendor_users_schema
 import logging
+from app.blueprints.vendor_user.model import VendorUser
 
 logger = logging.getLogger(__name__)
 
