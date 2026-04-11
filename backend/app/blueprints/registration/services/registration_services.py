@@ -53,6 +53,7 @@ class RegistrationService:
                 user_type=UserType.VENDOR,
                 is_active=True,
                 is_admin=True,
+                
             )
             user.set_password(user_data["password"])
             UserRepository.create(user)
@@ -74,8 +75,10 @@ class RegistrationService:
                 company_email=vendor_data["company_email"],
                 company_phone=vendor_data["company_phone"],
                 primary_contact_name=vendor_data["primary_contact_name"],
-                # service_type=vendor_data["service_type"],
+                service_type=vendor_data["service_type"],
                 address_id=address.address_id,
+                created_by_user_id=user.user_id,
+                updated_by_user_id=user.user_id,
             )
             VendorRepository.create(vendor)
             db.session.flush()

@@ -1,8 +1,9 @@
 from app.extensions import db
 from sqlalchemy import func
+from app.base import BaseModel
 
 
-class Ticket(db.Model):
+class Ticket(BaseModel):
     __tablename__ = 'ticket'
 
     ticket_id = db.Column(db.String, primary_key=True)

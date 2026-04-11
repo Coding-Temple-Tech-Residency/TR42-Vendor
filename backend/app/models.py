@@ -2,4 +2,24 @@ from app.blueprints.user.model import User
 from app.blueprints.vendor.model import Vendor
 from app.blueprints.vendor_user.model import VendorUser
 from app.blueprints.address.model import Address
+from app.blueprints.contractors.model import Contractor
 from app.blueprints.contractor_performance.model import ContractorPerformance
+from app.blueprints.ticket.model import Ticket
+from app.blueprints.well.model import Well
+from app.blueprints.work_orders.model import WorkOrder
+from app.blueprints.well.model import Well
+from app.blueprints.background_check.model import BackgroundCheck
+from app.blueprints.drug_test.model import DrugTest
+from app.blueprints.licenses.model import License
+#from app.blueprints.registration.model import Registration
+from app.blueprints.certifications.model import Certification
+#from app.blueprints.communication.model import Communication
+#from app.blueprints.finance.model import LineItem
+#from app.blueprints.fraud_alerts.model import FraudAlert
+from app.blueprints.insurance.model import Insurance
+from app.blueprints.invoice.model import Invoice
+#from app.blueprints.msa.model import MSA
+#from app.blueprints.role.model import Role
+#from app.blueprints.services.model import Service
+from app.blueprints.system.model import Session, Notification
+#from app.blueprints.ticket_extras.model import TicketPhoto

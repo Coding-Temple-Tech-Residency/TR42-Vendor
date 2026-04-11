@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import TextInput from "../components/TextInput";
-import PasswordInput from "../components/PasswordInput";
 import AuthButton from "../components/AuthButton";
 import AuthFooterLink from "../components/AuthFooterLink";
+import PasswordInput from "../components/PasswordInput";
+import TextInput from "../components/TextInput";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -40,22 +40,27 @@ const LoginForm = () => {
       setLoading(true);
       setError(null);
 
-      // TODO: Replace with real API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await fetch("/api/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-      if (
-        formData.email !== "test@example.com" ||
-        formData.password !== "123456"
-      ) {
-        throw new Error("Invalid email or password.");
+      const result = await response.json();
+      console.log(result);
+
+      if (!response.ok) {
+        throw result;
       }
 
-      console.log("Login successful!", formData);
+      console.log("Login successful!");
 
-      // Redirect to dashboard
       navigate("/vendor/dashboard");
     } catch (err: any) {
-      setError(err.message || "Login failed. Please try again.");
+      console.log("Login error:", err);
+      setError(err.message);
     } finally {
       setLoading(false);
     }

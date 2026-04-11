@@ -1,61 +1,119 @@
-from app.extensions import db
-from sqlalchemy import func
-from sqlalchemy.dialects.postgresql import JSON
-from sqlalchemy import Interval, Numeric
+from datetime import datetime
+import enum
+from typing import TYPE_CHECKING
+from sqlalchemy import DateTime, Enum, ForeignKey, Interval, Numeric, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from app.base import BaseModel
 
-class WorkOrder(db.Model):
-    __tablename__ = 'work_orders'
+if TYPE_CHECKING:
+    from app.blueprints.vendor.model import Vendor
+    from app.blueprints.well.model import Well
 
-    work_order_id = db.Column(db.String, primary_key=True)
+class OrderStatus(enum.Enum):
+    PENDING = "pending"
+    ASSIGNED = "assigned"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
 
-    assigned_vendor = db.Column(
-        db.String,  # ⚠️ FIXED (was integer)
-        db.ForeignKey('vendor.vendor_id')
+
+class PriorityStatus(enum.Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    URGENT = "urgent"
+
+
+class WorkOrder(BaseModel):
+    __tablename__ = "work_orders"
+
+    work_order_id: Mapped[str] = mapped_column(
+        String(36),
+        primary_key=True,
     )
 
-    assigned_at = db.Column(db.DateTime)
-    completed_at = db.Column(db.DateTime)
-
-    description = db.Column(db.String(500))
-
-    due_date = db.Column(db.DateTime)
-
-    current_status = db.Column(db.String, nullable=False)
-    priority = db.Column(db.String, nullable=False)
-
-    comments = db.Column(db.String(500))
-    location = db.Column(db.String(60))
-
-    estimated_cost = db.Column(Numeric)
-    estimated_duration = db.Column(Interval)
-
-    well_id = db.Column(
-        db.String,
-        db.ForeignKey('well.well_id')
+    assigned_vendor: Mapped[str | None] = mapped_column(
+        ForeignKey("vendor.vendor_id"),
+        nullable=True,
     )
 
-    # audit
-    created_at = db.Column(db.DateTime, server_default=func.now())
-    updated_at = db.Column(db.DateTime, onupdate=func.now())
-
-    created_by = db.Column(
-        db.String,
-        db.ForeignKey('user.user_id'),
-        nullable=False
+    assigned_at: Mapped[datetime | None] = mapped_column(
+        DateTime,
+        nullable=True,
+    )
+    completed_at: Mapped[datetime | None] = mapped_column(
+        DateTime,
+        nullable=True,
     )
 
-    updated_by = db.Column(
-        db.String,
-        db.ForeignKey('user.user_id')
+    description: Mapped[str | None] = mapped_column(
+        String(500),
+        nullable=True,
+    )
+
+    due_date: Mapped[datetime | None] = mapped_column(
+        DateTime,
+        nullable=True,
+    )
+
+    estimated_start_date: Mapped[datetime | None] = mapped_column(
+        DateTime,
+        nullable=True,
+    )
+
+    estimated_end_date: Mapped[datetime | None] = mapped_column(
+        DateTime,
+        nullable=True,
+    )
+
+    current_status: Mapped[OrderStatus] = mapped_column(
+        Enum(OrderStatus, name="order_status"),
+        nullable=False,
+    )
+    priority: Mapped[PriorityStatus] = mapped_column(
+        Enum(PriorityStatus, name="priority_status"),
+        nullable=False,
+    )
+
+    comments: Mapped[str | None] = mapped_column(
+        String(500),
+        nullable=True,
+    )
+    location: Mapped[str | None] = mapped_column(
+        String(60),
+        nullable=True,
+    )
+
+    estimated_cost: Mapped[Numeric | None] = mapped_column(
+        Numeric,
+        nullable=True,
+    )
+    estimated_duration: Mapped[Interval | None] = mapped_column(
+        Interval,
+        nullable=True,
+    )
+
+    well_id: Mapped[str | None] = mapped_column(
+        ForeignKey("well.well_id"),
+        nullable=True,
+    )
+
+    # Override BaseModel's nullable updated_by
+    updated_by: Mapped[str] = mapped_column(
+        ForeignKey("user.user_id"),
+        nullable=False,
     )
 
     # ----------------------
     # 🔗 Relationships
     # ----------------------
 
-    vendor = db.relationship('Vendor', backref='work_orders')
+    vendor: Mapped["Vendor"] = relationship(
+        "Vendor",
+        foreign_keys=[assigned_vendor],
+    )
 
-    well = db.relationship('Well', backref='work_orders')
-
-    creator = db.relationship('User', foreign_keys=[created_by])
-    updater = db.relationship('User', foreign_keys=[updated_by])
+    well: Mapped["Well"] = relationship(
+        "Well",
+        foreign_keys=[well_id],
+    )

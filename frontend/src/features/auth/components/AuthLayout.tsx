@@ -7,7 +7,7 @@ function AuthLayout({
 }) {
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center px-4"
+      className="min-h-screen flex flex-col items-center justify-center px-4 py-10"
       style={{
         background:
           "linear-gradient(to top, #243041 0%, #465366 40%, #e5e8ed 100%)",

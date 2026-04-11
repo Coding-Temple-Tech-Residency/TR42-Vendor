@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import TextInput from "../components/TextInput";
 import AuthButton from "../components/AuthButton";
-import { formatPhoneNumber, validateProfileForm } from "../utils/authValidation";
+import TextInput from "../components/TextInput";
+import {
+  formatPhoneNumber,
+  validateProfileForm,
+} from "../utils/authValidation";
 
 function ProfileSetupForm() {
   const navigate = useNavigate();
@@ -21,6 +24,7 @@ function ProfileSetupForm() {
   const [form, setForm] = useState({
     companyName: "",
     address: "",
+    primaryContactName: "",
     city: "",
     state: "",
     zip: "",
@@ -34,7 +38,7 @@ function ProfileSetupForm() {
 
   // Handle input changes
   function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) {
     const name = e.target.name;
     const value = e.target.value;
@@ -54,7 +58,7 @@ function ProfileSetupForm() {
   }
 
   // Submit form
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     const newErrors = validateProfileForm(form);
@@ -64,18 +68,69 @@ function ProfileSetupForm() {
       setErrors(newErrors);
       return;
     }
+    if (!userData) {
+      console.log("Missing registration data. Please start again.");
+      return;
+    }
 
     console.log("Step 1 data:", userData);
+
+    const cleanedPhone = form.companyPhone.replace(/\D/g, "");
+    const formattedPhone =
+      cleanedPhone.slice(0, 3) +
+      "-" +
+      cleanedPhone.slice(3, 6) +
+      "-" +
+      cleanedPhone.slice(6);
+
+    const payload = {
+      user: {
+        first_name: userData.firstName,
+        last_name: userData.lastName,
+        email: userData.email,
+        username: userData.username,
+        password: userData.password,
+      },
+      vendor: {
+        company_name: form.companyName,
+        company_email: form.companyEmail,
+        company_phone: formattedPhone,
+        primary_contact_name: form.primaryContactName,
+        service_type: form.serviceType,
+        address: form.address,
+        city: form.city,
+        state: form.state,
+        zipcode: form.zip,
+      },
+    };
+    console.log(payload);
     console.log("Step 2 data:", form);
+    try {
+      const response = await fetch("/api/registration", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
-    localStorage.removeItem("registerData");
+      const result = await response.json();
+      console.log(result);
 
-    navigate("/vendor/success");
+      if (!response.ok) {
+        throw result;
+      }
+
+      localStorage.removeItem("registerData");
+
+      navigate("/vendor/success");
+    } catch {
+      console.log("Request failed");
+    }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-
       {/* Company Name */}
       <div>
         <TextInput
@@ -86,6 +141,18 @@ function ProfileSetupForm() {
         />
         {errors.companyName && (
           <p className="text-red-500 text-sm">{errors.companyName}</p>
+        )}
+      </div>
+      {/* Primary Contact Name */}
+      <div>
+        <TextInput
+          label="Primary Contact Name"
+          name="primaryContactName"
+          value={form.primaryContactName}
+          onChange={handleChange}
+        />
+        {errors.primaryContactName && (
+          <p className="text-sm text-red-500">{errors.primaryContactName}</p>
         )}
       </div>
 
@@ -111,9 +178,7 @@ function ProfileSetupForm() {
             value={form.city}
             onChange={handleChange}
           />
-          {errors.city && (
-            <p className="text-red-500 text-sm">{errors.city}</p>
-          )}
+          {errors.city && <p className="text-red-500 text-sm">{errors.city}</p>}
         </div>
 
         <div>
@@ -135,9 +200,7 @@ function ProfileSetupForm() {
             value={form.zip}
             onChange={handleChange}
           />
-          {errors.zip && (
-            <p className="text-red-500 text-sm">{errors.zip}</p>
-          )}
+          {errors.zip && <p className="text-red-500 text-sm">{errors.zip}</p>}
         </div>
       </div>
 
@@ -192,10 +255,7 @@ function ProfileSetupForm() {
       </div>
 
       {/* Button */}
-      <AuthButton type="submit">
-        Create Vendor Account
-      </AuthButton>
-
+      <AuthButton type="submit">Create Vendor Account</AuthButton>
     </form>
   );
 }

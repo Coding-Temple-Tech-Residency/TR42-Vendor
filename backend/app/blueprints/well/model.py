@@ -1,7 +1,8 @@
 from app.extensions import db
+from app.base import BaseModel
 from sqlalchemy import func
 
-class Well(db.Model):
+class Well(BaseModel):
     __tablename__ = 'well'
 
     well_id = db.Column(db.String, primary_key=True)

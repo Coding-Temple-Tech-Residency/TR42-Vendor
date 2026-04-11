@@ -1,15 +1,19 @@
 from flask import Flask
 from sqlalchemy import text
 import time
+from flask_cors import CORS
 
 from app.extensions import db, ma
 from app.config import Config
 from app.logging_config import setup_logging
 
 
-
 def create_app(config_object=None):
     app = Flask(__name__)
+    CORS(
+        app,
+        resources={r"/*": {"origins": "http://localhost:5173"}},
+    )
 
     if config_object:
         app.config.from_object(config_object)
@@ -21,35 +25,10 @@ def create_app(config_object=None):
     db.init_app(app)
     ma.init_app(app)
 
-    from app.blueprints.user.model import User
-    from app.blueprints.address.model import Address
-    from app.blueprints.vendor.model import Vendor
-    from app.blueprints.vendor_user.model import VendorUser
-    from app.blueprints.background_check.model import BackgroundCheck
-    from app.blueprints.drug_test.model import DrugTest
-    from app.blueprints.contractors.model import Contractor
-    from app.blueprints.contractor_performance.model import ContractorPerformance
-    from app.blueprints.ticket.model import Ticket
-    from app.blueprints.well.model import Well
-    from app.blueprints.work_orders.model import WorkOrder
-    from app.blueprints.licenses.model import License
-    #from app.blueprints.registration.model import Registration
-    from app.blueprints.certifications.model import Certification
-    #from app.blueprints.communication.model import Communication
-    #from app.blueprints.finance.model import LineItem
-    #from app.blueprints.fraud_alerts.model import FraudAlert
-    from app.blueprints.insurance.model import Insurance
-    from app.blueprints.invoice.model import Invoice
-    #from app.blueprints.msa.model import MSA
-    #from app.blueprints.role.model import Role
-    #from app.blueprints.services.model import Service
-    from app.blueprints.system.model import Session, Notification
-    #from app.blueprints.ticket_extras.model import TicketPhoto
-    
-    
-    
-    
-    
+
+    # Import all models BEFORE blueprints to ensure they're registered with SQLAlchemy
+    from app import models
+
 
     with app.app_context():
         if not app.config.get("TESTING"):
@@ -67,15 +46,17 @@ def create_app(config_object=None):
 
         db.create_all()
         
+
+        # Now import blueprints
+
     from app.blueprints.user.controller.user_routes import user_bp
     from app.blueprints.address.controller.address_routes import address_bp
     from app.blueprints.vendor.controller.vendor_routes import vendor_bp
-    #from app.blueprints.registration.controller.registration_routes import registration_bp
+    from app.blueprints.registration.controller.registration_routes import registration_bp
     from app.blueprints.vendor_user.controller.vendor_user_routes import vendor_user_bp
     from app.blueprints.contractor_performance.controller.contractor_performance_routes import contractor_performance_bp
     from app.blueprints.contractors.controller.contractors_routes import contractor_bp
     from app.blueprints.ticket.controller.ticket_routes import ticket_bp
-    from app.blueprints.work_orders.controller.routes import work_order_bp
     from app.blueprints.background_check.controller.background_check_routes import background_check_bp
     from app.blueprints.drug_test.controller.drug_test_routes import drug_test_bp
     from app.blueprints.licenses.controller.routes import license_bp
@@ -91,20 +72,19 @@ def create_app(config_object=None):
     from app.blueprints.system.controller.system_routes import session_bp, notification_bp
     #from app.blueprints.ticket_extras.controller.routes import ticket_photo
     from app.blueprints.well.controller.routes import well_bp
-    
-    
+    from app.blueprints.work_orders.controller.work_order_routes import work_order_bp
 
 
 
     app.register_blueprint(user_bp, url_prefix="/api/users")
     app.register_blueprint(address_bp, url_prefix="/api/addresses")
     app.register_blueprint(vendor_bp, url_prefix="/api/vendors")
-    #app.register_blueprint(registration_bp, url_prefix="/api/registration")
+    app.register_blueprint(registration_bp, url_prefix="/api/registration")
     app.register_blueprint(vendor_user_bp, url_prefix="/api/vendor_users")
+    app.register_blueprint(work_order_bp, url_prefix="/api/work_orders")
     app.register_blueprint(contractor_performance_bp, url_prefix="/api/contractor_performance")
     app.register_blueprint(contractor_bp, url_prefix="/api/contractors")
     app.register_blueprint(ticket_bp, url_prefix="/api/tickets")
-    app.register_blueprint(work_order_bp, url_prefix="/api/work_orders")
     app.register_blueprint(background_check_bp, url_prefix="/api/background_check")
     app.register_blueprint(drug_test_bp, url_prefix="/api/drug_tests")
     app.register_blueprint(license_bp, url_prefix="/api/licenses")
@@ -121,4 +101,6 @@ def create_app(config_object=None):
     app.register_blueprint(notification_bp, url_prefix="/api/notifications")
     #app.register_blueprint(ticket_photo_bp, url_prefix="/api/ticket_photos")
     app.register_blueprint(well_bp, url_prefix="/api/wells")
+    
+    
     return app
