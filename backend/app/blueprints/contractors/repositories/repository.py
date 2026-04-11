@@ -1,4 +1,5 @@
-from models import Contractor, db
+from app.blueprints.contractors.model import Contractor
+from app.extensions import db
 
 class ContractorRepository:
 

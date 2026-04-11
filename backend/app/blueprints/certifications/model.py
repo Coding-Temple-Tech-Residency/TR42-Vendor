@@ -1,8 +1,8 @@
 from app.extensions import db
 from sqlalchemy import func
-from app.models.base import BaseModel
 
-class Certification(BaseModel):
+
+class Certification(db.Model):
     __tablename__ = 'certifications'
 
     certification_id = db.Column(db.String, primary_key=True)

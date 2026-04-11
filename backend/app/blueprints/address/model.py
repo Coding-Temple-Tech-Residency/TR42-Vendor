@@ -26,4 +26,4 @@ class Address(db.Model):
     updated_by_user_id: Mapped[str] = mapped_column(String)
 
     # relationships
-    vendor: Mapped["Vendor"] = relationship(back_populates="address")
+    #vendor: Mapped["Vendor"] = relationship(back_populates="address")

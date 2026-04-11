@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from .service import WorkOrderService
-from .schemas import WorkOrderSchema
+from app.blueprints.work_orders.services.service import WorkOrderService
+from app.blueprints.work_orders.schemas import WorkOrderSchema
 import logging
 
 logging.basicConfig(level=logging.DEBUG)

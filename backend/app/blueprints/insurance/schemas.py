@@ -1,12 +1,13 @@
 from app.extensions import ma
-from .model import VendorUser
+from app.blueprints.insurance.model import Insurance
 
 
-class VendorUserSchema(ma.SQLAlchemyAutoSchema):
+
+class InsuranceSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
-        model = VendorUser
+        model = Insurance
         load_instance = True
 
 
-vendor_user_schema = VendorUserSchema()
-vendor_users_schema = VendorUserSchema(many=True)
+insurance_schema = InsuranceSchema()
+insurances_schema = InsuranceSchema(many=True)

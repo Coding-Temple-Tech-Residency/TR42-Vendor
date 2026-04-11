@@ -1,5 +1,5 @@
 from app.extensions import ma
-from app.models.work_order import WorkOrder
+from app.blueprints.work_orders.model import WorkOrder
 
 
 class WorkOrderSchema(ma.SQLAlchemyAutoSchema):

@@ -11,6 +11,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 import enum
 
+from app.blueprints.vendor_user.model import VendorUser
+
 
 class VendorStatus(enum.Enum):
     ACTIVE = "active"
@@ -63,8 +65,8 @@ class Vendor(db.Model):
 
     # relationships
 
-    address: Mapped["Address"] = relationship(back_populates="vendor")  # type: ignore
+    #address: Mapped["Address"] = relationship(back_populates="vendor")  # type: ignore
 
-    vendor_links: Mapped[list["VendorUser"]] = relationship(
-        back_populates="vendor", cascade="all, delete-orphan"
-    )
+    #vendor_links: Mapped[list["VendorUser"]] = relationship(
+    #    back_populates="vendor", cascade="all, delete-orphan"
+    #)

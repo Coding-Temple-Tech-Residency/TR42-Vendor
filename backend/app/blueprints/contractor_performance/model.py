@@ -4,17 +4,13 @@ from datetime import datetime
 class ContractorPerformance(db.Model): 
     __tablename__ = 'contractor_performance'
 
-    contractor_performance_id = db.Column(db.String, primary_key=True)
-    performance_value = db.Column(db.Integer) #1.0 to 5.0
+    rating_id = db.Column(db.String, primary_key=True)
+    rating = db.Column(db.Integer) #1.0 to 5.0
     comments = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    tickets_open = db.Column(db.Integer)
-    on_time_rate = db.Column(db.Float) #percentage of tickets completed on time
-    
+    ticket_id = db.Column(db.String, db.ForeignKey('ticket.ticket_id'))
     contractor_id = db.Column(db.String, db.ForeignKey('contractors.contractor_id'))
-    contractor = db.relationship('Contractor', back_populates='contractor_performances')
-    tickets_completed = db.Column(db.Integer)
-    created_by = db.Column(db.String, db.ForeignKey('users.user_id')) #not sure well need this... but user_id of the person who created the rating
-    updatetd_by = db.Column(db.String, db.ForeignKey('users.user_id')) #not sure well need this but..user_id of the person who last updated the rating
+    created_by_user = db.Column(db.String, db.ForeignKey('user.user_id')) 
+    updated_by_user = db.Column(db.String, db.ForeignKey('user.user_id')) 
 

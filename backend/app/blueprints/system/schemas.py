@@ -1,6 +1,5 @@
 from app.extensions import ma
-from app.models.system import Session, Notification
-
+from app.blueprints.system.model import Session, Notification
 
 class SessionSchema(ma.SQLAlchemyAutoSchema):
     class Meta:

@@ -1,10 +1,12 @@
 from app.extensions import db
 from sqlalchemy.dialects.postgresql import JSON
-from sqlalchemy import Numeric
-from app.base import BaseModel
+from sqlalchemy import Numeric, ForeignKey
+from datetime import datetime
 
 
-class Contractor(BaseModel):
+
+
+class Contractor(db.Model):
     __tablename__ = 'contractors'
 
     contractor_id = db.Column(db.String, primary_key=True)
@@ -73,9 +75,9 @@ class Contractor(BaseModel):
         db.ForeignKey('drug_test.drug_test_id')
     )
 
-    drivers_license_id = db.Column(
+    license_id = db.Column(
         db.String,
-        db.ForeignKey('drivers_license.license_id')
+        db.ForeignKey('licenses.license_id')
     )
 
     preferred_job_types = db.Column(JSON)
@@ -95,7 +97,7 @@ class Contractor(BaseModel):
     address = db.relationship('Address', backref='contractors')
 
     background_check = db.relationship(
-        'BackgroundCheck',
+        'BackgroundCheck', foreign_keys='BackgroundCheck.contractor_id',
         backref='contractor',
         uselist=False
     )
@@ -105,3 +107,4 @@ class Contractor(BaseModel):
         backref='contractor',
         uselist=False
     )
+    

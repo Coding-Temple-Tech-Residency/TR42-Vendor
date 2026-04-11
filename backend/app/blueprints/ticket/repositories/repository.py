@@ -1,4 +1,6 @@
-from models import Ticket, db
+from app.blueprints.ticket.model import Ticket
+from app.extensions import db
+
 
 class TicketRepository:
 

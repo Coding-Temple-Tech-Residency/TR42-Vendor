@@ -1,7 +1,7 @@
 from app.extensions import db
 from app.base import BaseModel
 
-class Invoice(BaseModel):
+class Invoice(db.Model):
     __tablename__ = 'invoice'
 
     invoice_id = db.Column(db.String, primary_key=True)

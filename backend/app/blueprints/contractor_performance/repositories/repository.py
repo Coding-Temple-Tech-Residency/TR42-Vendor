@@ -1,4 +1,5 @@
-from ..model import ContractorPerformance, db
+from app.blueprints.contractor_performance.model import ContractorPerformance
+from app.extensions import db
 
 class ContractorPerformanceRepository:
     

@@ -1,5 +1,5 @@
-from .repository import TicketRepository
-from models import Ticket
+from app.blueprints.ticket.repositories.repository import TicketRepository
+from app.blueprints.ticket.model import Ticket
 
 class TicketService:
 

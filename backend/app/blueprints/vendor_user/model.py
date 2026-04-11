@@ -6,6 +6,11 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.extensions import db
 from app.functions import generate_uuid, utc_now
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.blueprints.user.model import User
+    from app.blueprints.vendor.model import Vendor
 
 
 class VendorUserRole(enum.Enum):
@@ -74,7 +79,7 @@ class VendorUser(db.Model):
         foreign_keys=[updated_by_user_id],
     )
 
-    vendor: Mapped["Vendor"] = relationship(
-        "Vendor",
-        back_populates="vendor_links",
-    )
+    #vendor: Mapped["Vendor"] = relationship(
+    #    "Vendor",
+    #    back_populates="vendor_links",
+    #)

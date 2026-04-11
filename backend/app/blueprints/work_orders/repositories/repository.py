@@ -1,4 +1,5 @@
-from models import WorkOrder, db
+from app.blueprints.work_orders.model import WorkOrder
+from app.extensions import db
 
 class WorkOrderRepository:
     

@@ -1,9 +1,9 @@
 from app.extensions import db
 from sqlalchemy.sql import func
-from app.models.base import BaseModel
 
 
-class License(BaseModel):
+
+class License(db.Model):
     __tablename__ = 'licenses'
 
     license_id = db.Column(db.String, primary_key=True)
@@ -50,7 +50,7 @@ class License(BaseModel):
     # 🔗 Relationships
     # ----------------------
 
-    contractor = db.relationship('Contractor', backref='licenses')
+    contractor = db.relationship('Contractor', foreign_keys=[contractor_id], backref='licenses')
 
     verifier = db.relationship('Vendor', backref='verified_licenses')
 

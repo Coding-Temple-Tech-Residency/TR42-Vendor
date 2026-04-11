@@ -1,7 +1,7 @@
 from app.extensions import db
-from app.models.base import BaseModel
 
-class Insurance(BaseModel):
+
+class Insurance(db.Model):
 
     __tablename__ = 'insurance'
 

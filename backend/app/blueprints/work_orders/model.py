@@ -1,9 +1,9 @@
 from app.extensions import db
 from sqlalchemy import func
-from sqlalchemy.dialects.postgresql import JSON, Interval, Numeric
-from app.models.base import BaseModel
+from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy import Interval, Numeric
 
-class WorkOrder(BaseModel):
+class WorkOrder(db.Model):
     __tablename__ = 'work_orders'
 
     work_order_id = db.Column(db.String, primary_key=True)

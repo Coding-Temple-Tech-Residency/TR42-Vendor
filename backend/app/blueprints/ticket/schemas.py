@@ -1,5 +1,5 @@
 from app.extensions import ma
-from app.models.ticket import Ticket
+from app.blueprints.ticket.model import Ticket
 
 
 class TicketSchema(ma.SQLAlchemyAutoSchema):
