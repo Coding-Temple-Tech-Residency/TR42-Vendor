@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, desc
 from app.extensions import db
 from app.blueprints.invoices.model import Invoice, LineItem
 from logging import getLogger
@@ -24,3 +24,20 @@ class InvoiceRepository:
     def delete(invoice: Invoice):
         db.session.delete(invoice)
         db.session.commit()
+
+    @staticmethod
+    def get_all_paginated(page: int = 1, per_page: int = 10) -> dict:
+        query = Invoice.query.order_by(desc(Invoice.created_at))
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+
+        return {
+            'invoices': pagination.items,
+            'total': pagination.total,
+            'pages': pagination.pages,
+            'current_page': pagination.page,
+            'per_page': pagination.per_page,
+            'has_next': pagination.has_next,
+            'has_prev': pagination.has_prev,
+            'next_page': pagination.next_num if pagination.has_next else None,
+            'prev_page': pagination.prev_num if pagination.has_prev else None
+        }
