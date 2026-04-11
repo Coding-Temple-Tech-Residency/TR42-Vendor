@@ -10,6 +10,7 @@ import os
 from faker import Faker
 from datetime import datetime, timedelta
 import json
+from werkzeug.security import generate_password_hash
 
 Faker.seed(42)
 fake = Faker()
@@ -108,6 +109,8 @@ SERVICE_TYPES = [
     "Well Intervention",
 ]
 
+DEFAULT_PASSWORD = "password"
+
 def generate_users(n=20, addresses=None):
     users = []
     addresses = addresses or []
@@ -120,7 +123,7 @@ def generate_users(n=20, addresses=None):
             {
                 "user_id": user_id,
                 "username": fake.unique.user_name(),
-                "password": fake.password(length=12),
+                "password": generate_password_hash(DEFAULT_PASSWORD),
                 "email": fake.unique.email(),
                 "first_name": fake.first_name(),
                 "last_name": fake.last_name(),

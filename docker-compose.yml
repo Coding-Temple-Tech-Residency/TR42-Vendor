@@ -43,6 +43,32 @@ services:
     depends_on:
       - db
 
+  seed: 
+    build: ./sample-data
+    depends_on:
+      - db
+    volumes:
+      - ./sample-data:/app
+    working_dir: /app
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: vendor_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    command: >
+      sh -c "
+      until pg_isready -h db -p 5432 -U postgres; do
+        echo 'Waiting for Postgres...';
+        sleep 2;
+      done &&
+      psql -h db -U postgres -d vendor_db -f schema.sql &&
+      python main.py &&
+      python csv_to_postgres.py
+      "
+    profiles:
+      - seed
+
 volumes:
   frontend_node_modules:
   postgres_data:
