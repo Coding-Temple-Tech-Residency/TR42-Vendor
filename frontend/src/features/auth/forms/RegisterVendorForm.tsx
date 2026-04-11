@@ -89,22 +89,22 @@ function RegisterVendorForm() {
 
     const payload = {
       user: {
-        first_name: userData.firstName.trim(),
-        last_name: userData.lastName.trim(),
-        email: userData.email.trim(),
-        username: userData.username.trim(),
+        first_name: userData.firstName,
+        last_name: userData.lastName,
+        email: userData.email,
+        username: userData.username,
         password: userData.password,
       },
       vendor: {
-        company_name: form.companyName.trim(),
-        company_email: form.companyEmail.trim(),
+        company_name: form.companyName,
+        company_email: form.companyEmail,
         company_phone: toBackendPhoneFormat(form.companyPhone),
-        primary_contact_name: form.primaryContactName.trim(),
-        service_type: form.serviceType.trim(),
-        address: form.address.trim(),
-        city: form.city.trim(),
-        state: form.state.trim(),
-        zipcode: form.zip.trim(),
+        primary_contact_name: form.primaryContactName,
+        service_type: form.serviceType,
+        address: form.address,
+        city: form.city,
+        state: form.state,
+        zipcode: form.zip,
       },
     };
 
