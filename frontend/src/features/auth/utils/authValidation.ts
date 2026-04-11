@@ -2,7 +2,10 @@
 function getPasswordChecks(password: string) {
   return {
     length: password.length >= 6, // at least 6 characters
+    uppercase: /[A-Z]/.test(password), // must include uppercase letter
+    lowercase: /[a-z]/.test(password), // must include lowercase letter
     number: /\d/.test(password), // must include a number
+    special: /[^A-Za-z0-9]/.test(password), // must include special character
   };
 }
 
@@ -31,10 +34,18 @@ function validateRegisterForm(form: any) {
   if (!form.password) {
     errors.password = "Password is required";
   } else {
-    if (form.password.length < 6) {
-      errors.password = "Must be at least 6 characters";
-    } else if (!/\d/.test(form.password)) {
+    const checks = getPasswordChecks(form.password);
+
+    if (!checks.length) {
+      errors.password = "Must be at least 8 characters";
+    } else if (!checks.uppercase) {
+      errors.password = "Must include an uppercase letter";
+    } else if (!checks.lowercase) {
+      errors.password = "Must include a lowercase letter";
+    } else if (!checks.number) {
       errors.password = "Must include a number";
+    } else if (!checks.special) {
+      errors.password = "Must include a special character";
     }
   }
 
