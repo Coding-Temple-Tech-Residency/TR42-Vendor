@@ -9,7 +9,7 @@ import {
   validateProfileForm,
 } from "../utils/authValidation";
 
-function ProfileSetupForm() {
+function RegisterVendorForm() {
   const navigate = useNavigate();
 
   const [userData, setUserData] = useState<User | null>(null);
@@ -266,4 +266,4 @@ function ProfileSetupForm() {
   );
 }
 
-export default ProfileSetupForm;
+export default RegisterVendorForm;

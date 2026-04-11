@@ -10,7 +10,7 @@ import {
   validateRegisterForm,
 } from "../utils/authValidation";
 
-function RegisterForm() {
+function RegisterUserForm() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState<User>({
@@ -204,4 +204,4 @@ function RegisterForm() {
   );
 }
 
-export default RegisterForm;
+export default RegisterUserForm;
