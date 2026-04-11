@@ -92,7 +92,7 @@ function getPasswordChecks(password: string, user: User) {
 }
 
 // Validate register form
-function validateRegisterForm(form: User) {
+function validateUserRegisterForm(form: User) {
   const errors: any = {};
 
   // Required fields
@@ -162,7 +162,7 @@ function toBackendPhoneFormat(value: string) {
 }
 
 // Validate Profile Setup form
-function validateProfileForm(form: Vendor) {
+function validateVenderRegisterForm(form: Vendor) {
   const errors: any = {};
 
   const companyNameError = validateName(form.companyName, "Company name");
@@ -222,6 +222,6 @@ export {
   formatPhoneNumber,
   getPasswordChecks,
   toBackendPhoneFormat,
-  validateProfileForm,
-  validateRegisterForm,
+  validateVenderRegisterForm,
+  validateUserRegisterForm,
 };

@@ -6,7 +6,7 @@ import type { User, Vendor } from "../types/types";
 import {
   formatPhoneNumber,
   toBackendPhoneFormat,
-  validateProfileForm,
+  validateVenderRegisterForm,
 } from "../utils/authValidation";
 
 function RegisterVendorForm() {
@@ -74,7 +74,7 @@ function RegisterVendorForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const newErrors = validateProfileForm(form);
+    const newErrors = validateVenderRegisterForm(form);
 
     // Stop if there are errors
     if (Object.keys(newErrors).length > 0) {

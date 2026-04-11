@@ -7,7 +7,7 @@ import TextInput from "../components/TextInput";
 import type { User } from "../types/types";
 import {
   getPasswordChecks,
-  validateRegisterForm,
+  validateUserRegisterForm,
 } from "../utils/authValidation";
 
 function RegisterUserForm() {
@@ -41,7 +41,7 @@ function RegisterUserForm() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const validationErrors = validateRegisterForm(form);
+    const validationErrors = validateUserRegisterForm(form);
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
