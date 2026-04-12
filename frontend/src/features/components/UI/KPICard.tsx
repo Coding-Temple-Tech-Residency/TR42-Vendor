@@ -48,6 +48,16 @@ const badgeStyles: Record<ColorVariant, string> = {
   yellow: "bg-yellow-100 text-yellow-700",
 };
 
+const borderAccentStyles: Record<ColorVariant, string> = {
+  red: "border-l-8 border-red-500",
+  orange: "border-l-8 border-orange-500",
+  gray: "border-l-8 border-gray-400",
+  blue: "border-l-8 border-blue-500",
+  green: "border-l-8 border-green-500",
+  purple: "border-l-8 border-purple-500",
+  yellow: "border-l-8 border-yellow-500",
+};
+
 const KpiCard: React.FC<KpiCardProps> = ({
   title,
   value,
@@ -57,7 +67,7 @@ const KpiCard: React.FC<KpiCardProps> = ({
 }) => {
   return (
     <div
-      className={`p-4 rounded-2xl shadow-sm border ${colorStyles[colorVariant]}`}
+      className={`p-4 rounded-2xl shadow-sm border ${colorStyles[colorVariant]} ${borderAccentStyles[colorVariant]}`}
     >
       {/* Title */}
       <h3 className="text-sm font-medium opacity-80">{title}</h3>
