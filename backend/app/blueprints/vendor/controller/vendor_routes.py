@@ -15,7 +15,7 @@ vendor_bp = Blueprint(
 )
 
 
-@vendor_bp.get("/")
+@vendor_bp.get("/vendors")
 def get_all_vendors():
     try:
         logger.debug("Fetching all vendors")

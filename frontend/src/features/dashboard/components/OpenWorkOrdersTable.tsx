@@ -1,4 +1,4 @@
-import DataTable from "../../components/UI/DataTable";
+//import DataTable from "../../components/UI/DataTable";
 
 type Props = {
   data: any[];
