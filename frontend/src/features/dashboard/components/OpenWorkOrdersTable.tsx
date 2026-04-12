@@ -1,4 +1,4 @@
-//import DataTable from "../../components/UI/DataTable";
+import DataTable from "../../components/UI/DataTable";
 
 type Props = {
   data: any[];
@@ -19,7 +19,7 @@ function OpenWorkOrdersTable({ data }: Props) {
       <DataTable
         columns={columns}
         data={data}
-        emptyMessage="No open work orders found"
+        emptyMessage="No active work orders found"
       />
     </div>
   );

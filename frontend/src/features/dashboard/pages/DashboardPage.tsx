@@ -6,6 +6,10 @@ import PageHeader from "../../components/UI/PageHeader";
 import SectionCard from "../../components/UI/SectionCard";
 import EmptyState from "../../components/UI/EmptyState";
 
+import { useEffect, useState } from "react";
+import { getOpenWorkOrders } from "../../auth/services/workOrderService";
+import { getVendorId } from "../../auth/utils/authTokenUtils";
+
 // import {
 //   UserPlusIcon,
 //   TruckIcon,
@@ -19,6 +23,14 @@ import OpenWorkOrdersTable from "../components/OpenWorkOrdersTable";
 import AssignContractorTable from "../components/AssignContractorTable";
 import FraudReviewTable from "../components/FraudReviewTable";
 import LineChart from "../../components/UI/LineChart";
+
+type WorkOrderRow = {
+  id: string;
+  location: string;
+  current_status: string;
+  assignedTo: string;
+  dueDate: string;
+}
 
 function DashboardPage() {
 
@@ -48,10 +60,39 @@ function DashboardPage() {
   const fraudRiskValue = 57;
 
   // EMPTY ARRAYS (backend will replace later)
-  const openWorkOrders: any[] = [];
   const contractors: any[] = [];
   const pendingInvoices: any[] = [];
   const fraudReview: any[] = [];
+
+  const [workOrders, setWorkOrders] = useState<WorkOrderRow[]>([]);
+  const [loadingWorkOrders, setLoadingWorkOrders] = useState(false);
+  const [workOrdersError, setWorkOrdersError] = useState<string | null>(null);
+
+  const openWorkOrders = workOrders;
+
+  useEffect(() => {
+    const fetchWorkOrders = async () => {
+      try{
+        setLoadingWorkOrders(true);
+        setWorkOrdersError(null);
+
+        const vendorId = getVendorId();
+        if (!vendorId) {
+          setWorkOrders([]);
+          setWorkOrdersError("Vendor ID not found. Please log in again.");
+          return;
+        }
+        const rows = await getOpenWorkOrders(1, 10);
+
+        setWorkOrders(rows);
+      } catch (error: any) {
+        setWorkOrdersError(error.message || "Failed to load work orders");
+      } finally {
+        setLoadingWorkOrders(false);
+      }
+    };
+    fetchWorkOrders();
+  }, []);
 
   // KPI COLOR HELPER
   const getKpiColor = (value) => {
@@ -115,10 +156,14 @@ function DashboardPage() {
 
           {/* Open Work Orders Table */}
           <SectionCard title="Open Work Orders">
-            {openWorkOrders.length === 0 ? (
+            {loadingWorkOrders ? (
+              <p className="text-center text-gray-500">Loading work orders...</p>
+            ) : workOrdersError ? (
+              <p className="text-center text-red-500">{workOrdersError}</p>
+            ) : openWorkOrders.length === 0 ? (
               <EmptyState
-                title="No work orders yet"
-                description="Work order details will appear here."
+                title="No open work orders"
+                description="Open work orders will appear here."
               />
             ) : (
               <OpenWorkOrdersTable data={openWorkOrders} />
