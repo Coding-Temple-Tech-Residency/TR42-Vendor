@@ -535,10 +535,11 @@ CREATE TABLE
   "user" (
     "user_id" text PRIMARY KEY,
     "username" varchar(40) UNIQUE NOT NULL,
-    "password" varchar(400) NOT NULL,
+    "password_hash" varchar(400) NOT NULL,
     "email" varchar(100) UNIQUE NOT NULL,
     "type" core.user_type NOT NULL,
     "is_active" bool NOT NULL DEFAULT true,
+    "token_version" integer default 0,
     "is_admin" bool DEFAULT false,
     "profile_photo" bytea,
     "created_at" timestamptz DEFAULT (now ()),

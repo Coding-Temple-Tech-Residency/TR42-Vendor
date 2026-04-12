@@ -123,7 +123,7 @@ def generate_users(n=20, addresses=None):
             {
                 "user_id": user_id,
                 "username": fake.unique.user_name(),
-                "password": generate_password_hash(DEFAULT_PASSWORD),
+                "password_hash": generate_password_hash(DEFAULT_PASSWORD),
                 "email": fake.unique.email(),
                 "first_name": fake.first_name(),
                 "last_name": fake.last_name(),

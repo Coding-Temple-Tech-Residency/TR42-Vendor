@@ -17,6 +17,7 @@ class Invoice(BaseModel):
     period_end: Mapped[str] = mapped_column(String)
 
     line_items: Mapped[list['LineItem']] = relationship('LineItem', back_populates='invoice', cascade='all, delete-orphan')
+    vendor: Mapped['Vendor'] = relationship('Vendor', back_populates='invoices')
 
 
 class LineItem(BaseModel):
