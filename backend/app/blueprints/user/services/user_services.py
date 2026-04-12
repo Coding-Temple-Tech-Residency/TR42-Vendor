@@ -6,7 +6,7 @@ from app.blueprints.user.model import User
 from app.blueprints.user.repositories.user_repositories import UserRepository
 from app.blueprints.user.schemas import users_schema
 
-from app.auth.passwords import verify_password
+from app.auth.passwords import hash_password, verify_password
 from app.auth.tokens import encode_token
 
 from logging import getLogger
@@ -19,26 +19,26 @@ class UserService:
 
     @staticmethod
     def login(data: dict):
-        logger.info("Attempting login for user: %s", data.get("username"))
+        logger.info("Attempting login for user: %s", data.get("email"))
 
-        username = data.get("username")
+        email = data.get("email")
         password = data.get("password")
 
-        if not username or not password:
+        if not email or not password:
             logger.warning("Login failed: Missing username or password")
             raise BadRequest("Username and password are required")
 
-        user = UserRepository.get_by_username(username)
+        user = UserRepository.get_by_email(email)
         if not user:
-            logger.warning("Login failed: User not found: %s", username)
-            raise BadRequest("Invalid username or password")
+            logger.warning("Login failed: user not found: %s", email)
+            raise BadRequest("Invalid email or password")
 
         if not verify_password(password, user.password_hash):
             logger.warning("Login failed: Incorrect password for user: %s", username)
             raise BadRequest("Invalid username or password")
 
         token = encode_token(user)
-        logger.info("Login successful for user: %s", username)
+        logger.info("Login successful for user: %s", email)
 
         return {
             "message": "Login successful",

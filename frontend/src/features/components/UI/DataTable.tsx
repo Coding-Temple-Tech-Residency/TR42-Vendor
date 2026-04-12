@@ -1,0 +1,58 @@
+interface Column {
+  key: string;
+  label: string;
+}
+
+interface DataTableProps {
+  columns: Column[];
+  data: any[];
+  emptyMessage?: string;
+}
+
+function DataTable({ columns, data, emptyMessage }: DataTableProps) {
+  return (
+    <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+      <table className="min-w-full text-sm">
+        <thead className="bg-slate-100 text-slate-700">
+          <tr>
+            {columns.map((col) => (
+              <th
+                key={col.key}
+                className="px-4 py-2 text-left font-medium border-b border-slate-200"
+              >
+                {col.label}
+              </th>
+            ))}
+          </tr>
+        </thead>
+
+        <tbody>
+          {data.length === 0 ? (
+            <tr>
+              <td
+                colSpan={columns.length}
+                className="px-4 py-6 text-center text-slate-500"
+              >
+                {emptyMessage || "No data available"}
+              </td>
+            </tr>
+          ) : (
+            data.map((row, index) => (
+              <tr
+                key={index}
+                className="hover:bg-slate-50 transition-colors border-b border-slate-100"
+              >
+                {columns.map((col) => (
+                  <td key={col.key} className="px-4 py-2 text-slate-700">
+                    {row[col.key]}
+                  </td>
+                ))}
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+export default DataTable;

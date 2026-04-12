@@ -1,13 +1,15 @@
 from datetime import datetime
 import enum
 from app.functions import generate_uuid, utc_now
-
+from typing import TYPE_CHECKING
 from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Integer, LargeBinary, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.auth.passwords import hash_password, verify_password
 
 from app.extensions import db
-from app.blueprints.vendor_user.model import VendorUser
+
+if TYPE_CHECKING:
+    from app.blueprints.vendor_user.model import VendorUser
 
 
 class UserType(enum.Enum):
@@ -60,7 +62,7 @@ class User(db.Model):
     last_name: Mapped[str] = mapped_column(String(50), nullable=False)
 
     vendor_links: Mapped[list["VendorUser"]] = relationship(
-        VendorUser,
+        "VendorUser",
         back_populates="user",
         foreign_keys="VendorUser.user_id",
         cascade="all, delete-orphan",

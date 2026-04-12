@@ -1,6 +1,6 @@
 from app.extensions import db
 from app.functions import generate_uuid
-
+from typing import TYPE_CHECKING
 from sqlalchemy import (
     Boolean,
     Enum,
@@ -9,8 +9,15 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+
 import enum
 
+from app.base import BaseModel
+
+if TYPE_CHECKING:
+    from app.blueprints.address.model import Address
+    from app.blueprints.vendor_user.model import VendorUser
+    from app.blueprints.invoices.model import Invoice
 
 class VendorStatus(enum.Enum):
     ACTIVE = "active"
@@ -23,7 +30,7 @@ class ComplianceStatus(enum.Enum):
     COMPLETE = "complete"
 
 
-class Vendor(db.Model):
+class Vendor(BaseModel):
     __tablename__ = "vendor"
 
     vendor_id: Mapped[str] = mapped_column(
@@ -34,11 +41,12 @@ class Vendor(db.Model):
 
     company_code: Mapped[str] = mapped_column(String, nullable=True)
 
-    # this is going to have to connect to the user in the create user step
     primary_contact_name: Mapped[str] = mapped_column(String)
 
     company_email: Mapped[str] = mapped_column(String, nullable=False)
     company_phone: Mapped[str] = mapped_column(String, nullable=False)
+
+    service_type: Mapped[str] = mapped_column(String, nullable=False)
 
     status: Mapped[VendorStatus] = mapped_column(
         Enum(VendorStatus, name="vendor_status"),
@@ -63,8 +71,12 @@ class Vendor(db.Model):
 
     # relationships
 
-    address: Mapped["Address"] = relationship(back_populates="vendor")  # type: ignore
+    address: Mapped["Address"] = relationship(back_populates="vendor")
 
     vendor_links: Mapped[list["VendorUser"]] = relationship(
+        back_populates="vendor", cascade="all, delete-orphan"
+    )
+
+    invoices: Mapped[list["Invoice"]] = relationship(
         back_populates="vendor", cascade="all, delete-orphan"
     )

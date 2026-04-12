@@ -1,11 +1,17 @@
 from app.extensions import db
 from sqlalchemy import func
-from app.models.base import BaseModel
+from app.base import BaseModel
 
 class Ticket(BaseModel):
     __tablename__ = 'ticket'
 
     ticket_id = db.Column(db.String, primary_key=True)
+
+    invoice_id = db.Column(
+        db.String,
+        db.ForeignKey('invoice.invoice_id'),
+        nullable=True
+    )
 
     work_order_id = db.Column(
         db.String,

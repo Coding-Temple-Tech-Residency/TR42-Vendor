@@ -2,7 +2,7 @@ import { Routes, Route, Outlet } from "react-router-dom";
 import RegisterPage from "../features/auth/pages/RegisterPage";
 import ProfileSetupPage from "../features/auth/pages/ProfileSetupPage";
 import SuccessPage from "../features/auth/pages/SuccessPage";
-import DashboardPage from "../features/pages/DashboardPage";
+import DashboardPage from "../features/dashboard/pages/DashboardPage";
 import WorkOrdersPage from "../features/pages/WorkOrdersDashboard";
 import TicketsPage from "../features/pages/TicketsDashboard";
 import ContractorsPage from "../features/pages/ContractorDashboard";
