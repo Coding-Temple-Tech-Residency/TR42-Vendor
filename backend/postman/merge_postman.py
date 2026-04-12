@@ -1,6 +1,8 @@
 import json
 import os
 
+# python backend/postman/merge_postman.py
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INPUT_DIR = os.path.join(BASE_DIR, "app", "blueprints")
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
