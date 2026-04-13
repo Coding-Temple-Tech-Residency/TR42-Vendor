@@ -1,0 +1,128 @@
+{
+  "info": {
+    "_postman_id": "9df27a35-2d39-4a55-8ed9-4a7fa8aaea33",
+    "name": "Vendor API Vendor",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "26152017",
+    "_collection_link": "https://go.postman.co/collection/26152017-9df27a35-2d39-4a55-8ed9-4a7fa8aaea33?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Get all vendors",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "Get Vendor by Id",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "Create Vendor",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzYwNDIyNTksImlhdCI6MTc3NjAzODY1OSwidXNlcl9pZCI6Ijk5NDBlM2FiLTI1MGEtNDIwOC04ZGIxLWVmYWM5MWVhZGNhMSIsInRva2VuX3ZlcnNpb24iOjAsImlzX2FkbWluIjp0cnVlfQ.cYIAlhI5YBhf2qY60GwfgPXiq-RyBxNCS1Vpo2gV5mY",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": " {\n    \"company_name\": \"Joes Catering\",\n    \"primary_contact_name\": \"John Doe\",\n    \"company_email\": \"contact@doecatering.com\",\n    \"company_phone\": \"555-123-4567\",\n    \"street\": \"123 Main St\",\n    \"city\": \"Denver\",\n    \"state\": \"CO\",\n    \"zipcode\": \"80202\",\n    \"service_type\":\"HVAC\"\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{Vendor API}}/vendors",
+          "host": [
+            "{{Vendor API}}"
+          ],
+          "path": [
+            "vendors"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Vendor",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzYwNTIyMTIsImlhdCI6MTc3NjA0ODYxMiwidXNlcl9pZCI6IjI1MGFlOTM3LWI0YzMtNDk2Mi1hNzVhLTU5MmFiYzU5NDA0NiIsInRva2VuX3ZlcnNpb24iOjAsImlzX2FkbWluIjp0cnVlfQ.eTx3r-Ojq0MdwN-8mLL7hlrx67CZYJFnwEqtmXA0prI",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"company_name\": \"Joess Catering\",\n    \"primary_contact_name\": \"John Doe\",\n    \"company_email\": \"contact@doecatering.com\",\n    \"company_phone\": \"555-123-4567\",\n    \"address\": {\n        \"street\": \"\",\n        \"city\": \"Austin\",\n        \"state\": \"TX\",\n        \"zipcode\": \"73301\"\n    }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{Vendor API}}/vendors/c595f43f-8278-44ad-92d1-fb7944e28424",
+          "host": [
+            "{{Vendor API}}"
+          ],
+          "path": [
+            "vendors",
+            "c595f43f-8278-44ad-92d1-fb7944e28424"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Vendor",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzYwNTIyMTIsImlhdCI6MTc3NjA0ODYxMiwidXNlcl9pZCI6IjI1MGFlOTM3LWI0YzMtNDk2Mi1hNzVhLTU5MmFiYzU5NDA0NiIsInRva2VuX3ZlcnNpb24iOjAsImlzX2FkbWluIjp0cnVlfQ.eTx3r-Ojq0MdwN-8mLL7hlrx67CZYJFnwEqtmXA0prI",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{Vendor API}}/vendors/c595f43f-8278-44ad-92d1-fb7944e28424",
+          "host": [
+            "{{Vendor API}}"
+          ],
+          "path": [
+            "vendors",
+            "c595f43f-8278-44ad-92d1-fb7944e28424"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
