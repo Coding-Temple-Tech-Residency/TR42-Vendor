@@ -1,5 +1,5 @@
 from app.extensions import db
-from app.models.base import BaseModel
+from app.base import BaseModel
 
 class Role(BaseModel):
     __tablename__ = 'role'

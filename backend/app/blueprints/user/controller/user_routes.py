@@ -40,7 +40,7 @@ def login_user():
         return jsonify({"error": "An error occurred during login"}), 500
 
 
-@user_bp.post("/")
+@user_bp.post("/") # Wasnt able to resolve the user_type error kept getting missing 1 required positional argument: 'user_type' and i dont want to break any other code
 def create_user():
     data = request.get_json()
     logger.debug("Creating a new user")
@@ -107,7 +107,7 @@ def get_vendor_users(current_user, vendor_link, vendor_id):
 # -----------------------
 @user_bp.get("/profile")
 @token_required
-def get_logged_in_user(user, user_role):
+def get_logged_in_user(user): # I hide user_role wasnt able to access it kept getting error missing 1 required positional argument: 'user_role'
     try:
         # User is already fetched and passed by the middleware
         return user_schema.dump(user), 200
@@ -119,7 +119,7 @@ def get_logged_in_user(user, user_role):
 # -----------------------
 # GET ALL USERS
 # -----------------------
-@user_bp.get("/")
+@user_bp.get("/") #same as get_all_users but this is for testing purposes to get all users without pagination and token required
 def get_users():
     try:
         users = UserService.get_all()

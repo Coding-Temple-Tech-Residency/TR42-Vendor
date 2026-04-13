@@ -1,5 +1,7 @@
 from app.extensions import db
-
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from app.blueprints.vendor.model import Vendor
 
 class Service(db.Model):
     __tablename__ = 'services'

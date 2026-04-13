@@ -1,4 +1,3 @@
-from app.extensions import db
 from app.functions import generate_uuid
 from typing import TYPE_CHECKING
 from sqlalchemy import (
@@ -74,6 +73,6 @@ class Vendor(BaseModel):
 
     address: Mapped["Address"] = relationship(back_populates="vendor")
 
-    #vendor_links: Mapped[list["VendorUser"]] = relationship(
-    #    back_populates="vendor", cascade="all, delete-orphan"
-    #)
+    vendor_links: Mapped[list["VendorUser"]] = relationship(
+        back_populates="vendor", cascade="all, delete-orphan"
+    )

@@ -8,8 +8,7 @@ from app.blueprints.ticket.model import Ticket
 from app.blueprints.well.model import Well
 from app.blueprints.work_orders.model import WorkOrder
 from app.blueprints.well.model import Well
-from app.blueprints.background_check.model import BackgroundCheck
-from app.blueprints.drug_test.model import DrugTest
+from app.blueprints.documents.model import BackgroundCheck, DrugTest, ComplianceDocument
 from app.blueprints.licenses.model import License
 #from app.blueprints.registration.model import Registration
 from app.blueprints.certifications.model import Certification

@@ -23,6 +23,7 @@ class UserService:
 
         email = data.get("email")
         password = data.get("password")
+        username = data.get("username")  # For logging purposes only(username wasnt defined)
 
         if not email or not password:
             logger.warning("Login failed: Missing username or password")
@@ -166,7 +167,7 @@ class UserService:
         for key, value in data.items():
             setattr(user, key, value)
 
-        return UserRepository.update(user)
+        return UserRepository.update(user, data)
 
     @staticmethod
     def delete(user):

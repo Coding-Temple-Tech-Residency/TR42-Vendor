@@ -1,14 +1,14 @@
 from datetime import datetime
 from app.functions import generate_uuid, utc_now
-from sqlalchemy import DateTime, String
+from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.extensions import db
+from app.base import BaseModel
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from app.blueprints.vendor.model import Vendor
 
-class Address(db.Model):
+class Address(BaseModel):
     __tablename__ = "address"
 
     address_id: Mapped[str] = mapped_column(
@@ -25,8 +25,11 @@ class Address(db.Model):
         default=utc_now,
         onupdate=utc_now,
     )
-    created_by_user_id: Mapped[str] = mapped_column(String, nullable=False)
-    updated_by_user_id: Mapped[str] = mapped_column(String)
-
+    created_by_user_id: Mapped[str | None ] = mapped_column( # This is causing error in the deletion of a user, if it could be made to on delete set null)
+        String, nullable=False
+    )
+    updated_by_user_id: Mapped[str | None ] = mapped_column( # Also causing error is the deletion of a user, same thing as above)
+        String)
+    
     # relationships
-    #vendor: Mapped["Vendor"] = relationship(back_populates="address")
+    vendor: Mapped["Vendor"] = relationship(back_populates="address")

@@ -39,7 +39,7 @@ def create_vendor():
         validated_data: Vendor = vendor_schema.load(data)
         logger.debug("Vendor data validated successfully")
 
-        new_vendor: Vendor = VendorService.create_vendor(validated_data)
+        new_vendor: Vendor = VendorService.create_vendor(validated_data) # ran into issue here with attribute error 'dict' object has no attribute 'company_name'
 
         logger.info(f"Vendor created successfull: {new_vendor.company_name}")
         return vendor_schema.jsonify(new_vendor), 201

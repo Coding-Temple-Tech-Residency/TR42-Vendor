@@ -57,8 +57,7 @@ def create_app(config_object=None):
     from app.blueprints.contractor_performance.controller.contractor_performance_routes import contractor_performance_bp
     from app.blueprints.contractors.controller.contractors_routes import contractor_bp
     from app.blueprints.ticket.controller.ticket_routes import ticket_bp
-    from app.blueprints.background_check.controller.background_check_routes import background_check_bp
-    from app.blueprints.drug_test.controller.drug_test_routes import drug_test_bp
+    from app.blueprints.documents.controller.routes import background_check_bp, drug_test_bp, compliance_document_bp
     from app.blueprints.licenses.controller.routes import license_bp
     from app.blueprints.certifications.controller.certifications_routes import certification_bp
     #from app.blueprints.communication.controller.routes import communication_bp
@@ -86,6 +85,7 @@ def create_app(config_object=None):
     app.register_blueprint(contractor_bp, url_prefix="/api/contractors")
     app.register_blueprint(ticket_bp, url_prefix="/api/tickets")
     app.register_blueprint(background_check_bp, url_prefix="/api/background_check")
+    app.register_blueprint(compliance_document_bp, url_prefix="/api/compliance_document")
     app.register_blueprint(drug_test_bp, url_prefix="/api/drug_tests")
     app.register_blueprint(license_bp, url_prefix="/api/licenses")
     app.register_blueprint(certification_bp, url_prefix="/api/certifications")

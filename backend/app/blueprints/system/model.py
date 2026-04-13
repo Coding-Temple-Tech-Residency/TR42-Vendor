@@ -1,36 +1,28 @@
-from app.extensions import db
-from datetime import datetime
+from app.base import BaseModel
+from sqlalchemy import Boolean, ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column
 
-class Session(db.Model):
+
+
+class Session(BaseModel):
     __tablename__ = 'sessions'
 
-    session_id = db.Column(db.String, primary_key=True)
+    session_id : Mapped [str] = mapped_column(String, primary_key=True)
 
-    user_id = db.Column(db.String, db.ForeignKey('user.user_id'))
+    user_id : Mapped [str] = mapped_column(String, ForeignKey('user.user_id'))
 
-    is_active = db.Column(db.Boolean)
+    is_active : Mapped[bool] = mapped_column(Boolean)
     
-    user_agent = db.Column(db.String)
+    user_agent : Mapped [str] = mapped_column(String)
     
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
-    created_by = db.Column(db.String, db.ForeignKey('user.user_id'))
-    
-    updated_by = db.Column(db.String, db.ForeignKey('user.user_id'))
-
-
-class Notification(db.Model):
+class Notification(BaseModel):
     __tablename__ = 'notification'
 
-    notification_id = db.Column(db.String, primary_key=True)
+    notification_id : Mapped [str] = mapped_column(String, primary_key=True)
 
-    message = db.Column(db.Text)
-    recipient = db.Column(db.String, db.ForeignKey('user.user_id'))
+    message : Mapped [str] = mapped_column(String)
+    recipient : Mapped [str] = mapped_column(String, ForeignKey('user.user_id'))
 
-    level = db.Column(db.String)
-    
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    level : Mapped [str] = mapped_column(String)

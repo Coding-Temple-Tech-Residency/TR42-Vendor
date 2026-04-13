@@ -1,5 +1,5 @@
 from app.extensions import db
-from app.models.base import BaseModel
+from app.models import BaseModel
 from sqlalchemy import JSON
 
 class MSA(BaseModel):

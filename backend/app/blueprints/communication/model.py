@@ -1,21 +1,25 @@
-from app.extensions import db
-from app.models.base import BaseModel
+from sqlalchemy import Integer
+from datetime import datetime
+from sqlalchemy import ForeignKey, String, Boolean, DateTime
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from app.base import BaseModel
+
 
 class Chat(BaseModel):
     __tablename__ = 'chat'
 
-    chat_id = db.Column(db.String, primary_key=True)
+    chat_id : Mapped[str] = mapped_column(String, primary_key=True)
 
 
 class Message(BaseModel):
     __tablename__ = 'messages'
 
-    message_id = db.Column(db.String, primary_key=True)
+    message_id : Mapped[str] = mapped_column(String, primary_key=True)
 
-    sender = db.Column(db.String, db.ForeignKey('user.user_id'))
-    recipient = db.Column(db.String, db.ForeignKey('user.user_id'))
-    chat_id = db.Column(db.String, db.ForeignKey('chat.chat_id'))
+    sender : Mapped[str] = mapped_column(String, ForeignKey('user.user_id'))
+    recipient : Mapped[str] = mapped_column(String, ForeignKey('user.user_id'))
+    chat_id : Mapped[str] = mapped_column(String, ForeignKey('chat.chat_id'))
 
-    message = db.Column(db.Text)
+    message : Mapped[str] = mapped_column(String)
 
-    chat = db.relationship('Chat', backref='messages')
+    chat : Mapped['Chat'] = relationship('Chat', backref='messages')

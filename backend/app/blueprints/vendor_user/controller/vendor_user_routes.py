@@ -24,7 +24,7 @@ def get_all_vendor_users():
 
 
 @vendor_user_bp.post("/")
-def create_vendor_user():
+def create_vendor_user(): #incountered issue here as well 
     try:
         logger.debug("Creating a new vendor user")
         data = request.get_json()

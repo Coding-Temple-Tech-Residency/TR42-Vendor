@@ -1,5 +1,5 @@
 from app.extensions import ma
-from marshmallow import fields, pre_load, validates
+from marshmallow import fields, pre_load, validates, validate
 from app.blueprints.user.model import User
 from app.functions import (
     strip_input,
@@ -9,8 +9,13 @@ from app.functions import (
 )
 
 
-class UserSchema(ma.SQLAlchemyAutoSchema):
-
+class UserSchema(ma.SQLAlchemyAutoSchema):  
+    # Below is the user_type field I added to the UserSchema. I got a TypeError: object of type 'UserType' has no len() when running creating user test. I think it might be because I am trying to validate the user_type field as a string but it is an enum in the database. I will need to change the validation to check if the value is one of the enum values instead of checking if it is a string.^^
+    user_type = fields.String(
+        required=True,
+        validate= validate.OneOf(["operator", "vendor", "contractor"])
+    ) # ^^
+    
     password = fields.String(required=True, load_only=True)
 
     vendor_links = fields.Nested(
