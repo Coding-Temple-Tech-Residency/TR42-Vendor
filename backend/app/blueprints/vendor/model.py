@@ -14,10 +14,15 @@ import enum
 
 from app.base import BaseModel
 
+
 if TYPE_CHECKING:
     from app.blueprints.address.model import Address
     from app.blueprints.vendor_user.model import VendorUser
+<<<<<<< HEAD
     from app.blueprints.invoices.model import Invoice
+=======
+    from app.associations import VendorService
+>>>>>>> 47726dc (added vendor-service)
 
 class VendorStatus(enum.Enum):
     ACTIVE = "active"
@@ -77,6 +82,13 @@ class Vendor(BaseModel):
         back_populates="vendor", cascade="all, delete-orphan"
     )
 
+<<<<<<< HEAD
     invoices: Mapped[list["Invoice"]] = relationship(
         back_populates="vendor", cascade="all, delete-orphan"
     )
+=======
+    
+    service_links: Mapped[list["VendorService"]] = relationship(
+        back_populates="vendor",cascade="all, delete-orphan"
+    )
+>>>>>>> 47726dc (added vendor-service)

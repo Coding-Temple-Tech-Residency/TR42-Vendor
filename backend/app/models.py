@@ -7,3 +7,4 @@ from app.blueprints.well.model import Well
 
 from app.blueprints.invoices.model import Invoice
 from app.blueprints.services.model import Service
+from app.blueprints.vendor_service.model import VendorService

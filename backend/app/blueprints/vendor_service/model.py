@@ -1,30 +1,32 @@
-
-from app.functions import generate_uuid
-from typing import TYPE_CHECKING
-from sqlalchemy import String, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.base import BaseModel
 from app.extensions import db
-from app.blueprints.vendor_service.model import VendorService
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import String, ForeignKey
+from app.functions import generate_uuid
+from app.base import BaseModel
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    #from app.blueprints.vendor_services.model import VendorService
+   
     from app.blueprints.user.model import User
 
-class Service(BaseModel):
-    __tablename__ = "services"
 
-    service_id: Mapped[str] = mapped_column(
+class VendorService(db.Model):
+    __tablename__ = "vendor_service"
+
+    id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
-        nullable=False,
         default=generate_uuid
     )
 
-    service: Mapped[str] = mapped_column(
-        String(255),
-        nullable=False,
-        unique=True
+    vendor_id: Mapped[str] = mapped_column(
+        ForeignKey("vendor.vendor_id"),
+        nullable=False
+    )
+
+    service_id: Mapped[str] = mapped_column(
+        ForeignKey("services.service_id"),
+        nullable=False
     )
 
     created_by: Mapped[str] = mapped_column(
@@ -48,8 +50,5 @@ class Service(BaseModel):
         foreign_keys=[updated_by]
     )
 
-    vendor_links: Mapped[list["VendorService"]] = relationship(
-        "VendorService",
-        back_populates="service",
-        cascade="all, delete-orphan"
-    )
+    vendor = relationship("Vendor", back_populates="service_links")
+    service = relationship("Service", back_populates="vendor_links")
