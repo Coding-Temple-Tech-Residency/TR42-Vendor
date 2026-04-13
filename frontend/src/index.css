@@ -15,3 +15,23 @@
 .btn-primary {
     @apply w-full bg-blue-900 text-white py-3 rounded-full mt-4 hover:bg-blue-800 transition;
 }
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+}
+
+.leaflet-container img {
+  max-width: none !important;
+}
+
+.leaflet-pane img,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+  max-width: none !important;
+}
+
+.leaflet-container img {
+  max-width: unset !important;
+}

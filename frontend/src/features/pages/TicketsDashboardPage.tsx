@@ -1,9 +1,10 @@
 import AppLayout from "../components/layout/AppLayout";
-import Sidebar from "../components/layout/Sidebar";
+import Sidebar from "../components/layout/SideBar";
 import Topbar from "../components/layout/Topbar";
 import PageHeader from "../components/UI/PageHeader";
 import SectionCard from "../components/UI/SectionCard";
 import EmptyState from "../components/UI/EmptyState";
+import KpiCard from "../components/UI/KPICard";
 
 function TicketsPage() {
   return (
@@ -16,31 +17,54 @@ function TicketsPage() {
         description="Monitor contractor tickets and job activity."
       />
 
-      {/* KPI Section (6 cards across top) */}
-      <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-6">
-        <SectionCard title="Active" subtitle="Currently open">
-          <div className="text-3xl font-bold">12</div>
-        </SectionCard>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-6">
+        <KpiCard
+          title="Active Tickets"
+          value={12}
+          subtitle="In Progress"
+          colorVariant="blue"
+          badge={{ type: "text", value: "Active in system"}}
+        />
 
-        <SectionCard title="On-Time" subtitle="Jobs completed on schedule">
-          <div className="text-3xl font-bold">92%</div>
-        </SectionCard>
+        <KpiCard
+          title="On-Time Completion"
+          value="92%"
+          subtitle="Jobs Completed"
+          colorVariant="green"
+          badge={{ type: "text", value: "On-Time"}}
+        />
 
-        <SectionCard title="Flagged" subtitle="Anomalies detected">
-          <div className="text-3xl font-bold">3</div>
-        </SectionCard>
+        <KpiCard
+          title="Flagged"
+          value={3}
+          subtitle="Tickets"
+          colorVariant="red"
+          badge={{ type: "text", value: "Anomalies Detected" }}
+        />
 
-        <SectionCard title="Completed Today" subtitle="As of 10:45 AM">
-          <div className="text-3xl font-bold">14</div>
-        </SectionCard>
+        <KpiCard
+          title="Completed Today"
+          value={14}
+          subtitle="Tickets Completed"
+          colorVariant="gray"
+          badge={{ type: "text", value: "As of 15:45" }}
+        />
 
-        <SectionCard title="Decline Rate" subtitle="Jobs declined by contractors">
-          <div className="text-3xl font-bold">6%</div>
-        </SectionCard>
+        <KpiCard
+          title="Decline Rate"
+          value="6%"
+          subtitle="Tickets Rejected"
+          colorVariant="orange"
+          badge={{ type: "text", value: "Declined by Contractor" }}
+        />
 
-        <SectionCard title="Avg. Duration" subtitle="This month">
-          <div className="text-3xl font-bold">1.8 days</div>
-        </SectionCard>
+        <KpiCard
+          title="Avg. Duration"
+          value="1.8 days"
+          subtitle="This Month"
+          colorVariant="purple"
+          badge={{ type: "trend", value: "0.5% days slower", trendDirection: "down" }}
+        />
       </div>
 
       {/* Charts Section (side-by-side) */}

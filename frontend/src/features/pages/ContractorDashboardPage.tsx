@@ -1,9 +1,11 @@
 import AppLayout from "../components/layout/AppLayout";
-import Sidebar from "../components/layout/Sidebar";
+import Sidebar from "../components/layout/SideBar";
 import Topbar from "../components/layout/Topbar";
 import PageHeader from "../components/UI/PageHeader";
+import { Link } from "react-router-dom";
 import SectionCard from "../components/UI/SectionCard";
 import EmptyState from "../components/UI/EmptyState";
+import KpiCard from "../components/UI/KPICard";
 
 function ContractorsPage() {
   return (
@@ -11,37 +13,71 @@ function ContractorsPage() {
       sidebar={<Sidebar />}
       topbar={<Topbar title="Vendor Dashboard" userName="Katty" />}
     >
-      <PageHeader
-        title="Contractors"
-        description="Manage, track, and monitor contractors."
-      />
+      <div className="space-y-6">
+        <PageHeader
+          title="Contractors"
+          description="Manage, track, and monitor contractors."
+          />
 
-      {/* KPI Section (6 cards across top) */}
-      <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-6">
-        <SectionCard title="Active Contractors" subtitle="Currently available">
-          <div className="text-3xl font-bold">32</div>
-        </SectionCard>
+          <Link
+            to="/vendor/contractors/profile"
+            className="inline-block rounded-lg bg-[#2F4F75] px-4 py-2 text-sm font-medium text-white hover:bg-[#1E3A5F]"
+            >
+              Veiw Profile
+          </Link>
 
-        <SectionCard title="Average Rating" subtitle="Across all contractors">
-          <div className="text-3xl font-bold">4.6</div>
-        </SectionCard>
 
-        <SectionCard title="In Progress" subtitle="On site">
-          <div className="text-3xl font-bold">21</div>
-        </SectionCard>
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-6">
+        <KpiCard
+          title="Active Contractors"
+          value={32}
+          subtitle="Currently Available"
+          colorVariant="orange"
+          badge={{ type: "text", value: "Active in system"}}
+        />
 
-        <SectionCard title="Jobs Completed" subtitle="This month">
-          <div className="text-3xl font-bold">45</div>
-        </SectionCard>
+        <KpiCard
+          title="Average Rating"
+          value={4.6}
+          subtitle="Out of 5"
+          colorVariant="gray"
+        />
 
-        <SectionCard title="Possible Fraud" subtitle="Needs attention">
-          <div className="text-3xl font-bold">3</div>
-        </SectionCard>
+        <KpiCard
+          title="In Progress"
+          value={21}
+          subtitle="Across All Contractors"
+          colorVariant="blue"
+          badge={{ type: "text", value: "On Site" }}
+        />
 
-        <SectionCard title="On-Time Completion" subtitle="Across all contractors">
-          <div className="text-3xl font-bold">93%</div>
-        </SectionCard>
+        <KpiCard
+          title="Jobs Completed"
+          value={45}
+          subtitle="Month"
+          colorVariant="green"
+          badge={{ type: "trend", value: "12% from last month", trendDirection: "up", }}
+        />
+
+        <KpiCard
+          title="Possible Fraud"
+          value={3}
+          subtitle="Across All Contractors"
+          colorVariant="red"
+          badge={{ type: "text", value: "Needs Attention" }}
+        />
+
+        <KpiCard
+          title="On Time Completion"
+          value="93%"
+          subtitle="Across All Contractors"
+          colorVariant="purple"
+          badge={{ type: "trend", value: "0.5% from last month", trendDirection: "up", }}
+        />
       </div>
+
+
 
       {/* Charts Section (side-by-side) */}
       <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
@@ -93,6 +129,7 @@ function ContractorsPage() {
         </SectionCard>
       </div>
 
+        </div>
     </AppLayout>
   );
 }
