@@ -101,7 +101,7 @@ function RegisterVendorForm() {
         company_phone: toBackendPhoneFormat(form.companyPhone),
         primary_contact_name: form.primaryContactName,
         service_type: form.serviceType,
-        address: form.address,
+        street: form.address,
         city: form.city,
         state: form.state,
         zipcode: form.zip,

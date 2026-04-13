@@ -7,6 +7,11 @@ from app.extensions import db, ma
 from app.config import Config
 from app.logging_config import setup_logging
 
+from flask_migrate import Migrate
+from app.extensions import db
+
+migrate = Migrate()
+
 
 def create_app(config_object=None):
     app = Flask(__name__)
@@ -23,6 +28,7 @@ def create_app(config_object=None):
     setup_logging()
 
     db.init_app(app)
+    migrate.init_app(app, db)
     ma.init_app(app)
 
     # Import all models BEFORE blueprints to ensure they're registered with SQLAlchemy

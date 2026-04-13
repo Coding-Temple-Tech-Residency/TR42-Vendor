@@ -4,11 +4,13 @@ from sqlalchemy import DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.extensions import db
 from typing import TYPE_CHECKING
+from app.base import BaseModel
 
 if TYPE_CHECKING:
     from app.blueprints.vendor.model import Vendor
 
-class Address(db.Model):
+
+class Address(BaseModel):
     __tablename__ = "address"
 
     address_id: Mapped[str] = mapped_column(
@@ -19,14 +21,6 @@ class Address(db.Model):
     state: Mapped[str] = mapped_column(String(255), nullable=False)
     zipcode: Mapped[str] = mapped_column(String(255), nullable=False)
     country: Mapped[str] = mapped_column(String(255), nullable=False, default="USA")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=utc_now,
-        onupdate=utc_now,
-    )
-    created_by_user_id: Mapped[str] = mapped_column(String, nullable=False)
-    updated_by_user_id: Mapped[str] = mapped_column(String)
 
     # relationships
     vendor: Mapped["Vendor"] = relationship(back_populates="address")

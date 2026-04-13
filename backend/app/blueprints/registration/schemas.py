@@ -2,7 +2,7 @@ from marshmallow import ValidationError, fields, pre_load, validates, validates_
 from app.extensions import ma
 from app.functions import (
     strip_input,
-    validate_address,
+    validate_street,
     validate_city,
     validate_email_format,
     validate_name,
@@ -74,7 +74,8 @@ class UserRegistrationSchema(ma.Schema):
 
 class VendorRegistrationSchema(ma.Schema):
     company_name = fields.String(required=True)
-    address = fields.String(required=True)
+    street = fields.String(required=True)
+    # vendor_code = fields.String(dump_only=True)
     city = fields.String(required=True)
     state = fields.String(required=True)
     zipcode = fields.String(required=True)
@@ -103,9 +104,9 @@ class VendorRegistrationSchema(ma.Schema):
     def validate_company_phone(self, value, **kwargs):
         validate_phone_format(value)
 
-    @validates("address")
+    @validates("street")
     def validate_address_field(self, value, **kwargs):
-        validate_address(value)
+        validate_street(value)
 
     @validates("city")
     def validate_city_field(self, value, **kwargs):

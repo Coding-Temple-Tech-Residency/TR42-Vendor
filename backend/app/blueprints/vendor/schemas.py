@@ -15,11 +15,6 @@ class VendorSchema(ma.SQLAlchemyAutoSchema):
         load_instance = False
         include_fk = True
 
-    users = fields.Nested(
-        "VendorUserSchema", many=True, dump_only=True, attribute="vendor_links"
-    )
-    address = fields.Nested("AddressSchema", dump_only=True)
-
     @pre_load
     def preprocess(self, data, **kwargs):
         return strip_input(data)

@@ -20,6 +20,8 @@ from app.blueprints.vendor_user.repositories.vendor_user_repositories import (
 
 from logging import getLogger
 
+from app.functions import generate_uuid
+
 
 logger = getLogger(__name__)
 
@@ -59,7 +61,7 @@ class RegistrationService:
             db.session.flush()
 
             address = Address(
-                street=vendor_data["address"],
+                street=vendor_data["street"],
                 city=vendor_data["city"],
                 state=vendor_data["state"],
                 zipcode=vendor_data["zipcode"],
@@ -69,12 +71,16 @@ class RegistrationService:
             AddressRepository.create(address)
             db.session.flush()
 
+            vendor_id = generate_uuid()
+
             vendor = Vendor(
+                vendor_id=vendor_id,
                 company_name=vendor_data["company_name"],
                 company_email=vendor_data["company_email"],
                 company_phone=vendor_data["company_phone"],
                 primary_contact_name=vendor_data["primary_contact_name"],
                 service_type=vendor_data["service_type"],
+                vendor_code=f"Vendor-{vendor_id[:8].upper()}",
                 address_id=address.address_id,
                 created_by_user_id=user.user_id,
                 updated_by_user_id=user.user_id,
@@ -91,6 +97,8 @@ class RegistrationService:
             )
             VendorUserRepository.create(vendor_user)
             db.session.flush()
+
+            vendor.vendor_code = f"Vendor-{vendor.vendor_id[:8].upper()}"
 
             db.session.commit()
 

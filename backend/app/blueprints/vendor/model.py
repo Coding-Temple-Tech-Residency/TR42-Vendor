@@ -1,8 +1,10 @@
-from app.extensions import db
-from app.functions import generate_uuid
+from datetime import datetime
+
+from app.functions import generate_uuid, utc_now
 from typing import TYPE_CHECKING
 from sqlalchemy import (
     Boolean,
+    DateTime,
     Enum,
     String,
     ForeignKey,
@@ -17,6 +19,7 @@ from app.base import BaseModel
 if TYPE_CHECKING:
     from app.blueprints.address.model import Address
     from app.blueprints.vendor_user.model import VendorUser
+
 
 class VendorStatus(enum.Enum):
     ACTIVE = "active"
@@ -42,6 +45,17 @@ class Vendor(BaseModel):
 
     primary_contact_name: Mapped[str] = mapped_column(String)
 
+    start_date: Mapped[datetime] = mapped_column(
+        DateTime,
+        nullable=False,
+        default=utc_now,
+    )
+
+    end_date: Mapped[datetime] = mapped_column(
+        DateTime,
+        nullable=True,
+    )
+
     company_email: Mapped[str] = mapped_column(String, nullable=False)
     company_phone: Mapped[str] = mapped_column(String, nullable=False)
 
@@ -52,6 +66,8 @@ class Vendor(BaseModel):
         nullable=False,
         default=VendorStatus.ACTIVE,
     )
+
+    vendor_code: Mapped[str] = mapped_column(String, unique=True)
 
     onboarding: Mapped[bool] = mapped_column(Boolean, nullable=True, default=False)
 

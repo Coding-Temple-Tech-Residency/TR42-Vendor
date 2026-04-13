@@ -40,7 +40,7 @@ def validate_name(value, min_length=2, field_name="Name"):
         )
 
 
-def validate_address(value, **kwargs):
+def validate_street(value, **kwargs):
     if not ADDRESS_REGEX.fullmatch(value):
         raise ValidationError("Enter a valid street address (e.g., '123 Main St')")
 

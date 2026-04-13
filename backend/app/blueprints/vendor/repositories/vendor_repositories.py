@@ -21,18 +21,40 @@ class VendorRepository:
     @staticmethod
     def get_by_company_name(company_name: str):
         try:
-            logger.debug("Fetching vendor by name: %s", company_name)
+            logger.debug("Fetching vendor by company name")
             return db.session.scalar(
                 select(Vendor).where(Vendor.company_name == company_name)
             )
         except Exception:
-            logger.exception("Failed to fetch vendor by name: %s", company_name)
+            logger.exception("Failed to fetch vendor by name")
             raise
 
     @staticmethod
-    def create(vendor: Vendor) -> Vendor:
+    def get_by_company_email(company_email: str):
         try:
-            logger.debug("Adding vendor to session: %s", vendor.company_name)
+            logger.debug("Fetching vendor by company name")
+            return db.session.scalar(
+                select(Vendor).where(Vendor.company_email == company_email)
+            )
+        except Exception:
+            logger.exception("Failed to fetch vendor by email")
+            raise
+
+    @staticmethod
+    def get_by_id(vendor_id: str):
+        try:
+            logger.debug("Fetching vendor by vendor_id")
+            return db.session.scalar(
+                select(Vendor).where(Vendor.vendor_id == vendor_id)
+            )
+        except Exception:
+            logger.exception("Failed to fetch vendor by id")
+            raise
+
+    @staticmethod
+    def create(vendor: Vendor):
+        try:
+            logger.debug("Adding vendor to session")
             db.session.add(vendor)
             return vendor
         except Exception:
