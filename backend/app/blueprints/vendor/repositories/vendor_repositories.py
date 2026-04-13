@@ -19,6 +19,10 @@ class VendorRepository:
             raise
 
     @staticmethod
+    def get_all_paginated(page: int = 1, per_page: int = 10):
+        return db.paginate(select(Vendor), page=page, per_page=per_page)
+
+    @staticmethod
     def get_by_company_name(company_name: str):
         try:
             logger.debug("Fetching vendor by company name")
@@ -60,3 +64,7 @@ class VendorRepository:
         except Exception:
             logger.exception("Failed to add vendor to session")
             raise
+
+    @staticmethod
+    def delete(vendor: Vendor):
+        db.session.delete(vendor)

@@ -60,11 +60,13 @@ class RegistrationService:
             UserRepository.create(user)
             db.session.flush()
 
+            address_data = vendor_data["address"]
+
             address = Address(
-                street=vendor_data["street"],
-                city=vendor_data["city"],
-                state=vendor_data["state"],
-                zipcode=vendor_data["zipcode"],
+                street=address_data["street"],
+                city=address_data["city"],
+                state=address_data["state"],
+                zipcode=address_data["zipcode"],
                 created_by_user_id=user.user_id,
                 updated_by_user_id=user.user_id,
             )
