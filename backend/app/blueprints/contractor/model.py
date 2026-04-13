@@ -1,6 +1,3 @@
-from app.extensions import db
-from sqlalchemy.dialects.postgresql import JSON
-from sqlalchemy import Numeric
 from app.base import BaseModel
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Boolean, Enum, String, ForeignKey, Integer, Float

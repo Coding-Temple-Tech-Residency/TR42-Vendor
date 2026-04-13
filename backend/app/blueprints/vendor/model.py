@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from app.functions import generate_uuid, utc_now
 from typing import TYPE_CHECKING
 from sqlalchemy import (
@@ -18,7 +17,6 @@ if TYPE_CHECKING:
     from app.blueprints.vendor_user.model import VendorUser
     from app.blueprints.vendor_contractor.model import VendorContractor
     from app.blueprints.compliance_document.model import ComplianceDocument
-
 
 
 class VendorStatus(enum.Enum):
