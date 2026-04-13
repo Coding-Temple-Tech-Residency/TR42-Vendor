@@ -4,78 +4,78 @@ CREATE TYPE "core"."location_type" AS ENUM ('WELL', 'GPS', 'ADDRESS');
 
 CREATE TYPE "core"."frequency_type" AS ENUM ('ONE_TIME', 'DAILY', 'WEEKLY', 'MONTHLY');
 
-CREATE TYPE "core"."role_options" AS ENUM ('user', 'manager', 'admin');
+CREATE TYPE "core"."role_options" AS ENUM ('USER', 'MANAGER', 'ADMIN');
 
-CREATE TYPE "core"."notification_level" AS ENUM ('success', 'danger', 'info');
+CREATE TYPE "core"."notification_level" AS ENUM ('SUCCESS', 'DANGER', 'INFO');
 
-CREATE TYPE "core"."device_types" AS ENUM ('Android', 'iOS', 'Tablet', 'Other');
+CREATE TYPE "core"."device_types" AS ENUM ('ANDROID', 'IOS', 'TABLET', 'OTHER');
 
-CREATE TYPE "core"."note_categories" AS ENUM ('general', 'safety', 'quality', 'instruction');
+CREATE TYPE "core"."note_categories" AS ENUM ('GENERAL', 'SAFETY', 'QUALITY', 'INSTRUCTION');
 
-CREATE TYPE "core"."issue_categories" AS ENUM ('safety', 'quality', 'delay', 'other');
+CREATE TYPE "core"."issue_categories" AS ENUM ('SAFETY', 'QUALITY', 'DELAY', 'OTHER');
 
-CREATE TYPE "core"."issue_severities" AS ENUM ('low', 'medium', 'high', 'critical', 'blocker');
+CREATE TYPE "core"."issue_severities" AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 'BLOCKER');
 
 CREATE TYPE "core"."order_status" AS ENUM (
-  'unassigned',
-  'assigned',
-  'in progress',
-  'completed',
-  'halted',
-  'rejected',
-  'cancelled',
-  'closed'
+  'UNASSIGNED',
+  'ASSIGNED',
+  'IN_PROGRESS',
+  'COMPLETED',
+  'HALTED',
+  'REJECTED',
+  'CANCELLED',
+  'CLOSED'
 );
 
-CREATE TYPE "core"."vendor_status" AS ENUM ('active', 'inactive');
+CREATE TYPE "core"."vendor_status" AS ENUM ('ACTIVE', 'INACTIVE');
 
-CREATE TYPE "core"."compliance_status" AS ENUM ('expired', 'incomplete', 'complete');
+CREATE TYPE "core"."compliance_status" AS ENUM ('EXPIRED', 'INCOMPLETE', 'COMPLETE');
 
 CREATE TYPE "core"."priority_status" AS ENUM ('LOW', 'MEDIUM', 'HIGH');
 
 CREATE TYPE "core"."ticket_status" AS ENUM (
-  'unassigned',
-  'assigned',
-  'in progress',
-  'completed'
+  'UNASSIGNED',
+  'ASSIGNED',
+  'IN_PROGRESS',
+  'COMPLETED'
 );
 
 CREATE TYPE "core"."well_status" AS ENUM (
-  'Active',
-  'Drilling',
-  'Completed',
-  'Inactive',
-  'Suspended',
-  'Abandoned',
-  'Plugged'
+  'ACTIVE',
+  'DRILLING',
+  'COMPLETED',
+  'INACTIVE',
+  'SUSPENDED',
+  'ABANDONED',
+  'PLUGGED'
 );
 
 CREATE TYPE "core"."well_type" AS ENUM (
-  'Oil',
-  'Gas',
-  'Oil & Gas',
-  'Injection',
-  'Water Disposal',
-  'Observation'
+  'OIL',
+  'GAS',
+  'OIL_AND_GAS',
+  'INJECTION',
+  'WATER_DISPOSAL',
+  'OBSERVATION'
 );
 
-CREATE TYPE "core"."contractor_status" AS ENUM ('active', 'inactive');
+CREATE TYPE "core"."contractor_status" AS ENUM ('ACTIVE', 'INACTIVE');
 
 CREATE TYPE "core"."company_types" AS ENUM (
-  'Oil/Gas Operators',
-  'Vendor/Service Provider',
-  'Field Personnel'
+  'OIL_GAS_OPERATORS',
+  'VENDOR_SERVICE_PROVIDER',
+  'FIELD_PERSONNEL'
 );
 
 CREATE TYPE "core"."invoice_statuses" AS ENUM (
-  'draft',
-  'submitted',
-  'approved',
-  'rejected',
-  'paid'
+  'DRAFT',
+  'SUBMITTED',
+  'APPROVED',
+  'REJECTED',
+  'PAID'
 );
 
-CREATE TYPE "core"."user_type" AS ENUM ('operator', 'vendor', 'contractor');
+CREATE TYPE "core"."user_type" AS ENUM ('OPERATOR', 'VENDOR', 'CONTRACTOR');
 
 CREATE TABLE
   "client" (
@@ -537,15 +537,15 @@ CREATE TABLE
     "username" varchar(40) UNIQUE NOT NULL,
     "password_hash" varchar(400) NOT NULL,
     "email" varchar(100) UNIQUE NOT NULL,
-    "type" core.user_type NOT NULL,
+    "user_type" core.user_type NOT NULL,
     "is_active" bool NOT NULL DEFAULT true,
     "token_version" integer default 0,
     "is_admin" bool DEFAULT false,
     "profile_photo" bytea,
     "created_at" timestamptz DEFAULT (now ()),
     "updated_at" timestamptz,
-    "created_by" text DEFAULT 'system',
-    "updated_by" text DEFAULT 'system',
+    "created_by_user_id" text DEFAULT 'system',
+    "updated_by_user_id" text DEFAULT 'system',
     "first_name" varchar(80),
     "last_name" varchar(80),
     "middle_name" varchar(80),

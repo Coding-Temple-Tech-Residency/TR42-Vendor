@@ -48,65 +48,70 @@ def after(start, max_days=30):
     )
 
 
-USER_TYPES = ["operator", "vendor", "contractor"]
-VENDOR_STATUS = ["active", "inactive"]
-COMPLIANCE_STATUS = ["expired", "incomplete", "complete"]
-ROLE_OPTIONS = ["user", "manager", "admin"]
-CONTRACTOR_STATUS = ["active", "inactive"]
+USER_TYPES = ["OPERATOR", "VENDOR", "CONTRACTOR"]
+
+VENDOR_STATUS = ["ACTIVE", "INACTIVE"]
+
+COMPLIANCE_STATUS = ["EXPIRED", "INCOMPLETE", "COMPLETE"]
+
+ROLE_OPTIONS = ["USER", "MANAGER", "ADMIN"]
+
+CONTRACTOR_STATUS = ["ACTIVE", "INACTIVE"]
 
 ORDER_STATUS = [
-    "unassigned",
-    "assigned",
-    "in progress",
-    "completed",
-    "halted",
-    "rejected",
-    "cancelled",
-    "closed",
+    "UNASSIGNED",
+    "ASSIGNED",
+    "IN_PROGRESS",
+    "COMPLETED",
+    "HALTED",
+    "REJECTED",
+    "CANCELLED",
+    "CLOSED",
 ]
 
 PRIORITY = ["LOW", "MEDIUM", "HIGH"]
 
 TICKET_STATUS = [
-    "unassigned",
-    "assigned",
-    "in progress",
-    "completed",
+    "UNASSIGNED",
+    "ASSIGNED",
+    "IN_PROGRESS",
+    "COMPLETED",
 ]
 
-INVOICE_STATUS = ["draft", "submitted", "approved", "paid", "rejected"]
+INVOICE_STATUS = ["DRAFT", "SUBMITTED", "APPROVED", "REJECTED", "PAID"]
 
 WELL_STATUS = [
-    "Active",
-    "Drilling",
-    "Completed",
-    "Inactive",
-    "Suspended",
-    "Abandoned",
-    "Plugged",
+    "ACTIVE",
+    "DRILLING",
+    "COMPLETED",
+    "INACTIVE",
+    "SUSPENDED",
+    "ABANDONED",
+    "PLUGGED",
 ]
 
 WELL_TYPE = [
-    "Oil",
-    "Gas",
-    "Oil & Gas",
-    "Injection",
-    "Water Disposal",
-    "Observation",
+    "OIL",
+    "GAS",
+    "OIL_AND_GAS",
+    "INJECTION",
+    "WATER_DISPOSAL",
+    "OBSERVATION",
 ]
 
 LOCATION_TYPES = ["WELL", "GPS", "ADDRESS"]
+
 FREQUENCY_TYPES = ["ONE_TIME", "DAILY", "WEEKLY", "MONTHLY"]
 
 SERVICE_TYPES = [
-    "Water Delivery",
-    "Chemical Delivery",
-    "Inspection",
-    "Routine Maintenance",
-    "Equipment Repair",
-    "Site Cleanup",
-    "Pipeline Service",
-    "Well Intervention",
+    "WATER_DELIVERY",
+    "CHEMICAL_DELIVERY",
+    "INSPECTION",
+    "ROUTINE_MAINTENANCE",
+    "EQUIPMENT_REPAIR",
+    "SITE_CLEANUP",
+    "PIPELINE_SERVICE",
+    "WELL_INTERVENTION",
 ]
 
 DEFAULT_PASSWORD = "password"
@@ -132,14 +137,14 @@ def generate_users(n=20, addresses=None):
                 "alternate_number": fake.phone_number(),
                 "date_of_birth": fake.date_of_birth(minimum_age=18, maximum_age=65),
                 "ssn_last_four": fake.bothify("####"),
-                "type": random.choice(USER_TYPES),
+                "user_type": random.choice(USER_TYPES),
                 "is_active": True,
                 "is_admin": random.choice([True, False]),
                 "profile_photo": None,
                 "created_at": generate_time_span(),
                 "updated_at": now(),
-                "created_by": user_id,
-                "updated_by": user_id,
+                "created_by_user_id": user_id,
+                "updated_by_user_id": user_id,
                 "address_id": address_id,
             }
         )
@@ -220,7 +225,7 @@ def generate_vendor_users(users, vendors, max_ratio=0.6):
         vendor = random.choice(vendors)
 
         # keep base user subtype aligned with membership table
-        user["type"] = "vendor"
+        user["user_type"] = "VENDOR"
 
         vendor_users.append(
             {
@@ -270,7 +275,7 @@ def generate_contractors(n, vendors, users, vendor_users):
         manager = random.choice(vendor_user_by_vendor[vendor["vendor_id"]])
 
         # keep base user subtype aligned with membership table
-        user["type"] = "contractor"
+        user["user_type"] = "CONTRACTOR"
 
         contractors.append(
             {
@@ -315,9 +320,9 @@ def update_contractor_ticket_counts(contractors, tickets):
         if not contractor_id or contractor_id not in counts:
             continue
 
-        if ticket["status"] == "completed":
+        if ticket["status"] == "COMPLETED":
             counts[contractor_id]["tickets_completed"] += 1
-        elif ticket["status"] in ["unassigned", "assigned", "in progress"]:
+        elif ticket["status"] in ["UNASSIGNED", "ASSIGNED", "IN_PROGRESS"]:
             counts[contractor_id]["tickets_open"] += 1
 
     for contractor in contractors:
@@ -361,14 +366,14 @@ def generate_work_orders(n, vendor_wells, users, wells, vendor_services):
         cancelled_at = None
         cancellation_reason = None
 
-        if status != "unassigned":
+        if status != "UNASSIGNED":
             assigned_at = after(created_at, max_days=3)
             est_start = after(assigned_at, max_days=2)
             est_end = est_start + timedelta(days=random.randint(1, 5))
 
-            if status in ["completed", "closed"]:
+            if status in ["COMPLETED", "CLOSED"]:
                 completed_at = after(est_end, max_days=2)
-            elif status == "cancelled":
+            elif status == "CANCELLED":
                 cancelled_at = after(assigned_at, max_days=2)
                 cancellation_reason = random.choice(
                     [
@@ -446,8 +451,8 @@ def generate_tickets(n, work_orders, contractors, users):
         completed_at = None
         contractor_id = None
 
-        if wo["current_status"] == "unassigned":
-            status = "unassigned"
+        if wo["current_status"] == "UNASSIGNED":
+            status = "UNASSIGNED"
         else:
             if not valid_contractors:
                 continue
@@ -457,26 +462,26 @@ def generate_tickets(n, work_orders, contractors, users):
 
             created_at = wo["created_at"]
 
-            if wo["current_status"] in ["completed", "closed"]:
-                status = "completed"
-            elif wo["current_status"] == "in progress":
-                status = random.choice(["assigned", "in progress"])
-            elif wo["current_status"] == "assigned":
-                status = "assigned"
+            if wo["current_status"] in ["COMPLETED", "CLOSED"]:
+                status = "COMPLETED"
+            elif wo["current_status"] == "IN_PROGRESS":
+                status = random.choice(["ASSIGNED", "IN_PROGRESS"])
+            elif wo["current_status"] == "ASSIGNED":
+                status = "ASSIGNED"
             else:
                 # cancelled / halted / rejected do not exist on ticket enum
-                status = random.choice(["assigned", "in progress"])
+                status = random.choice(["ASSIGNED", "IN_PROGRESS"])
 
             if wo["assigned_at"] is not None:
                 assigned_at = between(created_at, wo["assigned_at"])
             else:
                 assigned_at = after(created_at, max_days=2)
 
-            if status in ["in progress", "completed"]:
+            if status in ["IN_PROGRESS", "COMPLETED"]:
                 upper_bound = wo["estimated_start_date"] or (assigned_at + timedelta(days=1))
                 start_time = between(assigned_at, upper_bound)
 
-            if status == "completed":
+            if status == "COMPLETED":
                 completion_upper = wo["completed_at"] or wo["estimated_end_date"] or (start_time + timedelta(days=1))
                 completed_at = between(start_time, completion_upper)
 
@@ -531,7 +536,7 @@ def generate_invoices(n, work_orders, tickets, users):
 
     eligible_tickets = [
         t for t in tickets
-        if t["status"] == "completed"
+        if t["status"] == "COMPLETED"
         and t["vendor_id"] is not None
         and t["invoice_id"] is None
     ]
@@ -555,12 +560,12 @@ def generate_invoices(n, work_orders, tickets, users):
         paid_at = None
         rejected_at = None
 
-        if invoice_status == "approved":
+        if invoice_status == "APPROVED":
             approved_at = after(invoice_date, max_days=10)
-        elif invoice_status == "paid":
+        elif invoice_status == "PAID":
             approved_at = after(invoice_date, max_days=10)
             paid_at = after(approved_at, max_days=20)
-        elif invoice_status == "rejected":
+        elif invoice_status == "REJECTED":
             rejected_at = after(invoice_date, max_days=10)
 
         invoice_id = gen_id()
@@ -746,7 +751,7 @@ def generate_contractor_performance(tickets, contractors, users):
 
     for ticket in tickets:
         
-        if ticket["status"] != "completed":
+        if ticket["status"] != "COMPLETED":
             continue
 
         contractor_id = ticket["assigned_contractor"]
@@ -1019,7 +1024,7 @@ def generate_client_users(users, clients, vendor_users, contractors, max_ratio=0
         updater = random.choice(users)["user_id"]
 
         # client-side users line up best with operator in your current enum
-        user["type"] = "operator"
+        user["user_type"] = "OPERATOR"
 
         client_users.append(
             {
