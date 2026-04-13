@@ -1,0 +1,5 @@
+$kind: http-request
+name: Create Contractor Performance
+url: http://127.0.0.1:5001/api/contractor_performance
+method: POST
+order: 1776032207548

@@ -1,0 +1,5 @@
+$kind: http-request
+name: Get all wells
+url: http://127.0.0.1:5001/api/wells
+method: GET
+order: 4404123356239061

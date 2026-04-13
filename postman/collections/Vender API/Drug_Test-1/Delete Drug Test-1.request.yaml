@@ -1,0 +1,5 @@
+$kind: http-request
+name: Delete Drug Test
+url: http://127.0.0.1:5001/api/work_orders
+method: DELETE
+order: 3967637925134335

@@ -1,0 +1,5 @@
+$kind: http-request
+name: Delete Contractor
+url: http://127.0.0.1:5001/api/contractors
+method: DELETE
+order: 770246421011003

@@ -1,0 +1,5 @@
+$kind: http-request
+name: Get a Work Order
+url: http://127.0.0.1:5001/api/work_orders
+method: GET
+order: 2967910062666795

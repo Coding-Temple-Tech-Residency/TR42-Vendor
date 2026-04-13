@@ -1,0 +1,12 @@
+$kind: http-request
+name: Update Drug Test
+url: http://127.0.0.1:5001/api/work_orders
+method: PUT
+body:
+  type: json
+  content: |
+    {
+      "drug_test_passed": true,
+      "drug_test_date": "2024-09-01T12:00:00Z",
+    }
+order: 447002881032191

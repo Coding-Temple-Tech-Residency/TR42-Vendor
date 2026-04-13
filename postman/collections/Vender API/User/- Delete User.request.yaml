@@ -1,0 +1,5 @@
+$kind: http-request
+name: "? Delete User"
+url: http://127.0.0.1:5001/api/users/dd1e1fcc-569f-46c9-8798-6177bc5f15a2
+method: DELETE
+order: 4502737769557981

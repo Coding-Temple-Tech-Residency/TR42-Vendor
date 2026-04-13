@@ -1,0 +1,13 @@
+$kind: http-request
+name: Update User
+url: http://127.0.0.1:5001/api/users/dd1e1fcc-569f-46c9-8798-6177bc5f15a2
+method: PUT
+body:
+  type: json
+  content: |
+    {
+      "first_name": "Updated",
+      "password": "password123",
+      "email": "updated.parker@example.com"
+    }
+order: 4501705007432634

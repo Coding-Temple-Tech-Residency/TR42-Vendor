@@ -1,0 +1,5 @@
+$kind: http-request
+name: Delete compliance document
+url: http://127.0.0.1:5001/api/compliance_document
+method: DELETE
+order: 1776033043518

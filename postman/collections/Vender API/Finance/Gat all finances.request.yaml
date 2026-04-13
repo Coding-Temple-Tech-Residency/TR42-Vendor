@@ -1,0 +1,5 @@
+$kind: http-request
+name: Gat all finances
+url: http://127.0.0.1:5000/customers/my-tickets
+method: GET
+order: 2303665194287843

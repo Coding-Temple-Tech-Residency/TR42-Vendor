@@ -1,0 +1,5 @@
+$kind: http-request
+name: Update MSA
+url: http://127.0.0.1:5001/api/msa
+method: PUT
+order: 945360149224604

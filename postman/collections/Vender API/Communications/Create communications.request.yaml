@@ -1,0 +1,5 @@
+$kind: http-request
+name: Create communications
+url: http://127.0.0.1:5001/api/communications
+method: POST
+order: 3424418602064236

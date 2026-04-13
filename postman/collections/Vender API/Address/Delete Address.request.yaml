@@ -1,0 +1,5 @@
+$kind: http-request
+name: Delete Address
+url: http://127.0.0.1:5001/api/addresses
+method: GET
+order: 3315593991159807

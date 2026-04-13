@@ -1,0 +1,5 @@
+$kind: http-request
+name: Delete invoices
+url: http://127.0.0.1:5001/api/invoices
+method: DELETE
+order: 4316439100512285

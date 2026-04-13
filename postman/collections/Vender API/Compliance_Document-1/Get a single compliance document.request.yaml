@@ -1,0 +1,5 @@
+$kind: http-request
+name: Get a single compliance document
+url: http://127.0.0.1:5001/api/compliance_document
+method: GET
+order: 4234057261478583

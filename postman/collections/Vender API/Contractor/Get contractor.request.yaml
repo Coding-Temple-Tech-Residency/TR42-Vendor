@@ -1,0 +1,5 @@
+$kind: http-request
+name: Get contractor
+url: http://127.0.0.1:5001/api/contractors
+method: GET
+order: 1776022940402

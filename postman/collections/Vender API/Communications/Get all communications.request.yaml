@@ -1,0 +1,5 @@
+$kind: http-request
+name: Get all communications
+url: http://127.0.0.1:5001/api/communications
+method: GET
+order: 1382272325975102

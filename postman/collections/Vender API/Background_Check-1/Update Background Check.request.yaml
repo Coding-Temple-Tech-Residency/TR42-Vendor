@@ -1,0 +1,12 @@
+$kind: http-request
+name: Update Background Check
+url: http://127.0.0.1:5001/api/background_check
+method: PUT
+body:
+  type: json
+  content: |
+    {
+      "check_status": "Completed",
+      "check_result": "No issues found"
+    }
+order: 25557091745791

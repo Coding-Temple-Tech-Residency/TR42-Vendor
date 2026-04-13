@@ -1,0 +1,9 @@
+$kind: http-request
+name: Get All Current Users
+url: http://127.0.0.1:5001/api/users
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: ""
+order: 4458449587521086

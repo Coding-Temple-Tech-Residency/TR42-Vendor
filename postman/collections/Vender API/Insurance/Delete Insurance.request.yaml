@@ -1,0 +1,5 @@
+$kind: http-request
+name: Delete Insurance
+url: http://127.0.0.1:5001/api/insurance
+method: DELETE
+order: 4489968355029747

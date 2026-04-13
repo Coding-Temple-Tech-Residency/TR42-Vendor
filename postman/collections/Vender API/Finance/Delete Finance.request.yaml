@@ -1,0 +1,5 @@
+$kind: http-request
+name: Delete Finance
+url: http://127.0.0.1:5001/api/finance
+method: DELETE
+order: 1776034086947

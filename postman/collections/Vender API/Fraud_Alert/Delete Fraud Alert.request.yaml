@@ -1,0 +1,5 @@
+$kind: http-request
+name: Delete Fraud Alert
+url: http://127.0.0.1:5001/api/fraud_alert
+method: DELETE
+order: 3399579405931513

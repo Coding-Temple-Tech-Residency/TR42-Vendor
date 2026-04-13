@@ -1,0 +1,38 @@
+$kind: http-request
+name: Create Contractor
+url: http://127.0.0.1:5001/api/contractors
+method: POST
+body:
+  type: json
+  content: |
+    {
+      "contractor_id": "",
+      "employee_number":
+      "vendor_id": "",
+      "vendor_manager_id": "",
+      "first_name": "",
+      "last_name": "",
+      "middle_name": "",
+      "date_of_birth": "",
+      "ssn_last_four": ""
+      contact_number
+      alternate_number
+      email
+      role
+      status
+      biometric_enrolled
+      is_onboarded
+      is_subcontractor
+      is_fte
+      is_licensed
+      is_insured
+      is_certified
+      address_id
+      average_rating
+      years_experience
+      background_check_id
+      drug_test_id
+      preferred_job_types
+
+    }
+order: 586989637329377

@@ -1,0 +1,16 @@
+$kind: http-request
+name: "Create Background Check"
+url: http://127.0.0.1:5001/api/background_check
+method: POST
+body:
+  type: json
+  content: |
+    {
+      "background_check_id": "550e8400-e29b-41d4-a716-446655440000",
+      "contractor_id": "550e8400-e29b-41d4-a716-446655440000",
+      "check_type": "Criminal",
+      "check_status": "Pending",
+      "check_date": "2023-10-01",
+      "check_result": null
+    }
+order: 1945054134403071

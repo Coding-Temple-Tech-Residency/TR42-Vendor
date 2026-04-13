@@ -1,0 +1,5 @@
+$kind: http-request
+name: Get all services
+url: http://127.0.0.1:5001/api/services
+method: GET
+order: 1425911247745799

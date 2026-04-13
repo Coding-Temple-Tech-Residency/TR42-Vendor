@@ -1,0 +1,5 @@
+$kind: http-request
+name: Update invoice
+url: http://127.0.0.1:5001/api/invoices
+method: PUT
+order: 4256004875597933

@@ -1,0 +1,5 @@
+$kind: http-request
+name: Create Session
+url: http://127.0.0.1:5001/api/sessions
+method: POST
+order: 1776044437624

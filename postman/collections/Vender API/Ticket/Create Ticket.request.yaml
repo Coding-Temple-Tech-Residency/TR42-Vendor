@@ -1,0 +1,5 @@
+$kind: http-request
+name: Create Ticket
+url: http://127.0.0.1:5001/api/tickets
+method: POST
+order: 4017677913383891

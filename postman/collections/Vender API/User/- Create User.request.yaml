@@ -1,0 +1,16 @@
+$kind: http-request
+name: "? Create User"
+url: http://127.0.0.1:5001/api/users
+method: POST
+body:
+  type: json
+  content: |
+    {
+      "first_name": "Peter",
+      "last_name": "Parker",
+      "password": "password123",
+      "email": "peter.parker@example.com",
+      "username": "spiderman",
+      "user_type": "contractor"
+    }
+order: 4302230742272029

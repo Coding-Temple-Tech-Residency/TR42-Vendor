@@ -1,0 +1,5 @@
+$kind: http-request
+name: Get all contractor performances
+url: http://127.0.0.1:5001/api/contractor_performance
+method: GET
+order: 2257116110667178

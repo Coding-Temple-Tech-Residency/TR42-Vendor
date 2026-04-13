@@ -1,0 +1,5 @@
+$kind: http-request
+name: Update Session
+url: http://127.0.0.1:5001/api/sessions
+method: PUT
+order: 3962156387663290

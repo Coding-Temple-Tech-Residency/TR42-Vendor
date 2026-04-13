@@ -1,0 +1,5 @@
+$kind: http-request
+name: Update certifications
+url: http://127.0.0.1:5001/api/certifications
+method: PUT
+order: 353244131284788

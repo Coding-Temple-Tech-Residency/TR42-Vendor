@@ -1,0 +1,5 @@
+$kind: http-request
+name: Create Fraud Alert
+url: http://127.0.0.1:5001/api/fraud_alert
+method: POST
+order: 1776040147398

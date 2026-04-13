@@ -1,0 +1,5 @@
+$kind: http-request
+name: Get a single ticket
+url: http://127.0.0.1:5000/customers/my-tickets
+method: GET
+order: 3556962569959331

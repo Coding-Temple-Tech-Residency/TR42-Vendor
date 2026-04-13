@@ -1,0 +1,5 @@
+$kind: http-request
+name: Get all fraud alerts
+url: http://127.0.0.1:5001/api/fraud_alert
+method: GET
+order: 4468740127746727

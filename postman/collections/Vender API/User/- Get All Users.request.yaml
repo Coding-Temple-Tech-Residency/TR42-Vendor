@@ -1,0 +1,5 @@
+$kind: http-request
+name: "? Get All Users"
+url: http://127.0.0.1:5001/api/users
+method: GET
+order: 4475380287638045

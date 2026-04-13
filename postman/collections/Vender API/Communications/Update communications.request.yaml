@@ -1,0 +1,5 @@
+$kind: http-request
+name: Update communications
+url: http://127.0.0.1:5001/api/communications
+method: PUT
+order: 4260613729915781

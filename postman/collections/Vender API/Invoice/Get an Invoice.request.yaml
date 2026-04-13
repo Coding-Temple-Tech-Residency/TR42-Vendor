@@ -1,0 +1,5 @@
+$kind: http-request
+name: Get an Invoice
+url: http://127.0.0.1:5001/api/invoices
+method: GET
+order: 3383242726412191

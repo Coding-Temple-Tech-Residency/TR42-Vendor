@@ -1,0 +1,5 @@
+$kind: http-request
+name: Get addresses
+url: http://127.0.0.1:5001/api/addresses
+method: GET
+order: 507409622630399

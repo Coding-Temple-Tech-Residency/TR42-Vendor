@@ -1,0 +1,5 @@
+$kind: http-request
+name: Delete Ticket
+url: http://127.0.0.1:5001/api/tickets
+method: GET
+order: 3920993422301919

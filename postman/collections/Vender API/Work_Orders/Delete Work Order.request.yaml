@@ -1,0 +1,5 @@
+$kind: http-request
+name: Delete Work Order
+url: http://127.0.0.1:5001/api/work_orders
+method: DELETE
+order: 4080837767838877

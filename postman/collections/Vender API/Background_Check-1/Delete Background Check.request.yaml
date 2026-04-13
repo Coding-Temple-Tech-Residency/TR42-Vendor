@@ -1,0 +1,5 @@
+$kind: http-request
+name: Delete Background Check
+url: http://127.0.0.1:5001/api/background_check
+method: DELETE
+order: 4167720346058751

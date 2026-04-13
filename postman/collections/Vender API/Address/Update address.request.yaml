@@ -1,0 +1,5 @@
+$kind: http-request
+name: Update address
+url: http://127.0.0.1:5001/api/addresses
+method: PUT
+order: 1111541739945983

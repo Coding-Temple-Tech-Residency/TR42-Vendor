@@ -1,0 +1,5 @@
+$kind: http-request
+name: Get Single User
+url: http://127.0.0.1:5001/api/users/dd1e1fcc-569f-46c9-8798-6177bc5f15a2
+method: GET
+order: 4492245745317204

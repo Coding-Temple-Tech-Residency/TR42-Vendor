@@ -1,0 +1,5 @@
+$kind: http-request
+name: Delete Certification
+url: http://127.0.0.1:5001/api/certifications
+method: DELETE
+order: 1776037571508

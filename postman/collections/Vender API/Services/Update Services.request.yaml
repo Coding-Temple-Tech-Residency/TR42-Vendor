@@ -1,0 +1,5 @@
+$kind: http-request
+name: Update Services
+url: http://127.0.0.1:5001/api/services
+method: PUT
+order: 4130977205659153

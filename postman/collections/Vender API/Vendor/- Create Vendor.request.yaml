@@ -1,0 +1,17 @@
+$kind: http-request
+name: "? Create Vendor"
+url: http://127.0.0.1:5001/api/vendors
+method: POST
+body:
+  type: json
+  content: |
+    {
+      "address_id": "dd1e1fcc-569f-46c9-8798-6177bc5f15a2",
+      "company_email": "info@acmecontracting.com",
+      "created_by_user_id": "dd1e1fcc-569f-46c9-8798-6177bc5f15a2",
+      "primary_contact_name": "John Martinez",
+      "service_type": "contractor",
+      "company_name": "Acme Contracting",
+      "company_phone": "525-123-4567"
+    }
+order: 868788063953008

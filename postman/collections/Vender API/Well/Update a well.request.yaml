@@ -1,0 +1,5 @@
+$kind: http-request
+name: Update a well
+url: http://127.0.0.1:5001/api/wells
+method: GET
+order: 3082353015714344

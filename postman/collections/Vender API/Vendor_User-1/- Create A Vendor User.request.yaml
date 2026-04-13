@@ -1,0 +1,14 @@
+$kind: http-request
+name: "? Create A Vendor User"
+url: http://127.0.0.1:5001/api/vendor_users
+method: POST
+body:
+  type: json
+  content: |
+    {
+      "user_id": "dd1e1fcc-569f-46c9-8798-6177bc5f15a2",
+      "company_email": "info@acmecontracting.com",
+      "vendor_id": "3e9d44a9-3ab3-4b08-a172-bb5047cb2610",
+      "vendor_user_role": "admin"
+    }
+order: 948554633448148

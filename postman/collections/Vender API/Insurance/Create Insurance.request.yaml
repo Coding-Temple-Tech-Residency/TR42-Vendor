@@ -1,0 +1,5 @@
+$kind: http-request
+name: Create Insurance
+url: http://127.0.0.1:5001/api/insurance
+method: POST
+order: 4503409739133558

@@ -1,0 +1,5 @@
+$kind: http-request
+name: Update finance
+url: http://127.0.0.1:5001/api/finance
+method: GET
+order: 381796890622231

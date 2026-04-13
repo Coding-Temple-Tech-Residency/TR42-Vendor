@@ -1,0 +1,5 @@
+$kind: http-request
+name: Update licenses
+url: http://127.0.0.1:5001/api/licenses
+method: PUT
+order: 4257168038324785

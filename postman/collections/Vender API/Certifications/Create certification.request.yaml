@@ -1,0 +1,5 @@
+$kind: http-request
+name: Create certification
+url: http://127.0.0.1:5001/api/certifications
+method: POST
+order: 789548150084575

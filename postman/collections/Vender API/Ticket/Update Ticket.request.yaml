@@ -1,0 +1,5 @@
+$kind: http-request
+name: Update Ticket
+url: http://127.0.0.1:5001/api/tickets
+method: PUT
+order: 3711232188651870

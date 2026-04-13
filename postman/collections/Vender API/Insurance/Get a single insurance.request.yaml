@@ -1,0 +1,5 @@
+$kind: http-request
+name: Get a single insurance
+url: http://127.0.0.1:5001/api/insurance
+method: GET
+order: 1681533683718695

@@ -1,0 +1,15 @@
+$kind: http-request
+name: Create Address
+url: http://127.0.0.1:5001/api/addresses
+method: POST
+body:
+  type: json
+  content: |
+    {
+      "street": "123 Main St",
+      "city": "Anytown",
+      "state": "CA",
+      "zipcode": "12345",
+      "country": "USA"
+    }
+order: 4200199058620415

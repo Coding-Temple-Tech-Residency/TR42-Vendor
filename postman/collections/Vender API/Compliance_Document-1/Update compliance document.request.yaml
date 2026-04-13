@@ -1,0 +1,5 @@
+$kind: http-request
+name: Update compliance document
+url: http://127.0.0.1:5001/api/compliance_document
+method: PUT
+order: 3357469205925225

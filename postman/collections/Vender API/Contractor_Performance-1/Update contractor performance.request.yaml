@@ -1,0 +1,5 @@
+$kind: http-request
+name: Update contractor performance
+url: http://127.0.0.1:5001/api/contractor_performance
+method: PUT
+order: 4482861372497573

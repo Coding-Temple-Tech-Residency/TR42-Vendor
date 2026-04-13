@@ -1,0 +1,5 @@
+$kind: http-request
+name: Delete session
+url: http://127.0.0.1:5001/api/sessions
+method: DELETE
+order: 60601395566915

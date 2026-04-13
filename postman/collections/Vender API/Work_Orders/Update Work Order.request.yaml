@@ -1,0 +1,5 @@
+$kind: http-request
+name: Update Work Order
+url: http://127.0.0.1:5001/api/work_orders
+method: PUT
+order: 3968111332811920

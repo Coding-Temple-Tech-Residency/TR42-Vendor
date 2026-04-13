@@ -1,0 +1,12 @@
+$kind: http-request
+name: Login user
+url: http://127.0.0.1:5001/api/users/login
+method: POST
+body:
+  type: json
+  content: |
+    {
+      "email": "jcole@email.com",
+      "password": "245589"
+    }
+order: 1775960534528

@@ -1,0 +1,5 @@
+$kind: http-request
+name: Delete communications
+url: http://127.0.0.1:5001/api/communications
+method: GET
+order: 4467523725730866

@@ -1,0 +1,28 @@
+$kind: http-request
+name: Register User
+url: http://127.0.0.1:5001/api/registration
+method: POST
+body:
+  type: json
+  content: |
+    {
+      "user": {
+        "username": "jcole",
+        "password": "245589",
+        "email": "jcole@email.com",
+        "first_name": "Julian",
+        "last_name": "Cole"
+      },
+      "vendor": {
+        "company_name": "Oil & Gas Co.",
+        "address": "3 Stewart St",
+        "city": "Dallas",
+        "state": "TX",
+        "zipcode": "75202",
+        "company_email": "info@oilandgas.com",
+        "company_phone": "544-753-9876",
+        "primary_contact_name": "Julian Cole",
+        "service_type": "Oil & Gas"
+      }
+    }
+order: 1775922404528

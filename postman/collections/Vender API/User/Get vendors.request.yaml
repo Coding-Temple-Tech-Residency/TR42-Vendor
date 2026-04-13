@@ -1,0 +1,5 @@
+$kind: http-request
+name: Get vendors
+url: ""
+method: GET
+order: 4502962282997689

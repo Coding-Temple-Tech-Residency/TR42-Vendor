@@ -1,0 +1,5 @@
+$kind: http-request
+name: Create Work Order
+url: http://127.0.0.1:5001/api/work_orders
+method: POST
+order: 4453659003140140

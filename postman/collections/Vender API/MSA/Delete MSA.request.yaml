@@ -1,0 +1,5 @@
+$kind: http-request
+name: Delete MSA
+url: http://127.0.0.1:5001/api/msa
+method: DELETE
+order: 1776034595173

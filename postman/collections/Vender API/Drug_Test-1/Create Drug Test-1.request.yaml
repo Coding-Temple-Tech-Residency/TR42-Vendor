@@ -1,0 +1,12 @@
+$kind: http-request
+name: Create Drug Test
+url: http://127.0.0.1:5001/api/drug_tests
+method: POST
+body:
+  type: json
+  content: |
+    {
+      "drug_test_passed": false,
+      "drug_test_date": "2024-06-01T12:00:00Z",
+    }
+order: 754065321492479

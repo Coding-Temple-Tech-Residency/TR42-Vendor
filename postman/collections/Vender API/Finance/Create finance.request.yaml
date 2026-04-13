@@ -1,0 +1,5 @@
+$kind: http-request
+name: Create finance
+url: http://127.0.0.1:5001/api/finance
+method: POST
+order: 330704338230181

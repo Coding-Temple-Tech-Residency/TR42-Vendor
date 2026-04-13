@@ -1,0 +1,5 @@
+$kind: http-request
+name: Get MSA
+url: http://127.0.0.1:5001/api/msa
+method: GET
+order: 1431452836508880

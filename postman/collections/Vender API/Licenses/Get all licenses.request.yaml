@@ -1,0 +1,5 @@
+$kind: http-request
+name: Get all licenses
+url: http://127.0.0.1:5001/api/licenses
+method: GET
+order: 4443615913006624

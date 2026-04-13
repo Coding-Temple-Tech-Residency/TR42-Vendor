@@ -1,0 +1,5 @@
+$kind: http-request
+name: Get all compliance documents
+url: http://127.0.0.1:5001/api/compliance_document
+method: GET
+order: 3969926865676695
