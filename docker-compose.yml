@@ -76,4 +76,9 @@ volumes:
 
 # docker compose down -v <- this wipes the database
 # docker compose down <- Stops and removes containers, keeps data
-# docker compose up --build
+# docker compose up --build backend frontend db pgadmin 
+
+# SEED DATABASE INSTRUCTIONS
+# db compose build seed
+# db compose up --build -d db pgadmin
+# db compose --profile seed run --rm seed
