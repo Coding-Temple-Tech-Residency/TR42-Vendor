@@ -11,12 +11,11 @@ if TYPE_CHECKING:
     from app.blueprints.well.model import Well
 
 class OrderStatus(enum.Enum):
-    PENDING = "pending"
-    ASSIGNED = "assigned"
-    IN_PROGRESS = "in_progress"
-    COMPLETED = "completed"
-    CANCELLED = "cancelled"
-
+    PENDING = "Pending"
+    ASSIGNED = "Assigned"
+    IN_PROGRESS = "In Progress"
+    COMPLETED = "Completed"
+    CANCELLED = "Cancelled"
 
 class PriorityStatus(enum.Enum):
     LOW = "low"

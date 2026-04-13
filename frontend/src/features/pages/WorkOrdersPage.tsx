@@ -12,6 +12,11 @@ import OpenWorkOrdersTable from "../dashboard/components/OpenWorkOrdersTable";
 import AssignContractorTable from "../dashboard/components/AssignContractorTable";
 import FraudReviewTable from "../dashboard/components/FraudReviewTable";
 
+import { Link } from "react-router-dom";
+
+//Reusable hooks
+import { useWorkOrders } from "../hooks/useWorkOrders";
+
 import {
   BarChart,
   Bar,
@@ -24,16 +29,52 @@ import {
 function WorkOrdersPage() {
   const kpiData = {
     overdue: 5,
-    unassigned: 12,
-    assigned: 8,
-    inProgress: 21,
-    completed: 45,
+    // unassigned: 12,
+    // assigned: 8,
+    // inProgress: 21,
+    // completed: 45,
     avgCompletion: "2.4 days",
   };
 
+  const {
+    loading,
+    unassignedCount,
+    error,
+    inProgressCount,
+    assignedCount,
+    completedCount,
+    unassignedWorkOrders,
+    assignedWorkOrders,
+    inProgressWorkOrders,
+    recentlyCompleted,
+  } = useWorkOrders({ page: 1, perPage: 50, current_status: "all" });
+
+  if (loading) {
+    return (
+      <AppLayout
+        sidebar={<Sidebar />}
+        topbar={<Topbar title="Vendor Dashboard" userName="Katty" />}
+      >
+        <div className="p-6 text-gray-600">Loading work orders...</div>
+      </AppLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <AppLayout
+        sidebar={<Sidebar />}
+        topbar={<Topbar title="Vendor Dashboard" userName="Katty" />}
+      >
+        <div className="p-6 text-red-500">{error}</div>
+      </AppLayout>
+    );
+  }
+
+  // const openWorkOrders = workOrders;
   const statusChartData = [
     { name: "Overdue", value: 5, color: "#EF4444" },
-    { name: "Unassigned", value: 12, color: "#F59E0B" },
+    // { name: "Unassigned", value: 12, color: "#F59E0B" },
     { name: "Assigned", value: 8, color: "#3B82F6" },
     { name: "In Progress", value: 21, color: "#1E3A5F" },
     { name: "Completed", value: 45, color: "#10B981" },
@@ -62,11 +103,6 @@ function WorkOrdersPage() {
     );
   };
 
-  const unassignedWorkOrders = [];
-  const assignedWorkOrders = [];
-  const inProgressWorkOrders = [];
-  const recentlyCompleted = [];
-
   return (
     <AppLayout
       sidebar={<Sidebar />}
@@ -84,19 +120,24 @@ function WorkOrdersPage() {
         </SectionCard>
 
         <SectionCard title="Unassigned" subtitle="Needs assignment">
-          <div className="text-3xl font-bold">{kpiData.unassigned}</div>
+          <Link
+            to="/vendor/work-orders"
+            className="text-3xl hover:opacity-75 transition-opacity font-bold cursor-pointer"
+          >
+            <div>{unassignedCount}</div>
+          </Link>
         </SectionCard>
 
         <SectionCard title="Assigned" subtitle="Not started">
-          <div className="text-3xl font-bold">{kpiData.assigned}</div>
+          <div className="text-3xl font-bold">{assignedCount}</div>
         </SectionCard>
 
         <SectionCard title="In Progress" subtitle="On site">
-          <div className="text-3xl font-bold">{kpiData.inProgress}</div>
+          <div className="text-3xl font-bold">{inProgressCount}</div>
         </SectionCard>
 
         <SectionCard title="Completed" subtitle="This week">
-          <div className="text-3xl font-bold">{kpiData.completed}</div>
+          <div className="text-3xl font-bold">{completedCount}</div>
         </SectionCard>
 
         <SectionCard title="Avg. Completion" subtitle="This month">
@@ -106,19 +147,23 @@ function WorkOrdersPage() {
 
       {/* Charts Section */}
       <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
-        
         {/* Donut + Legend */}
         <SectionCard title="Work Order by Status">
           <div className="flex items-center justify-between">
-            
             <div className="flex-1 flex justify-center">
               <div className="space-y-3">
                 {statusChartData.map((item) => {
-                  const total = statusChartData.reduce((sum, i) => sum + i.value, 0);
+                  const total = statusChartData.reduce(
+                    (sum, i) => sum + i.value,
+                    0,
+                  );
                   const percentage = Math.round((item.value / total) * 100);
 
                   return (
-                    <div key={item.name} className="flex items-center gap-3 text-sm">
+                    <div
+                      key={item.name}
+                      className="flex items-center gap-3 text-sm"
+                    >
                       <span
                         className="h-2.5 w-2.5 rounded-full"
                         style={{ backgroundColor: item.color }}
@@ -138,14 +183,12 @@ function WorkOrdersPage() {
                 <DonutChart data={statusChartData} />
               </div>
             </div>
-
           </div>
         </SectionCard>
 
         <SectionCard title="Work Orders Created (per week)">
           <SimpleBarChart data={workOrdersCreated} />
         </SectionCard>
-
       </div>
 
       <div className="mt-6 grid grid-cols-1">
@@ -156,7 +199,7 @@ function WorkOrdersPage() {
               description="Work orders needing assignment will appear here."
             />
           ) : (
-            <OpenWorkOrdersTable />
+            <OpenWorkOrdersTable data={unassignedWorkOrders} />
           )}
         </SectionCard>
       </div>
@@ -169,7 +212,7 @@ function WorkOrdersPage() {
               description="Assigned work orders will appear here."
             />
           ) : (
-            <AssignContractorTable />
+            <AssignContractorTable data={assignedWorkOrders}/>
           )}
         </SectionCard>
 
@@ -180,7 +223,7 @@ function WorkOrdersPage() {
               description="Work orders currently in progress will appear here."
             />
           ) : (
-            <OpenWorkOrdersTable />
+            <OpenWorkOrdersTable data={inProgressWorkOrders}/>
           )}
         </SectionCard>
       </div>
@@ -193,7 +236,8 @@ function WorkOrdersPage() {
               description="Completed work orders will appear here."
             />
           ) : (
-            <FraudReviewTable />
+            // <FraudReviewTable />
+            <OpenWorkOrdersTable data={recentlyCompleted}/>
           )}
         </SectionCard>
       </div>

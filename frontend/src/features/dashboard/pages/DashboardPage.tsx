@@ -6,9 +6,7 @@ import PageHeader from "../../components/UI/PageHeader";
 import SectionCard from "../../components/UI/SectionCard";
 import EmptyState from "../../components/UI/EmptyState";
 
-import { useEffect, useState } from "react";
-import { getOpenWorkOrders } from "../../auth/services/workOrderService";
-import { getVendorId } from "../../auth/utils/authTokenUtils";
+import { Link } from "react-router-dom";
 
 // import {
 //   UserPlusIcon,
@@ -24,15 +22,17 @@ import AssignContractorTable from "../components/AssignContractorTable";
 import FraudReviewTable from "../components/FraudReviewTable";
 import LineChart from "../../components/UI/LineChart";
 
-type WorkOrderRow = {
-  id: string;
-  location: string;
-  current_status: string;
-  assignedTo: string;
-  dueDate: string;
-}
+//Reusable hooks
+import { useWorkOrders } from "../../hooks/useWorkOrders";
 
 function DashboardPage() {
+  const {
+    workOrders: openWorkOrders,
+    loading: loadingWorkOrders,
+    error: workOrdersError,
+    unassignedCount: unassignedCount,
+    pendingCount,
+  } = useWorkOrders({ page: 1, perPage: 10, status: "all" });
 
   // KPI DATA (dummy for now)
   const kpiData = {
@@ -64,35 +64,9 @@ function DashboardPage() {
   const pendingInvoices: any[] = [];
   const fraudReview: any[] = [];
 
-  const [workOrders, setWorkOrders] = useState<WorkOrderRow[]>([]);
-  const [loadingWorkOrders, setLoadingWorkOrders] = useState(false);
-  const [workOrdersError, setWorkOrdersError] = useState<string | null>(null);
-
-  const openWorkOrders = workOrders;
-
-  useEffect(() => {
-    const fetchWorkOrders = async () => {
-      try{
-        setLoadingWorkOrders(true);
-        setWorkOrdersError(null);
-
-        const vendorId = getVendorId();
-        if (!vendorId) {
-          setWorkOrders([]);
-          setWorkOrdersError("Vendor ID not found. Please log in again.");
-          return;
-        }
-        const rows = await getOpenWorkOrders(1, 10);
-
-        setWorkOrders(rows);
-      } catch (error: any) {
-        setWorkOrdersError(error.message || "Failed to load work orders");
-      } finally {
-        setLoadingWorkOrders(false);
-      }
-    };
-    fetchWorkOrders();
-  }, []);
+  // const [workOrders, setWorkOrders] = useState<WorkOrderRow[]>([]);
+  // const [loadingWorkOrders, setLoadingWorkOrders] = useState(false);
+  // const [workOrdersError, setWorkOrdersError] = useState<string | null>(null);
 
   // KPI COLOR HELPER
   const getKpiColor = (value) => {
@@ -118,21 +92,28 @@ function DashboardPage() {
           title="Unassigned Work Orders"
           subtitle="Jobs needing assignment"
         >
-          <div className={`text-3xl font-bold ${getKpiColor(kpiData.unassigned)}`}>
-            {kpiData.unassigned}
-          </div>
+          <Link
+            to="/vendor/work-orders"
+            className="text-3xl hover:opacity-75 transition-opacity font-bold cursor-pointer"
+          >
+            <div className={`${getKpiColor(unassignedCount)}`}>
+              {unassignedCount}
+            </div>
+          </Link>
         </SectionCard>
 
         <SectionCard title="Pending Jobs" subtitle="Jobs awaiting action">
           <div className={`text-3xl font-bold ${getKpiColor(kpiData.pending)}`}>
-          {/* <div className="text-3xl font-bold text-yellow-600"> */}
+            {/* <div className="text-3xl font-bold text-yellow-600"> */}
             {kpiData.pending}
           </div>
         </SectionCard>
 
         <SectionCard title="Open Invoices" subtitle="Invoices requiring review">
-          <div className={`text-3xl font-bold ${getKpiColor(kpiData.openInvoices)}`}>
-          {/* <div className="text-3xl font-bold text-green-600"> */}
+          <div
+            className={`text-3xl font-bold ${getKpiColor(kpiData.openInvoices)}`}
+          >
+            {/* <div className="text-3xl font-bold text-green-600"> */}
             {kpiData.openInvoices}
           </div>
         </SectionCard>
@@ -157,7 +138,9 @@ function DashboardPage() {
           {/* Open Work Orders Table */}
           <SectionCard title="Open Work Orders">
             {loadingWorkOrders ? (
-              <p className="text-center text-gray-500">Loading work orders...</p>
+              <p className="text-center text-gray-500">
+                Loading work orders...
+              </p>
             ) : workOrdersError ? (
               <p className="text-center text-red-500">{workOrdersError}</p>
             ) : openWorkOrders.length === 0 ? (
@@ -196,7 +179,6 @@ function DashboardPage() {
               {/* Temporarily Force UI To Show */}
               {true ? (
                 <div className="bg-white rounded-xl shadow-sm p-4 flex items-center justify-center gap-10">
-                  
                   <div className="relative h-48 w-48 flex-shrink-0">
                     <DonutChart data={invoiceChartData} />
 
@@ -210,11 +192,19 @@ function DashboardPage() {
 
                   <div className="space-y-5 ml-8 flex-1">
                     {invoiceChartData.map((item) => {
-                      const total = invoiceChartData.reduce((sum, i) => sum + i.value, 0);
-                      const percentage = ((item.value / total) * 100).toFixed(1);
+                      const total = invoiceChartData.reduce(
+                        (sum, i) => sum + i.value,
+                        0,
+                      );
+                      const percentage = ((item.value / total) * 100).toFixed(
+                        1,
+                      );
 
                       return (
-                        <div key={item.name} className="flex items-center gap-4">
+                        <div
+                          key={item.name}
+                          className="flex items-center gap-4"
+                        >
                           <div className="flex items-center gap-2 min-w-[140px]">
                             <span
                               className="h-3 w-3 rounded"
@@ -235,7 +225,6 @@ function DashboardPage() {
                       );
                     })}
                   </div>
-
                 </div>
               ) : (
                 <EmptyState

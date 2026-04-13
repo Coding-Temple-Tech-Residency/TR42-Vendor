@@ -7,6 +7,7 @@ interface DataTableProps {
   columns: Column[];
   data: any[];
   emptyMessage?: string;
+  onRowClick?: (row: any) => void;
 }
 
 function DataTable({ columns, data, emptyMessage }: DataTableProps) {
