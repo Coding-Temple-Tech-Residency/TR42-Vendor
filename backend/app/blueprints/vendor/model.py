@@ -19,6 +19,7 @@ from app.base import BaseModel
 if TYPE_CHECKING:
     from app.blueprints.address.model import Address
     from app.blueprints.vendor_user.model import VendorUser
+    from app.blueprints.invoices.model import Invoice
 
 
 class VendorStatus(enum.Enum):
@@ -89,5 +90,9 @@ class Vendor(BaseModel):
     address: Mapped["Address"] = relationship(back_populates="vendor")
 
     vendor_links: Mapped[list["VendorUser"]] = relationship(
+        back_populates="vendor", cascade="all, delete-orphan"
+    )
+
+    invoices: Mapped[list["Invoice"]] = relationship(
         back_populates="vendor", cascade="all, delete-orphan"
     )

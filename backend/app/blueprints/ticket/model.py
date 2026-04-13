@@ -7,6 +7,12 @@ class Ticket(BaseModel):
 
     ticket_id = db.Column(db.String, primary_key=True)
 
+    invoice_id = db.Column(
+        db.String,
+        db.ForeignKey('invoice.invoice_id'),
+        nullable=True
+    )
+
     work_order_id = db.Column(
         db.String,
         db.ForeignKey('work_orders.work_order_id'),

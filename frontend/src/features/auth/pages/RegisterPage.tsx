@@ -2,6 +2,7 @@ import AuthCard from "../components/AuthCard";
 import AuthHeader from "../components/AuthHeader";
 import AuthLayout from "../components/AuthLayout";
 import RegisterUserForm from "../forms/RegisterUserForm";
+import AuthFooterLink from "../components/AuthFooterLink";
 
 function RegisterPage() {
   return (
@@ -13,6 +14,14 @@ function RegisterPage() {
         />
 
         <RegisterUserForm />
+
+        {/* Footer Link */}
+        <AuthFooterLink
+          text="Already have an account?"
+          linkText="Login"
+          to="/vendor/login"
+        />
+        
       </AuthCard>
     </AuthLayout>
   );
