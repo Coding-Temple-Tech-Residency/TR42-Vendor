@@ -16,7 +16,7 @@ from app.blueprints.certifications.model import Certification
 #from app.blueprints.finance.model import LineItem
 #from app.blueprints.fraud_alerts.model import FraudAlert
 from app.blueprints.insurance.model import Insurance
-from app.blueprints.invoice.model import Invoice
+from app.blueprints.invoices.model import Invoice
 #from app.blueprints.msa.model import MSA
 #from app.blueprints.role.model import Role
 #from app.blueprints.services.model import Service

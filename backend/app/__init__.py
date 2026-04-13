@@ -38,7 +38,7 @@ def create_app(config_object=None):
                     print("Database is ready")
                     break
                 except Exception as e:
-                    print(f"Database not ready yet, retrying... ({i + 1}/10): {e}")
+                    print(f"Database not ready yet, retrying... ({i + 1}/api/10): {e}")
                     time.sleep(2)
             else:
                 raise RuntimeError("Database was not ready after multiple attempts")
@@ -64,7 +64,7 @@ def create_app(config_object=None):
     #from app.blueprints.finance.controller.routes import line_item_bp
     #from app.blueprints.fraud_alerts.controller.routes import fraud_alert_bp
     from app.blueprints.insurance.controller.routes import insurance_bp
-    from app.blueprints.invoice.controller.routes import invoice_bp
+    from app.blueprints.invoices.controller.invoice_routes import invoice_bp
     #from app.blueprints.msa.controller.routes import msa_bp
     #from app.blueprints.role.controller.routes import Role
     #from app.blueprints.services.controller.routes import service_bp
@@ -72,6 +72,8 @@ def create_app(config_object=None):
     #from app.blueprints.ticket_extras.controller.routes import ticket_photo
     from app.blueprints.well.controller.routes import well_bp
     from app.blueprints.work_orders.controller.work_order_routes import work_order_bp
+    from app.blueprints.invoices.controller.invoice_routes import invoice_bp
+    from app.blueprints.invoices.controller.lineitem_routes import lineItem_bp
 
 
 
@@ -90,7 +92,7 @@ def create_app(config_object=None):
     app.register_blueprint(license_bp, url_prefix="/api/licenses")
     app.register_blueprint(certification_bp, url_prefix="/api/certifications")
     #app.register_blueprint(communication_bp, url_prefix="/api/communication")
-    #app.register_blueprint(line_item_bp, url_prefix="/api/line_items")
+    app.register_blueprint(lineItem_bp, url_prefix="/api/line_items")
     #app.register_blueprint(fraud_alert_bp, url_prefix="/api/fraud_alerts")
     app.register_blueprint(insurance_bp, url_prefix="/api/insurance")
     app.register_blueprint(invoice_bp, url_prefix="/api/invoices")
@@ -104,3 +106,5 @@ def create_app(config_object=None):
     
     
     return app
+
+
