@@ -1,4 +1,3 @@
-from app.extensions import db
 from app.functions import generate_uuid
 from typing import TYPE_CHECKING
 from sqlalchemy import (
@@ -8,15 +7,15 @@ from sqlalchemy import (
     ForeignKey,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-
 import enum
-
 from app.base import BaseModel
 
 if TYPE_CHECKING:
     from app.blueprints.address.model import Address
     from app.blueprints.vendor_user.model import VendorUser
+    from app.blueprints.vendor_contractor.model import VendorContractor
+    from app.blueprints.compliance_document.model import ComplianceDocument
+
 
 class VendorStatus(enum.Enum):
     ACTIVE = "active"
@@ -68,10 +67,21 @@ class Vendor(BaseModel):
         unique=True,
     )
 
-    # relationships
-
+    # Relationships
     address: Mapped["Address"] = relationship(back_populates="vendor")
 
-    vendor_links: Mapped[list["VendorUser"]] = relationship(
-        back_populates="vendor", cascade="all, delete-orphan"
+    user_links: Mapped[list["VendorUser"]] = relationship(
+        "VendorUser", back_populates="vendor", cascade="all, delete-orphan"
+    )
+
+    contractor_links: Mapped[list["VendorContractor"]] = relationship(
+        "VendorContractor",
+        back_populates="vendor",
+        cascade="all, delete-orphan",
+    )
+
+    compliance_documents: Mapped[list["ComplianceDocument"]] = relationship(
+        "ComplianceDocument",
+        back_populates="vendor",
+        cascade="all, delete-orphan",
     )

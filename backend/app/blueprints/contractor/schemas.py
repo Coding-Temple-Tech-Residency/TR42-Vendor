@@ -1,5 +1,5 @@
 from app.extensions import ma
-from blueprints.contractors import Contractor
+from blueprints.contractor import Contractor
 
 
 class ContractorSchema(ma.SQLAlchemyAutoSchema):

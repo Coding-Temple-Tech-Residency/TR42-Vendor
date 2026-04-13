@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from app.blueprints.user.model import User
     from app.blueprints.vendor.model import Vendor
 
+
 class VendorUserRole(enum.Enum):
     ADMIN = "admin"
     MANAGER = "manager"
@@ -54,5 +55,5 @@ class VendorUser(BaseModel):
 
     vendor: Mapped["Vendor"] = relationship(
         "Vendor",
-        back_populates="vendor_links",
+        back_populates="user_links",
     )
