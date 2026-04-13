@@ -2,7 +2,7 @@ from marshmallow import ValidationError, fields, pre_load, validates, validates_
 from app.extensions import ma
 from app.functions import (
     strip_input,
-    validate_address,
+    validate_street,
     validate_city,
     validate_email_format,
     validate_name,
@@ -11,6 +11,7 @@ from app.functions import (
     validate_state,
     validate_zipcode,
 )
+from app.blueprints.address.schemas import AddressSchema
 
 
 class UserRegistrationSchema(ma.Schema):
@@ -74,10 +75,7 @@ class UserRegistrationSchema(ma.Schema):
 
 class VendorRegistrationSchema(ma.Schema):
     company_name = fields.String(required=True)
-    address = fields.String(required=True)
-    city = fields.String(required=True)
-    state = fields.String(required=True)
-    zipcode = fields.String(required=True)
+    address = fields.Nested(AddressSchema, required=True)
     company_email = fields.Email(required=True)
     company_phone = fields.String(required=True)
     primary_contact_name = fields.String(required=True)
@@ -102,22 +100,6 @@ class VendorRegistrationSchema(ma.Schema):
     @validates("company_phone")
     def validate_company_phone(self, value, **kwargs):
         validate_phone_format(value)
-
-    @validates("address")
-    def validate_address_field(self, value, **kwargs):
-        validate_address(value)
-
-    @validates("city")
-    def validate_city_field(self, value, **kwargs):
-        validate_city(value)
-
-    @validates("state")
-    def validate_state_field(self, value, **kwargs):
-        validate_state(value)
-
-    @validates("zipcode")
-    def validate_zipcode_field(self, value, **kwargs):
-        validate_zipcode(value)
 
     @validates("service_type")
     def validate_service_type(self, value, **kwargs):
