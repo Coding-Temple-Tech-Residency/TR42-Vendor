@@ -83,10 +83,11 @@ class User(db.Model):
         cascade="all, delete-orphan",
     )
 
-    contractor_profile: Mapped["Contractor"] = relationship(
+    contractor_profile: Mapped["Contractor | None"] = relationship(
         "Contractor",
         back_populates="user",
         uselist=False,
+        foreign_keys="Contractor.user_id",
         cascade="all, delete-orphan",
     )
 
