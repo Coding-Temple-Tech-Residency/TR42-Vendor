@@ -115,3 +115,26 @@ class WorkOrderService:
         except Exception as e:
             logger.error(f"Error fetching vendor work orders for {vendor_id} with status {status}: {e}")
             raise
+
+    @staticmethod
+    def _validate_status_assignment_rule(data: Dict[str, Any], existing: Optional[WorkOrder] = None) -> None:
+        # Use incoming value, or fall back to existing value on partial updates
+        status = data.get("current_status", existing.current_status if existing else None)
+        assigned_vendor = data.get("assigned_vendor", existing.assigned_vendor if existing else None)
+
+        # status may be enum after schema load; normalize to string value
+        if hasattr(status, "value"):
+            status_value = status.value
+        else:
+            status_value = status
+
+        # Treat None/empty as unassigned
+        is_unassigned = assigned_vendor in (None, "")
+
+        # Rule 1: Pending requires Unassigned
+        if status_value == "Pending" and not is_unassigned:
+            raise BadRequest("Pending work orders must be unassigned")
+
+        # Unassigned can only be Pending
+        if is_unassigned and status_value != "Pending":
+            raise BadRequest("Unassigned work orders must have status Pending")

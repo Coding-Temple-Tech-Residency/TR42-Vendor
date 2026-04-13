@@ -17,6 +17,19 @@ import { Link } from "react-router-dom";
 //Reusable hooks
 import { useWorkOrders } from "../hooks/useWorkOrders";
 
+/* 
+  Questions:
+  - Do we want to the bar graph to show work orders created or completed? Or both as separate charts?
+  - Do we want the work order rows to be clickable to navigate to a work order details page? I created a placeholder route in the frontend for this already
+  - How do we want to format Work Order IDs?
+  - Is the Assigned - Not Started table necessary? I think it would be more efficient to just have one table for all non-completed work orders with a status column instead of splitting into unassigned vs assigned. We can also add a filter on the table to filter by status if needed.
+  - Is the Fraud Review Table supposed to be on this page? 
+  - In regards to a work order being "assigned", do we mean its assigned to a contractor? 
+    If so this might not make sense since we're assigning tickets to contractors. What should "Assigned To" show?
+  - Should we add a table for overdue work orders? Or just show the count of overdue work orders without the details since they can be filtered in the main work orders page? Should the date in due date change to OVERDUE?
+*/
+
+
 import {
   BarChart,
   Bar,
@@ -25,10 +38,11 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import CompletedWorkOrdersTable from "../components/misc/CompletedWorkOrderTable";
 
 function WorkOrdersPage() {
   const kpiData = {
-    overdue: 5,
+    // overdue: 5,
     // unassigned: 12,
     // assigned: 8,
     // inProgress: 21,
@@ -42,11 +56,13 @@ function WorkOrdersPage() {
     error,
     inProgressCount,
     assignedCount,
+    completedInWeekCount,
     completedCount,
     unassignedWorkOrders,
     assignedWorkOrders,
     inProgressWorkOrders,
     recentlyCompleted,
+    overDueCount,
   } = useWorkOrders({ page: 1, perPage: 50, current_status: "all" });
 
   if (loading) {
@@ -73,11 +89,11 @@ function WorkOrdersPage() {
 
   // const openWorkOrders = workOrders;
   const statusChartData = [
-    { name: "Overdue", value: 5, color: "#EF4444" },
-    // { name: "Unassigned", value: 12, color: "#F59E0B" },
-    { name: "Assigned", value: 8, color: "#3B82F6" },
-    { name: "In Progress", value: 21, color: "#1E3A5F" },
-    { name: "Completed", value: 45, color: "#10B981" },
+    { name: "Overdue", value: overDueCount, color: "#EF4444" },
+    { name: "Unassigned", value: unassignedCount, color: "#F59E0B" },
+    { name: "Assigned", value: assignedCount, color: "#3B82F6" },
+    { name: "In Progress", value: inProgressCount, color: "#1E3A5F" },
+    { name: "Completed", value: completedCount, color: "#10B981" },
   ];
 
   const workOrdersCreated = [
@@ -116,7 +132,7 @@ function WorkOrdersPage() {
       {/* KPI cards */}
       <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-6">
         <SectionCard title="Overdue" subtitle="Needs attention">
-          <div className="text-3xl font-bold">{kpiData.overdue}</div>
+          <div className="text-3xl font-bold">{overDueCount}</div>
         </SectionCard>
 
         <SectionCard title="Unassigned" subtitle="Needs assignment">
@@ -137,7 +153,7 @@ function WorkOrdersPage() {
         </SectionCard>
 
         <SectionCard title="Completed" subtitle="This week">
-          <div className="text-3xl font-bold">{completedCount}</div>
+          <div className="text-3xl font-bold">{completedInWeekCount}</div>
         </SectionCard>
 
         <SectionCard title="Avg. Completion" subtitle="This month">
@@ -237,7 +253,7 @@ function WorkOrdersPage() {
             />
           ) : (
             // <FraudReviewTable />
-            <OpenWorkOrdersTable data={recentlyCompleted}/>
+            <CompletedWorkOrdersTable data={recentlyCompleted}/>
           )}
         </SectionCard>
       </div>
