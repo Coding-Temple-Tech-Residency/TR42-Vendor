@@ -15,12 +15,13 @@ class AddressSchema(ma.SQLAlchemyAutoSchema):
         model = Address
         load_instance = False
         include_fk = True
-
-    # address_id = fields.String(dump_only=True)
-    # created_at = fields.DateTime(dump_only=True)
-    # updated_at = fields.DateTime(dump_only=True)
-    # created_by_user_id = fields.String(dump_only=True)
-    # updated_by_user_id = fields.String(dump_only=True)
+        dump_only = (
+            "address_id",
+            "created_at",
+            "updated_at",
+            "created_by_user_id",
+            "updated_by_user_id",
+        )
 
     @pre_load
     def preprocess(self, data, **kwargs):

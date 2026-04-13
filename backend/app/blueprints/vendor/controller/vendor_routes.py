@@ -1,9 +1,8 @@
 from flask import Blueprint, jsonify, request
 from marshmallow import ValidationError
 
-from app.blueprints.vendor.model import Vendor
 from app.blueprints.vendor.services.vendor_services import VendorService
-from app.blueprints.vendor.schemas import vendor_schema, vendors_schema
+from app.blueprints.vendor.schemas import vendor_schema
 from app.blueprints.registration.schemas import vendor_registration_schema
 import logging
 from app.auth.tokens import (
@@ -21,13 +20,30 @@ vendor_bp = Blueprint(
 )
 
 
+# @vendor_bp.get("/")
+# @token_required
+# def get_all_vendors():
+#     try:
+#         logger.debug("Fetching all vendors")
+#         vendors = VendorService.get_all_vendors()
+#         logger.info(f"Retrieved {len(vendors)} vendors")
+#         return jsonify(vendors_schema.dump(vendors)), 200
+#     except Exception:
+#         logger.exception("Error fetching vendors")
+#         return {"error": "An error occurred while fetching vendors"}, 500
+
+
 @vendor_bp.get("/")
+# @token_required
 def get_all_vendors():
     try:
         logger.debug("Fetching all vendors")
-        vendors = VendorService.get_all_vendors()
-        logger.info(f"Retrieved {len(vendors)} vendors")
-        return jsonify(vendors_schema.dump(vendors)), 200
+
+        page = request.args.get("page", default=1, type=int)
+        per_page = request.args.get("per_page", default=10, type=int)
+
+        result = VendorService.get_all_paginated(page=page, per_page=per_page)
+        return jsonify(result), 200
     except Exception:
         logger.exception("Error fetching vendors")
         return {"error": "An error occurred while fetching vendors"}, 500
@@ -73,8 +89,7 @@ def create_vendor(current_user):
         )
 
         logger.info("Vendor created successfully")
-        return jsonify(vendor_registration_schema.dump(new_vendor)), 201
-
+        return jsonify(vendor_schema.dump(new_vendor)), 200
     except ValidationError as err:
         logger.warning(f"Validation error while creating vendor: {err.messages}")
         return {"error": "Validation error", "messages": err.messages}, 400
@@ -83,28 +98,27 @@ def create_vendor(current_user):
         return {"error": "An error occurred while creating the vendor"}, 500
 
 
-@vendor_bp.put("/<int:vendor_id>")
-def update_vendor(vendor_id: int):
+@vendor_bp.put("/<vendor_id>")
+@token_required
+@vendor_membership_required
+@vendor_roles_required([VendorUserRole.ADMIN])
+def update_vendor(current_user, vendor_link, vendor_id: str):
     try:
-        data = request.get_json()
+        vendor_data = request.get_json(silent=True)
         logger.debug("Updating vendor with id")
 
-        if not data:
+        if not vendor_data:
             logger.warning("No input data provided for vendor update")
             return {"error": "No input data provided"}, 400
 
-        existing_vendor = VendorService.get_vendor_by_id(vendor_id)
-        if not existing_vendor:
-            logger.warning("Vendor with id not found for update")
+        updated_vendor = VendorService.update_vendor(vendor_id, vendor_data)
+
+        if not updated_vendor:
+            logger.warning(f"Vendor with id not found")
             return {"error": "Vendor not found"}, 404
 
-        validated_data: Vendor = vendor_schema.load(data, partial=True)
-        logger.debug(f"Vendor data validated successfully for vendor id {vendor_id}")
-
-        updated_vendor: Vendor = VendorService.update_vendor(vendor_id, validated_data)
-
         logger.info("Vendor updated successfully")
-        return vendor_schema.jsonify(updated_vendor), 200
+        return jsonify(vendor_schema.dump(updated_vendor)), 200
 
     except ValidationError as err:
         logger.warning(f"Validation error while updating vendor: {err.messages}")
@@ -114,17 +128,17 @@ def update_vendor(vendor_id: int):
         return {"error": "An error occurred while updating the vendor"}, 500
 
 
-@vendor_bp.delete("/<int:vendor_id>")
-def delete_vendor(vendor_id: int):
+@vendor_bp.delete("/<vendor_id>")
+@token_required
+@vendor_membership_required
+@vendor_roles_required([VendorUserRole.ADMIN])
+def delete_vendor(current_user, vendor_link, vendor_id: str):
     try:
         logger.debug("Deleting vendor with id")
 
-        existing_vendor = VendorService.get_vendor_by_id(vendor_id)
-        if not existing_vendor:
-            logger.warning("Vendor with id not found for deletion")
+        deleted = VendorService.delete_vendor(vendor_id)
+        if not deleted:
             return {"error": "Vendor not found"}, 404
-
-        VendorService.delete_vendor(vendor_id)
 
         logger.info("Vendor deleted successfully")
         return {"message": "Vendor deleted successfully"}, 200
