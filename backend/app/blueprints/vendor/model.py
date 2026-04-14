@@ -82,13 +82,13 @@ class Vendor(BaseModel):
         back_populates="vendor", cascade="all, delete-orphan"
     )
 
-<<<<<<< HEAD
+
     invoices: Mapped[list["Invoice"]] = relationship(
         back_populates="vendor", cascade="all, delete-orphan"
     )
-=======
+
     
     service_links: Mapped[list["VendorService"]] = relationship(
         back_populates="vendor",cascade="all, delete-orphan"
     )
->>>>>>> 47726dc (added vendor-service)
+
