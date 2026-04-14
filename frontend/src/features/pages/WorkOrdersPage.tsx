@@ -139,8 +139,8 @@ export default function WorkOrdersPage() {
 
           <KPICard
             title="Completed"
-            value={completedCount}
-            subtitle="This Week"
+            value={completedInWeekCount}
+            subtitle= "This Week"
             colorVariant="green"
             badge={{
               type: "trend",
