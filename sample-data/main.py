@@ -1265,7 +1265,7 @@ def main():
     system_users = generate_users(5)
     addresses = generate_addresses(30, system_users)
 
-    users = generate_users(1000, addresses)
+    users = generate_users(500, addresses)
     vendors = generate_vendors(10, users, addresses)
 
     clients = generate_clients(25, users, addresses)
