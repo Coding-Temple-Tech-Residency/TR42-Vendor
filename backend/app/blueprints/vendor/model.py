@@ -18,11 +18,9 @@ from app.base import BaseModel
 if TYPE_CHECKING:
     from app.blueprints.address.model import Address
     from app.blueprints.vendor_user.model import VendorUser
-<<<<<<< HEAD
     from app.blueprints.invoices.model import Invoice
-=======
-    from app.associations import VendorService
->>>>>>> 47726dc (added vendor-service)
+    from app.blueprints.vendor_service.model import VendorService
+
 
 class VendorStatus(enum.Enum):
     ACTIVE = "active"
