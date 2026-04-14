@@ -13,6 +13,7 @@ import json
 from werkzeug.security import generate_password_hash
 
 Faker.seed(42)
+random.seed(42)
 fake = Faker()
 
 

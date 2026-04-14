@@ -272,16 +272,29 @@
 -- where wo.current_status='unassigned'
 -- group by 1;
 
-select DISTINCT(vendor_id) from vendor;
+-- select DISTINCT(vendor_id) from vendor;
 
--- Test Vendor: 11c653b3-219e-4d98-9b42-7d6f683ea5c6
--- Work Orders with unassigned Tickets for a vendor
-select work_order_id, count(*) as "unassigned tickets"
-from ticket t
-join work_orders wo
-using (work_order_id)
-where t.status = 'unassigned' and wo.assigned_vendor = '65242d3c-bb96-4d7f-8e0d-e8aa76d6d2d5'
-group by 1;
+-- -- Test Vendor: 11c653b3-219e-4d98-9b42-7d6f683ea5c6
+-- -- Work Orders with unassigned Tickets for a vendor
+-- select work_order_id, count(*) as "unassigned tickets"
+-- from ticket t
+-- join work_orders wo
+-- using (work_order_id)
+-- where t.status = 'unassigned' and wo.assigned_vendor = '65242d3c-bb96-4d7f-8e0d-e8aa76d6d2d5'
+-- group by 1;
 
 -- select * from work_orders
 -- where assigned_vendor = '11c653b3-219e-4d98-9b42-7d6f683ea5c6'
+
+select vendor_id, company_name from vendor;
+
+-- 4b9a1a60-fd1c-443b-970b-ff91a08130bb	Stevens, Green and Boone
+-- c609a610-2264-4e0c-aaec-07a369ad2e0e	Taylor-Jacobs
+-- 47088e1f-9a23-4569-8441-9255bd1e5c92	Lane PLC
+-- f87487ca-eca6-4758-af2f-da258a1b59f1	Todd-Taylor
+-- f7d9c9da-79cd-4fa9-a231-6f33656accb1	Gutierrez, Johnson and Garcia
+-- 1e707621-61b6-4eec-8097-3a56464d053b	Simpson, Vargas and Padilla
+-- 4c153496-0485-4a3a-a1b4-722a6f47388e	Barry-Gutierrez
+-- bcdef8e6-fc16-400b-9af6-5be254ff54d1	Ruiz Inc
+-- 33307c4d-f438-4b31-9ea5-afb33960f7cc	Fernandez-Hicks
+-- 7bb8bceb-272a-41ee-bcaa-4a35623ee3eb	Cox LLC
