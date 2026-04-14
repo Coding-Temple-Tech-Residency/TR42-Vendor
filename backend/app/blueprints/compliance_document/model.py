@@ -1,16 +1,14 @@
-from datetime import date, datetime
+from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, Date, DateTime, ForeignKey, LargeBinary, String
+from sqlalchemy import Boolean, DateTime, ForeignKey, LargeBinary, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.base import BaseModel
 from app.functions import generate_uuid
 
 if TYPE_CHECKING:
-    from app.blueprints.contractor.model import Contractor
     from app.blueprints.vendor.model import Vendor
-    from app.blueprints.user.model import User
 
 
 class ComplianceDocument(BaseModel):
