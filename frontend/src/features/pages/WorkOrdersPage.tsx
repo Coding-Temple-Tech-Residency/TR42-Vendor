@@ -1,18 +1,15 @@
 import AppLayout from "../components/layout/AppLayout";
-import Sidebar from "../components/layout/Sidebar";
+import Sidebar from "../components/layout/SideBar";
 import Topbar from "../components/layout/Topbar";
-
 import PageHeader from "../components/UI/PageHeader";
+import KPICard from "../components/UI/KPICard";
+import { Link } from "react-router-dom";
 import SectionCard from "../components/UI/SectionCard";
 import EmptyState from "../components/UI/EmptyState";
-
 import DonutChart from "../components/UI/DonutChart";
+
 import OpenWorkOrdersTable from "../dashboard/components/OpenWorkOrdersTable";
 import CompletedWorkOrdersTable from "../components/misc/CompletedWorkOrderTable";
-
-import { Link } from "react-router-dom";
-
-//Reusable hooks
 import { useWorkOrders } from "../hooks/useWorkOrders";
 
 type StatusChartPoint = {
@@ -21,7 +18,7 @@ type StatusChartPoint = {
   color: string;
 };
 
-function WorkOrdersPage() {
+export default function WorkOrdersPage() {
   const {
     // activeWorkOrders,
     loading,
@@ -29,10 +26,10 @@ function WorkOrdersPage() {
     error,
     inProgressCount,
     assignedCount,
-    completedInWeekCount,
+    // completedInWeekCount,
     completedCount,
     // recurringCount,
-    avgCompletion,
+    // avgCompletion,
     unassignedWorkOrders,
     assignedWorkOrders,
     inProgressWorkOrders,
@@ -81,53 +78,91 @@ function WorkOrdersPage() {
       sidebar={<Sidebar />}
       topbar={<Topbar title="Vendor Dashboard" userName="Katty" />}
     >
-      <PageHeader
-        title="Work Orders"
-        description="Manage, track, and assign work orders."
-      />
+      <div className="space-y-6">
+        <PageHeader
+          title="Work Orders"
+          description="Manage, track, and assign work orders."
+        />
 
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-        <SectionCard title="Unassigned" subtitle="Needs assignment">
+        <div className="flex gap-4">
           <Link
-            to="/vendor/work-orders"
-            className="text-3xl hover:opacity-75 transition-opacity font-bold cursor-pointer"
+            to="/vendor/work-orders/overview"
+            className="inline-block rounded-lg bg-[#2F4F75] px-4 py-2 text-sm font-medium text-white hover:bg-[#1E3A5F]"
           >
-            {unassignedCount}
+            View All Work Orders
           </Link>
-        </SectionCard>
 
-        <SectionCard title="Assigned" subtitle="Ready to start">
-          <div className="text-3xl font-bold text-slate-900">
-            {assignedCount}
-          </div>
-        </SectionCard>
+          <Link
+            to="/vendor/work-orders/edit"
+            className="inline-block rounded-lg bg-[#2F4F75] px-4 py-2 text-sm font-medium text-white hover:bg-[#1E3A5F]"
+          >
+            Edit Work Order
+          </Link>
+        </div>
 
-        <SectionCard title="Overdue" subtitle="Past estimated end">
-          <div className="text-3xl font-bold text-red-600">{overDueCount}</div>
-        </SectionCard>
+        {/* KPI Cards */}
+        <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <KPICard
+            title="Overdue"
+            value={overDueCount}
+            subtitle="Work Orders"
+            colorVariant="red"
+            badge={{ type: "text", value: "Needs Attention" }}
+          />
 
-        <SectionCard title="In Progress" subtitle="On site">
-          <div className="text-3xl font-bold">{inProgressCount}</div>
-        </SectionCard>
+          <KPICard
+            title="Unassigned"
+            value={unassignedCount}
+            subtitle="Work Orders"
+            colorVariant="orange"
+            badge={{
+              type: "text",
+              value: "Needs Assignment",
+            }}
+          />
 
-        <SectionCard
-          title="Completed"
-          subtitle={`Total: ${completedCount}`}
-        >
-          <div className="text-3xl font-bold">{completedInWeekCount}</div>
-        </SectionCard>
+          <KPICard
+            title="Assigned"
+            value={assignedCount}
+            subtitle="Not Started"
+            colorVariant="gray"
+            badge={{ type: "text", value: "Scheduled" }}
+          />
 
-        <SectionCard title="Avg. Completion" subtitle="Completed orders">
-          <div className="text-3xl font-bold text-slate-900">
-            {avgCompletion}
-          </div>
-        </SectionCard>
-      </div>
+          <KPICard
+            title="In Progress"
+            value={inProgressCount}
+            subtitle="Assigned Contractors"
+            colorVariant="blue"
+            badge={{ type: "text", value: "On Site" }}
+          />
 
-      {/* Charts Section */}
-      <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
-        {/* Donut + Legend */}
-        <SectionCard title="Work Order by Status">
+          <KPICard
+            title="Completed"
+            value={completedCount}
+            subtitle="This Week"
+            colorVariant="green"
+            badge={{
+              type: "trend",
+              value: "12% from last week",
+              trendDirection: "up",
+            }}
+          />
+
+          <KPICard
+            title="Invoices Created"
+            value="2.4 days"
+            subtitle="This month"
+            colorVariant="purple"
+            badge={{
+              type: "trend",
+              value: "0.5 days slower",
+              trendDirection: "up",
+            }}
+          />
+        </div>
+
+        <SectionCard title="Work Order Status">
           <div className="flex items-center justify-between">
             <div className="flex flex-1 justify-center">
               <div className="space-y-3">
@@ -170,68 +205,59 @@ function WorkOrdersPage() {
           </div>
         </SectionCard>
 
-        <SectionCard title="Work Order Timeline">
+        <SectionCard title="Work Orders Created">
           <EmptyState
-            title="Trend chart disabled"
-            description="Weekly work order trend reporting is not wired in yet."
+            title="Chart coming soon"
+            description="This section will display number of Work Orders created in a month in bar chart form."
           />
         </SectionCard>
-      </div>
 
-      <div className="mt-6 grid grid-cols-1">
-        <SectionCard title="Unassigned Work Orders">
-          {unassignedWorkOrders.length === 0 ? (
-            <EmptyState
-              title="No unassigned work orders"
-              description="Work orders needing assignment will appear here."
-            />
-          ) : (
-            <OpenWorkOrdersTable data={unassignedWorkOrders} />
-          )}
-        </SectionCard>
-      </div>
+        <div className="mt-6 grid grid-cols-1">
+          <SectionCard title="Unassigned Work Orders">
+            {unassignedWorkOrders.length === 0 ? (
+              <EmptyState
+                title="No unassigned work orders"
+                description="This section will contain a table of unassigned Work Orders."
+              />
+            ) : (
+              <OpenWorkOrdersTable data={unassignedWorkOrders} />
+            )}
+          </SectionCard>
+        </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <SectionCard title="Assigned – Not Started">
-          {assignedWorkOrders.length === 0 ? (
+        <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
+          <SectionCard title="Assigned to Ticket">
             <EmptyState
-              title="No assigned work orders"
-              description="Assigned work orders will appear here."
+              title="No Tickets Assigned Work Orders"
+              description="This section will contain a table of assigned Work Orders."
             />
-          ) : (
-            <OpenWorkOrdersTable data={assignedWorkOrders} />
-          )}
-        </SectionCard>
+          </SectionCard>
 
-        <SectionCard title="In Progress">
-          {inProgressWorkOrders.length === 0 ? (
-            <EmptyState
-              title="No active work orders"
-              description="Work orders currently in progress will appear here."
-            />
-          ) : (
-            <OpenWorkOrdersTable data={inProgressWorkOrders} />
-          )}
-        </SectionCard>
-      </div>
+          <SectionCard title="In Progress">
+            {inProgressWorkOrders.length === 0 ? (
+              <EmptyState
+                title="No active work orders"
+                description="This section will contain a table of in progress Work Orders."
+              />
+            ) : (
+              <OpenWorkOrdersTable data={inProgressWorkOrders} />
+            )}
+          </SectionCard>
+        </div>
 
-      <div className="mt-6 grid grid-cols-1">
-        <SectionCard
-          title="Recently Completed"
-          subtitle="Latest completed work orders"
-        >
-          {recentlyCompleted.length === 0 ? (
-            <EmptyState
-              title="No completed work orders"
-              description="Completed work orders will appear here."
-            />
-          ) : (
-            <CompletedWorkOrdersTable data={recentlyCompleted} />
-          )}
-        </SectionCard>
+        <div className="mt-6 grid grid-cols-1">
+          <SectionCard title="Recently Completed">
+            {recentlyCompleted.length === 0 ? (
+              <EmptyState
+                title="No recently completed work orders"
+                description="This section will contain a table of recently completed Work Orders."
+              />
+            ) : (
+              <CompletedWorkOrdersTable data={recentlyCompleted} />
+            )}
+          </SectionCard>
+        </div>
       </div>
     </AppLayout>
   );
 }
-
-export default WorkOrdersPage;
