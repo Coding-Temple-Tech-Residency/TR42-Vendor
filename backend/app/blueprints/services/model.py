@@ -1,5 +1,5 @@
 from app.extensions import db
-from app.models.base import BaseModel
+from app.base import BaseModel
 
 class Service(BaseModel):
     __tablename__ = 'services'
@@ -32,4 +32,4 @@ class VendorService(db.Model):
 
     # relationships
     vendor = db.relationship('Vendor', backref='services_link')
-    service = db.relationship('Service', backref='vendor_links')
+    service = db.relationship('Service', back_populates='vendors')

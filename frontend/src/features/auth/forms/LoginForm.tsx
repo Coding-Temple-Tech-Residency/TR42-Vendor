@@ -57,6 +57,12 @@ const LoginForm = () => {
 
       console.log("Login successful!");
 
+      // Save auth context to localStorage for protected API calls
+      localStorage.setItem("token", result.token);
+      localStorage.setItem("user_id", result.user_id);
+      // TODO: Backend should return vendor_id in login response, or we need separate endpoint
+      // For now, this will be fetched/set by dashboard after auth
+
       navigate("/vendor/dashboard");
     } catch (err: any) {
       console.log("Login error:", err);
