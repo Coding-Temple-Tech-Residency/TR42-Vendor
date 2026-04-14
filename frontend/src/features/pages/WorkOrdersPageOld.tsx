@@ -110,10 +110,7 @@ function WorkOrdersPage() {
           <div className="text-3xl font-bold">{inProgressCount}</div>
         </SectionCard>
 
-        <SectionCard
-          title="Completed"
-          subtitle={`Total: ${completedCount}`}
-        >
+        <SectionCard title="Completed" subtitle={`Total: ${completedCount}`}>
           <div className="text-3xl font-bold">{completedInWeekCount}</div>
         </SectionCard>
 
@@ -125,10 +122,10 @@ function WorkOrdersPage() {
       </div>
 
       {/* Charts Section */}
-      <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Donut + Legend */}
         <SectionCard title="Work Order by Status">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
             <div className="flex flex-1 justify-center">
               <div className="space-y-3">
                 {statusChartData.map((item) => {

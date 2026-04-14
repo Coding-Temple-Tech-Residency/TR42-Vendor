@@ -26,12 +26,12 @@ export default function WorkOrdersPage() {
     error,
     inProgressCount,
     assignedCount,
-    // completedInWeekCount,
+    completedInWeekCount,
     completedCount,
     // recurringCount,
     // avgCompletion,
     unassignedWorkOrders,
-    assignedWorkOrders,
+    // assignedWorkOrders,
     inProgressWorkOrders,
     recentlyCompleted,
     overDueCount,
@@ -162,56 +162,57 @@ export default function WorkOrdersPage() {
           />
         </div>
 
-        <SectionCard title="Work Order Status">
-          <div className="flex items-center justify-between">
-            <div className="flex flex-1 justify-center">
-              <div className="space-y-3">
-                {statusChartData.map((item) => {
-                  const percentage = totalStatusCount
-                    ? Math.round((item.value / totalStatusCount) * 100)
-                    : 0;
+        <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
+          <SectionCard title="Work Order Status">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex flex-1 justify-center">
+                <div className="space-y-3">
+                  {statusChartData.map((item) => {
+                    const percentage = totalStatusCount
+                      ? Math.round((item.value / totalStatusCount) * 100)
+                      : 0;
 
-                  return (
-                    <div
-                      key={item.name}
-                      className="flex items-center gap-3 text-sm"
-                    >
-                      <span
-                        className="h-2.5 w-2.5 rounded-full"
-                        style={{ backgroundColor: item.color }}
-                      />
-                      <span className="text-gray-600 w-24">{item.name}</span>
-                      <span className="font-medium text-gray-900">
-                        {item.value} ({percentage}%)
-                      </span>
-                    </div>
-                  );
-                })}
+                    return (
+                      <div
+                        key={item.name}
+                        className="flex items-center gap-3 text-sm"
+                      >
+                        <span
+                          className="h-2.5 w-2.5 rounded-full"
+                          style={{ backgroundColor: item.color }}
+                        />
+                        <span className="w-24 text-gray-600">{item.name}</span>
+                        <span className="font-medium text-gray-900">
+                          {item.value} ({percentage}%)
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="flex flex-1 justify-center">
+                <div className="h-56 w-56">
+                  {totalStatusCount === 0 ? (
+                    <EmptyState
+                      title="No status data"
+                      description="Status chart will appear once work orders are available."
+                    />
+                  ) : (
+                    <DonutChart data={statusChartData} />
+                  )}
+                </div>
               </div>
             </div>
+          </SectionCard>
 
-            <div className="flex flex-1 justify-center">
-              <div className="h-56 w-56">
-                {totalStatusCount === 0 ? (
-                  <EmptyState
-                    title="No status data"
-                    description="Status chart will appear once work orders are available."
-                  />
-                ) : (
-                  <DonutChart data={statusChartData} />
-                )}
-              </div>
-            </div>
-          </div>
-        </SectionCard>
-
-        <SectionCard title="Work Orders Created">
-          <EmptyState
-            title="Chart coming soon"
-            description="This section will display number of Work Orders created in a month in bar chart form."
-          />
-        </SectionCard>
-
+          <SectionCard title="Work Orders Created">
+            <EmptyState
+              title="Chart coming soon"
+              description="This section will display number of Work Orders created in a month in bar chart form."
+            />
+          </SectionCard>
+        </div>
         <div className="mt-6 grid grid-cols-1">
           <SectionCard title="Unassigned Work Orders">
             {unassignedWorkOrders.length === 0 ? (
