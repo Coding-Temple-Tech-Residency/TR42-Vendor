@@ -6,51 +6,24 @@ import PageHeader from "../components/UI/PageHeader";
 import SectionCard from "../components/UI/SectionCard";
 import EmptyState from "../components/UI/EmptyState";
 
-// Reusable UI components
 import DonutChart from "../components/UI/DonutChart";
 import OpenWorkOrdersTable from "../dashboard/components/OpenWorkOrdersTable";
-import AssignContractorTable from "../dashboard/components/AssignContractorTable";
-import FraudReviewTable from "../dashboard/components/FraudReviewTable";
+import CompletedWorkOrdersTable from "../components/misc/CompletedWorkOrderTable";
 
 import { Link } from "react-router-dom";
 
 //Reusable hooks
 import { useWorkOrders } from "../hooks/useWorkOrders";
 
-/* 
-  Questions:
-  - Do we want to the bar graph to show work orders created or completed? Or both as separate charts?
-  - Do we want the work order rows to be clickable to navigate to a work order details page? I created a placeholder route in the frontend for this already
-  - How do we want to format Work Order IDs?
-  - Is the Assigned - Not Started table necessary? I think it would be more efficient to just have one table for all non-completed work orders with a status column instead of splitting into unassigned vs assigned. We can also add a filter on the table to filter by status if needed.
-  - Is the Fraud Review Table supposed to be on this page? 
-  - In regards to a work order being "assigned", do we mean its assigned to a contractor? 
-    If so this might not make sense since we're assigning tickets to contractors. What should "Assigned To" show?
-  - Should we add a table for overdue work orders? Or just show the count of overdue work orders without the details since they can be filtered in the main work orders page? Should the date in due date change to OVERDUE?
-*/
-
-
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import CompletedWorkOrdersTable from "../components/misc/CompletedWorkOrderTable";
+type StatusChartPoint = {
+  name: string;
+  value: number;
+  color: string;
+};
 
 function WorkOrdersPage() {
-  const kpiData = {
-    // overdue: 5,
-    // unassigned: 12,
-    // assigned: 8,
-    // inProgress: 21,
-    // completed: 45,
-    avgCompletion: "2.4 days",
-  };
-
   const {
+    // activeWorkOrders,
     loading,
     unassignedCount,
     error,
@@ -58,12 +31,15 @@ function WorkOrdersPage() {
     assignedCount,
     completedInWeekCount,
     completedCount,
+    // recurringCount,
+    avgCompletion,
     unassignedWorkOrders,
     assignedWorkOrders,
     inProgressWorkOrders,
     recentlyCompleted,
     overDueCount,
-  } = useWorkOrders({ page: 1, perPage: 50, current_status: "all" });
+    // overDueWorkOrders,
+  } = useWorkOrders({ page: 1, perPage: 100, status: "all", scope: "vendor" });
 
   if (loading) {
     return (
@@ -87,8 +63,7 @@ function WorkOrdersPage() {
     );
   }
 
-  // const openWorkOrders = workOrders;
-  const statusChartData = [
+  const statusChartData: StatusChartPoint[] = [
     { name: "Overdue", value: overDueCount, color: "#EF4444" },
     { name: "Unassigned", value: unassignedCount, color: "#F59E0B" },
     { name: "Assigned", value: assignedCount, color: "#3B82F6" },
@@ -96,28 +71,10 @@ function WorkOrdersPage() {
     { name: "Completed", value: completedCount, color: "#10B981" },
   ];
 
-  const workOrdersCreated = [
-    { week: "Week 1", count: 14 },
-    { week: "Week 2", count: 19 },
-    { week: "Week 3", count: 23 },
-    { week: "Week 4", count: 17 },
-  ];
-
-  // BarChart
-  const SimpleBarChart = ({ data }) => {
-    return (
-      <div className="h-64">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data}>
-            <XAxis dataKey="week" />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="count" radius={[6, 6, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-    );
-  };
+  const totalStatusCount = statusChartData.reduce(
+    (sum, item) => sum + item.value,
+    0,
+  );
 
   return (
     <AppLayout
@@ -129,35 +86,41 @@ function WorkOrdersPage() {
         description="Manage, track, and assign work orders."
       />
 
-      {/* KPI cards */}
-      <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-6">
-        <SectionCard title="Overdue" subtitle="Needs attention">
-          <div className="text-3xl font-bold">{overDueCount}</div>
-        </SectionCard>
-
+      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
         <SectionCard title="Unassigned" subtitle="Needs assignment">
           <Link
             to="/vendor/work-orders"
             className="text-3xl hover:opacity-75 transition-opacity font-bold cursor-pointer"
           >
-            <div>{unassignedCount}</div>
+            {unassignedCount}
           </Link>
         </SectionCard>
 
-        <SectionCard title="Assigned" subtitle="Not started">
-          <div className="text-3xl font-bold">{assignedCount}</div>
+        <SectionCard title="Assigned" subtitle="Ready to start">
+          <div className="text-3xl font-bold text-slate-900">
+            {assignedCount}
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Overdue" subtitle="Past estimated end">
+          <div className="text-3xl font-bold text-red-600">{overDueCount}</div>
         </SectionCard>
 
         <SectionCard title="In Progress" subtitle="On site">
           <div className="text-3xl font-bold">{inProgressCount}</div>
         </SectionCard>
 
-        <SectionCard title="Completed" subtitle="This week">
+        <SectionCard
+          title="Completed"
+          subtitle={`Total: ${completedCount}`}
+        >
           <div className="text-3xl font-bold">{completedInWeekCount}</div>
         </SectionCard>
 
-        <SectionCard title="Avg. Completion" subtitle="This month">
-          <div className="text-3xl font-bold">{kpiData.avgCompletion}</div>
+        <SectionCard title="Avg. Completion" subtitle="Completed orders">
+          <div className="text-3xl font-bold text-slate-900">
+            {avgCompletion}
+          </div>
         </SectionCard>
       </div>
 
@@ -166,14 +129,12 @@ function WorkOrdersPage() {
         {/* Donut + Legend */}
         <SectionCard title="Work Order by Status">
           <div className="flex items-center justify-between">
-            <div className="flex-1 flex justify-center">
+            <div className="flex flex-1 justify-center">
               <div className="space-y-3">
                 {statusChartData.map((item) => {
-                  const total = statusChartData.reduce(
-                    (sum, i) => sum + i.value,
-                    0,
-                  );
-                  const percentage = Math.round((item.value / total) * 100);
+                  const percentage = totalStatusCount
+                    ? Math.round((item.value / totalStatusCount) * 100)
+                    : 0;
 
                   return (
                     <div
@@ -194,16 +155,26 @@ function WorkOrdersPage() {
               </div>
             </div>
 
-            <div className="flex-1 flex justify-center">
+            <div className="flex flex-1 justify-center">
               <div className="h-56 w-56">
-                <DonutChart data={statusChartData} />
+                {totalStatusCount === 0 ? (
+                  <EmptyState
+                    title="No status data"
+                    description="Status chart will appear once work orders are available."
+                  />
+                ) : (
+                  <DonutChart data={statusChartData} />
+                )}
               </div>
             </div>
           </div>
         </SectionCard>
 
-        <SectionCard title="Work Orders Created (per week)">
-          <SimpleBarChart data={workOrdersCreated} />
+        <SectionCard title="Work Order Timeline">
+          <EmptyState
+            title="Trend chart disabled"
+            description="Weekly work order trend reporting is not wired in yet."
+          />
         </SectionCard>
       </div>
 
@@ -228,7 +199,7 @@ function WorkOrdersPage() {
               description="Assigned work orders will appear here."
             />
           ) : (
-            <AssignContractorTable data={assignedWorkOrders}/>
+            <OpenWorkOrdersTable data={assignedWorkOrders} />
           )}
         </SectionCard>
 
@@ -239,21 +210,23 @@ function WorkOrdersPage() {
               description="Work orders currently in progress will appear here."
             />
           ) : (
-            <OpenWorkOrdersTable data={inProgressWorkOrders}/>
+            <OpenWorkOrdersTable data={inProgressWorkOrders} />
           )}
         </SectionCard>
       </div>
 
       <div className="mt-6 grid grid-cols-1">
-        <SectionCard title="Recently Completed">
+        <SectionCard
+          title="Recently Completed"
+          subtitle="Latest completed work orders"
+        >
           {recentlyCompleted.length === 0 ? (
             <EmptyState
               title="No completed work orders"
               description="Completed work orders will appear here."
             />
           ) : (
-            // <FraudReviewTable />
-            <CompletedWorkOrdersTable data={recentlyCompleted}/>
+            <CompletedWorkOrdersTable data={recentlyCompleted} />
           )}
         </SectionCard>
       </div>

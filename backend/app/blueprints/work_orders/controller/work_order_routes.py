@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app.blueprints.work_orders.services.services import WorkOrderService
-from app.blueprints.work_orders.schemas import work_order_schema, work_orders_schema
+from app.blueprints.work_orders.schemas import work_order_schema
 from app.blueprints.vendor_user.model import VendorUserRole
 from app.auth.tokens import (
     token_required,

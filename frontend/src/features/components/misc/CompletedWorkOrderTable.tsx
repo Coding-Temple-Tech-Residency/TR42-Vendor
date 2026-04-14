@@ -1,8 +1,9 @@
 import DataTable from "../UI/DataTable";
 import { useNavigate } from "react-router-dom";
+import type { WorkOrderRow } from "../../auth/services/workOrderService";
 
 type Props = {
-  data: any[];
+  data: WorkOrderRow[];
 };
 
 function CompletedWorkOrdersTable({ data }: Props) {
@@ -10,15 +11,14 @@ function CompletedWorkOrdersTable({ data }: Props) {
   // Dummy data for now (backend will replace this later)
   const columns = [
     { key: "id", label: "Work Order ID" },
-    { key: "location", label: "Location" },
-    { key: "current_status", label: "Status" },
-    { key: "assignedTo", label: "Assigned To" },
-    { key: "dueDate", label: "Due Date" },
-    { key: "completed_at", label: "Completed At" },
+    { key: "serviceType", label: "Service" },
+    { key: "locationSummary", label: "Location" },
+    { key: "quantityLabel", label: "Quantity" },
+    { key: "recurrenceLabel", label: "Recurrence" },
+    { key: "completedAtLabel", label: "Completed At" },
   ];
 
-  // Handle row click to navigate to work order details page when created in future
-  const handleRowClick = (row: any) => {
+  const handleRowClick = (row: WorkOrderRow) => {
     navigate(`/vendor/work-orders/${row.id}`);
   };
   
@@ -27,7 +27,7 @@ function CompletedWorkOrdersTable({ data }: Props) {
       <DataTable
         columns={columns}
         data={data}
-        emptyMessage="No recentl completed work orders found"
+        emptyMessage="No recently completed work orders found"
         onRowClick={handleRowClick}
       />
     </div>

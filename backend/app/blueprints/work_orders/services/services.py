@@ -1,15 +1,11 @@
 from app.blueprints.work_orders.repositories.repository import WorkOrderRepository
-from app.blueprints.work_orders.model import WorkOrder, OrderStatus, PriorityStatus
+from app.blueprints.work_orders.model import WorkOrder
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import BadRequest
 from app.extensions import db
 from typing import Dict, Any, Optional, List
 from marshmallow import ValidationError
 from app.blueprints.work_orders.schemas import work_order_schema, work_orders_schema
-
-from app.blueprints.user.model import User
-from app.blueprints.user.repositories.user_repositories import UserRepository
-from app.blueprints.user.schemas import users_schema
 
 from logging import getLogger
 

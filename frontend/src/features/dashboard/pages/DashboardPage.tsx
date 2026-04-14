@@ -32,12 +32,11 @@ function DashboardPage() {
     error: workOrdersError,
     unassignedCount: unassignedCount,
     pendingCount,
-  } = useWorkOrders({ page: 1, perPage: 10, status: "all" });
+    workOrdersTrend,
+  } = useWorkOrders({ page: 1, perPage: 25, status: "all", scope: "vendor" });
 
   // KPI DATA (dummy for now)
   const kpiData = {
-    unassigned: 3,
-    pending: 2,
     openInvoices: 12,
   };
 
@@ -179,7 +178,7 @@ function DashboardPage() {
               {/* Temporarily Force UI To Show */}
               {true ? (
                 <div className="bg-white rounded-xl shadow-sm p-4 flex items-center justify-center gap-10">
-                  <div className="relative h-48 w-48 flex-shrink-0">
+                  <div className="relative h-48 w-48 shrink-0">
                     <DonutChart data={invoiceChartData} />
 
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
