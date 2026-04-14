@@ -1,9 +1,10 @@
 import AppLayout from "../components/layout/AppLayout";
-import Sidebar from "../components/layout/Sidebar";
+import Sidebar from "../components/layout/SideBar";
 import Topbar from "../components/layout/Topbar";
 import PageHeader from "../components/UI/PageHeader";
 import SectionCard from "../components/UI/SectionCard";
 import EmptyState from "../components/UI/EmptyState";
+import KpiCard from "../components/UI/KPICard";
 
 function InvoicesPage() {
   return (
@@ -17,31 +18,56 @@ function InvoicesPage() {
       />
 
       {/* KPI Section (6 cards across top) */}
-      <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-6">
-        <SectionCard title="Pending" subtitle="Awaiting payment">
-          <div className="text-3xl font-bold">23</div>
-        </SectionCard>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-6">
+        <KpiCard
+          title="Pending"
+          value={23}
+          subtitle="Awaiting Payment"
+          colorVariant="gray"
+          badge={{ type: "text", value: "Due This Week"}}
+        />
 
-        <SectionCard title="Completed" subtitle="This month">
-          <div className="text-3xl font-bold">$84,320</div>
-        </SectionCard>
+        <KpiCard
+          title="Completed"
+          value="$84,320"
+          subtitle="This Month"
+          colorVariant="green"
+          badge={{ type: "trend", value: "8% from last month", trendDirection: "up" }}
+        />
 
-        <SectionCard title="Overdue Invoices" subtitle="Needs attention">
-          <div className="text-3xl font-bold">7</div>
-        </SectionCard>
+        <KpiCard
+          title="Overdue Invoices"
+          value={7}
+          subtitle="Past Due Date"
+          colorVariant="red"
+          badge={{ type: "text", value: "Needs Attention" }}
+        />
 
-        <SectionCard title="Total Outstanding" subtitle="Unpaid balance">
-          <div className="text-3xl font-bold">$41,580</div>
-        </SectionCard>
+        <KpiCard
+          title="Total Outstanding"
+          value="$41,580"
+          subtitle="Unpaid Balance"
+          colorVariant="purple"
+          badge={{ type: "text", value: "Across Open Invoices" }}
+        />
 
-        <SectionCard title="Avg. Payment Time" subtitle="This month">
-          <div className="text-3xl font-bold">18 days</div>
-        </SectionCard>
+        <KpiCard
+          title="Avg. Payment Time"
+          value="18 days"
+          subtitle="Payment Time"
+          colorVariant="blue"
+          badge={{ type: "trend", value: "2 days faster", trendDirection: "down" }}
+        />
 
-        <SectionCard title="Invoices Created" subtitle="This month">
-          <div className="text-3xl font-bold">64</div>
-        </SectionCard>
+        <KpiCard
+          title="Invoices Created"
+          value={64}
+          subtitle="This Month"
+          colorVariant="orange"
+          badge={{ type: "trend", value: "12 from last month", trendDirection: "up", }}
+        />
       </div>
+
 
       {/* Charts Section (side-by-side) */}
       <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
