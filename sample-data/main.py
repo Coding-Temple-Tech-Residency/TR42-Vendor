@@ -47,6 +47,24 @@ def after(start, max_days=30):
         start_date=start,
         end_date=start + timedelta(days=max_days)
     )
+    
+def clamp_to_now(dt):
+    return min(dt, now())
+
+
+def random_recent_datetime(max_days_back=30):
+    return fake.date_time_between(
+        start_date=now() - timedelta(days=max_days_back),
+        end_date=now()
+    )
+
+
+def random_today_datetime():
+    start_of_today = now().replace(hour=0, minute=0, second=0, microsecond=0)
+    return fake.date_time_between(
+        start_date=start_of_today,
+        end_date=now()
+    )
 
 
 USER_TYPES = ["OPERATOR", "VENDOR", "CONTRACTOR"]
@@ -332,6 +350,8 @@ def update_contractor_ticket_counts(contractors, tickets):
         contractor["tickets_completed"] = counts[cid]["tickets_completed"]
         contractor["tickets_open"] = counts[cid]["tickets_open"]
 
+
+
 def generate_work_orders(n, vendor_wells, users, wells, vendor_services):
     work_orders = []
 
@@ -358,9 +378,29 @@ def generate_work_orders(n, vendor_wells, users, wells, vendor_services):
             continue
 
         service_type = random.choice(valid_service_ids)
-        status = random.choice(ORDER_STATUS)
 
-        created_at = generate_time_span("-2y", "-3d")
+        # Bucket the created_at dates so:
+        # - some are from today
+        # - some are from the last 30 days
+        # - most are historical
+        roll = random.random()
+
+        if roll < 0.05:
+            created_at = random_today_datetime()
+            status = random.choices(
+                ["UNASSIGNED", "ASSIGNED", "IN_PROGRESS", "COMPLETED"],
+                weights=[20, 35, 35, 10]
+            )[0]
+        elif roll < 0.20:
+            created_at = random_recent_datetime(30)
+            status = random.choices(
+                ["UNASSIGNED", "ASSIGNED", "IN_PROGRESS", "COMPLETED", "CANCELLED"],
+                weights=[15, 30, 30, 15, 10]
+            )[0]
+        else:
+            created_at = generate_time_span("-2y", "-31d")
+            status = random.choice(ORDER_STATUS)
+
         assigned_at = None
         est_start = None
         est_end = None
@@ -369,14 +409,46 @@ def generate_work_orders(n, vendor_wells, users, wells, vendor_services):
         cancellation_reason = None
 
         if status != "UNASSIGNED":
-            assigned_at = after(created_at, max_days=3)
-            est_start = after(assigned_at, max_days=2)
+            assigned_upper = clamp_to_now(created_at + timedelta(days=3))
+            if created_at <= assigned_upper:
+                assigned_at = fake.date_time_between(
+                    start_date=created_at,
+                    end_date=assigned_upper
+                )
+            else:
+                assigned_at = created_at
+
+            est_start_upper = clamp_to_now(assigned_at + timedelta(days=2))
+            if assigned_at <= est_start_upper:
+                est_start = fake.date_time_between(
+                    start_date=assigned_at,
+                    end_date=est_start_upper
+                )
+            else:
+                est_start = assigned_at
+
             est_end = est_start + timedelta(days=random.randint(1, 5))
 
             if status in ["COMPLETED", "CLOSED"]:
-                completed_at = after(est_end, max_days=2)
+                completion_upper = clamp_to_now(est_end + timedelta(days=2))
+                if est_start <= completion_upper:
+                    completed_at = fake.date_time_between(
+                        start_date=est_start,
+                        end_date=completion_upper
+                    )
+                else:
+                    completed_at = est_start
+
             elif status == "CANCELLED":
-                cancelled_at = after(assigned_at, max_days=2)
+                cancel_upper = clamp_to_now(assigned_at + timedelta(days=2))
+                if assigned_at <= cancel_upper:
+                    cancelled_at = fake.date_time_between(
+                        start_date=assigned_at,
+                        end_date=cancel_upper
+                    )
+                else:
+                    cancelled_at = assigned_at
+
                 cancellation_reason = random.choice(
                     [
                         "Client cancelled request",
@@ -387,8 +459,15 @@ def generate_work_orders(n, vendor_wells, users, wells, vendor_services):
                     ]
                 )
         else:
-            # still keep estimated dates even if not yet assigned
-            est_start = after(created_at, max_days=5)
+            est_start_upper = clamp_to_now(created_at + timedelta(days=5))
+            if created_at <= est_start_upper:
+                est_start = fake.date_time_between(
+                    start_date=created_at,
+                    end_date=est_start_upper
+                )
+            else:
+                est_start = created_at
+
             est_end = est_start + timedelta(days=random.randint(1, 5))
 
         location_type = random.choice(LOCATION_TYPES)
@@ -462,30 +541,66 @@ def generate_tickets(n, work_orders, contractors, users):
             contractor = random.choice(valid_contractors)
             contractor_id = contractor["contractor_id"]
 
-            created_at = wo["created_at"]
-
             if wo["current_status"] in ["COMPLETED", "CLOSED"]:
                 status = "COMPLETED"
             elif wo["current_status"] == "IN_PROGRESS":
                 status = random.choice(["ASSIGNED", "IN_PROGRESS"])
             elif wo["current_status"] == "ASSIGNED":
                 status = "ASSIGNED"
+            elif wo["current_status"] == "UNASSIGNED":
+                status = "UNASSIGNED"
             else:
-                # cancelled / halted / rejected do not exist on ticket enum
+                # For HALTED / REJECTED / CANCELLED on work order,
+                # keep ticket in a valid ticket enum state.
                 status = random.choice(["ASSIGNED", "IN_PROGRESS"])
 
             if wo["assigned_at"] is not None:
-                assigned_at = between(created_at, wo["assigned_at"])
+                assigned_upper = min(wo["assigned_at"], now())
+                if created_at <= assigned_upper:
+                    assigned_at = fake.date_time_between(
+                        start_date=created_at,
+                        end_date=assigned_upper
+                    )
+                else:
+                    assigned_at = created_at
             else:
-                assigned_at = after(created_at, max_days=2)
+                assigned_upper = clamp_to_now(created_at + timedelta(days=2))
+                if created_at <= assigned_upper:
+                    assigned_at = fake.date_time_between(
+                        start_date=created_at,
+                        end_date=assigned_upper
+                    )
+                else:
+                    assigned_at = created_at
 
             if status in ["IN_PROGRESS", "COMPLETED"]:
-                upper_bound = wo["estimated_start_date"] or (assigned_at + timedelta(days=1))
-                start_time = between(assigned_at, upper_bound)
+                start_upper = wo["estimated_start_date"] or (assigned_at + timedelta(days=1))
+                start_upper = clamp_to_now(start_upper)
+
+                if assigned_at <= start_upper:
+                    start_time = fake.date_time_between(
+                        start_date=assigned_at,
+                        end_date=start_upper
+                    )
+                else:
+                    start_time = assigned_at
 
             if status == "COMPLETED":
-                completion_upper = wo["completed_at"] or wo["estimated_end_date"] or (start_time + timedelta(days=1))
-                completed_at = between(start_time, completion_upper)
+                effective_start = start_time or assigned_at or created_at
+                completion_upper = (
+                    wo["completed_at"]
+                    or wo["estimated_end_date"]
+                    or (effective_start + timedelta(days=1))
+                )
+                completion_upper = clamp_to_now(completion_upper)
+
+                if effective_start <= completion_upper:
+                    completed_at = fake.date_time_between(
+                        start_date=effective_start,
+                        end_date=completion_upper
+                    )
+                else:
+                    completed_at = effective_start
 
         tickets.append(
             {
