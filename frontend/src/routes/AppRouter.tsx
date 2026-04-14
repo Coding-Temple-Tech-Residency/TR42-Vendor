@@ -1,24 +1,24 @@
-import { Routes, Route, Outlet } from "react-router-dom";
-import RegisterPage from "../features/auth/pages/RegisterPage";
-import ProfileSetupPage from "../features/auth/pages/ProfileSetupPage";
-import SuccessPage from "../features/auth/pages/SuccessPage";
-import DashboardPage from "../features/dashboard/pages/DashboardPage";
-import WorkOrdersPage from "../features/pages/WorkOrdersDashboardPage";
-import TicketsPage from "../features/pages/TicketsDashboardPage";
-import ContractorsPage from "../features/pages/ContractorDashboardPage";
-import InvoicesPage from "../features/pages/InvoicesDashboardPage";
-import ReportsPage from "../features/pages/ReportsDashboardPage";
-import FraudRisksPage from "../features/pages/FraudRisksDashboardPage";
-import MessagesPage from "../features/pages/MessagesDashboardPage";
-import AdminPage from "../features/pages/AdminDashboardPage";
-import SettingsPage from "../features/pages/SettingsDashboardPage";
-import LoginPage from "../features/auth/pages/LoginPage";
+import { Outlet, Route, Routes } from "react-router-dom";
 import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
-import ContractorProfilePage from "../features/contractors/pages/ContractorProfile";
-import ContractorJobsPage from "../features/contractors/pages/ContractorJobs";
+import LoginPage from "../features/auth/pages/LoginPage";
+import ProfileSetupPage from "../features/auth/pages/ProfileSetupPage";
+import RegisterPage from "../features/auth/pages/RegisterPage";
+import SuccessPage from "../features/auth/pages/SuccessPage";
 import ContractorEditPage from "../features/contractors/pages/ContractorEditPage";
-import WorkOrderOverviewPage from "../features/work orders/pages/WorkOrdersOverView";
+import ContractorJobsPage from "../features/contractors/pages/ContractorJobs";
+import ContractorProfilePage from "../features/contractors/pages/ContractorProfile";
+import DashboardPage from "../features/dashboard/pages/DashboardPage";
+import AdminPage from "../features/pages/AdminDashboardPage";
+import ContractorsPage from "../features/pages/ContractorDashboardPage";
+import FraudRisksPage from "../features/pages/FraudRisksDashboardPage";
+import InvoicesPage from "../features/pages/InvoicesDashboardPage";
+import MessagesPage from "../features/pages/MessagesDashboardPage";
+import ReportsPage from "../features/pages/ReportsDashboardPage";
+import SettingsPage from "../features/pages/SettingsDashboardPage";
+import TicketsPage from "../features/pages/TicketsDashboardPage";
+import WorkOrdersPage from "../features/pages/WorkOrdersDashboardPage";
 import EditWorkOrderPage from "../features/work orders/pages/EditWorkOrders";
+import WorkOrderOverviewPage from "../features/work orders/pages/WorkOrdersOverView";
 
 function VendorLayout() {
   return <Outlet />;
@@ -50,12 +50,17 @@ export default function AppRouter() {
         {/*Contractor Pages*/}
         <Route path="contractors/profile" element={<ContractorProfilePage />} />
         <Route path="contractors/jobs" element={<ContractorJobsPage />} />
-        <Route path="contractors/profile/edit" element={<ContractorEditPage />} />
+        <Route
+          path="contractors/profile/edit"
+          element={<ContractorEditPage />}
+        />
 
         {/*Work Orders Pages*/}
-        <Route path="work-orders/overview" element={<WorkOrderOverviewPage />} />
+        <Route
+          path="work-orders/overview"
+          element={<WorkOrderOverviewPage />}
+        />
         <Route path="work-orders/edit" element={<EditWorkOrderPage />} />
-
       </Route>
     </Routes>
   );

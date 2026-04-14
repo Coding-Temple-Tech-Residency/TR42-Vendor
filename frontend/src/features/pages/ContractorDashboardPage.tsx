@@ -23,7 +23,7 @@ function ContractorsPage() {
           to="/vendor/contractors/profile"
           className="inline-block rounded-lg bg-[#2F4F75] px-4 py-2 text-sm font-medium text-white hover:bg-[#1E3A5F]"
           >
-            Veiw Profile
+            View Profile
         </Link>
 
 
