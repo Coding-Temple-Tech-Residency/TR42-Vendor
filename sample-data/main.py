@@ -164,12 +164,12 @@ def generate_addresses(n=30, users=[]):
                 "street": fake.street_address(),
                 "city": fake.city(),
                 "state": fake.state(),
-                "zip": fake.zipcode(),
+                "zipcode": fake.zipcode(),
                 "country": "US",
                 "created_at": generate_time_span(),
                 "updated_at": now(),
-                "created_by": creator,
-                "updated_by": creator,
+                "created_by_user_id": creator,
+                "updated_by_user_id": creator,
             }
         )
 
@@ -192,8 +192,9 @@ def generate_vendors(n=10, users=[], addresses=[]):
                 "start_date": fake.date_time_between(start_date="-2y", end_date="-1y"),
                 "end_date": None,
                 "primary_contact_name": fake.name(),
-                "contact_email": fake.company_email(),
-                "contact_phone": fake.phone_number(),
+                "company_email": fake.company_email(),
+                "company_phone": fake.phone_number(),
+                "service_type": "ANY",
                 "status": random.choice(VENDOR_STATUS),
                 "vendor_code": fake.bothify(text="VEND-####"),
                 "onboarding": random.choice([True, False]),
@@ -201,8 +202,8 @@ def generate_vendors(n=10, users=[], addresses=[]):
                 "description": fake.text(max_nb_chars=100),
                 "created_at": generate_time_span(),
                 "updated_at": now(),
-                "created_by": creator,
-                "updated_by": updater,
+                "created_by_user_id": creator,
+                "updated_by_user_id": updater,
                 "address_id": address,
             }
         )
@@ -232,11 +233,11 @@ def generate_vendor_users(users, vendors, max_ratio=0.6):
                 "id": gen_id(),
                 "user_id": user["user_id"],
                 "vendor_id": vendor["vendor_id"],
-                "role": random.choices(ROLE_OPTIONS, weights=[80, 15, 5])[0],
+                "vendor_user_role": random.choices(ROLE_OPTIONS, weights=[80, 15, 5])[0],
                 "created_at": generate_time_span(),
                 "updated_at": now(),
-                "created_by": creator,
-                "updated_by": updater,
+                "created_by_user_id": creator,
+                "updated_by_user_id": updater,
             }
         )
 

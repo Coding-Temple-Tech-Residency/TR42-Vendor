@@ -100,17 +100,18 @@ CREATE TABLE
     "start_date" timestamptz,
     "end_date" timestamptz,
     "primary_contact_name" text NOT NULL,
-    "contact_email" text NOT NULL,
-    "contact_phone" text NOT NULL,
+    "company_email" text NOT NULL,
+    "company_phone" text NOT NULL,
     "status" core.vendor_status NOT NULL,
+    "service_type" text,
     "vendor_code" text,
     "onboarding" bool NOT NULL,
     "compliance_status" core.compliance_status,
     "description" text,
     "created_at" timestamptz DEFAULT (now ()),
     "updated_at" timestamptz,
-    "created_by" text,
-    "updated_by" text,
+    "created_by_user_id" text,
+    "updated_by_user_id" text,
     "address_id" text
   );
 
@@ -120,12 +121,12 @@ CREATE TABLE
     "street" text,
     "city" text,
     "state" varchar(20),
-    "zip" varchar(10),
-    "country" char(2),
+    "zipcode" varchar(10),
+    "country" char(40),
     "created_at" timestamptz DEFAULT (now ()),
     "updated_at" timestamptz,
-    "created_by" text NOT NULL,
-    "updated_by" text NOT NULL
+    "created_by_user_id" text NOT NULL,
+    "updated_by_user_id" text NOT NULL
   );
 
 CREATE TABLE
@@ -573,11 +574,11 @@ CREATE TABLE
     "id" text PRIMARY KEY,
     "user_id" text UNIQUE NOT NULL,
     "vendor_id" text,
-    "role" core.role_options NOT NULL,
+    "vendor_user_role" core.role_options NOT NULL,
     "created_at" timestamptz DEFAULT (now ()),
     "updated_at" timestamptz,
-    "created_by" text NOT NULL,
-    "updated_by" text NOT NULL
+    "created_by_user_id" text NOT NULL,
+    "updated_by_user_id" text NOT NULL
   );
 
 CREATE TABLE
@@ -731,11 +732,11 @@ ALTER TABLE "vendor" ADD CONSTRAINT "vendor_address" FOREIGN KEY ("address_id") 
 
 ALTER TABLE "client" ADD CONSTRAINT "client_created_by" FOREIGN KEY ("created_by") REFERENCES "user" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
 
-ALTER TABLE "vendor" ADD CONSTRAINT "vendor_created_by" FOREIGN KEY ("created_by") REFERENCES "user" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "vendor" ADD CONSTRAINT "vendor_created_by" FOREIGN KEY ("created_by_user_id") REFERENCES "user" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
 
 ALTER TABLE "client" ADD CONSTRAINT "client_updated_by" FOREIGN KEY ("updated_by") REFERENCES "user" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
 
-ALTER TABLE "vendor" ADD CONSTRAINT "vendor_updated_by" FOREIGN KEY ("updated_by") REFERENCES "user" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "vendor" ADD CONSTRAINT "vendor_updated_by" FOREIGN KEY ("updated_by_user_id") REFERENCES "user" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
 
 ALTER TABLE "client_vendor" ADD CONSTRAINT "client_client_vendor" FOREIGN KEY ("client_id") REFERENCES "client" ("client_id") DEFERRABLE INITIALLY IMMEDIATE;
 
@@ -913,9 +914,9 @@ ALTER TABLE "client_user" ADD CONSTRAINT "client_user_created_by" FOREIGN KEY ("
 
 ALTER TABLE "client_user" ADD CONSTRAINT "client_user_updated_by" FOREIGN KEY ("updated_by") REFERENCES "user" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
 
-ALTER TABLE "vendor_user" ADD CONSTRAINT "vendor_user_created_by" FOREIGN KEY ("created_by") REFERENCES "user" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "vendor_user" ADD CONSTRAINT "vendor_user_created_by" FOREIGN KEY ("created_by_user_id") REFERENCES "user" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
 
-ALTER TABLE "vendor_user" ADD CONSTRAINT "vendor_user_updated_by" FOREIGN KEY ("updated_by") REFERENCES "user" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "vendor_user" ADD CONSTRAINT "vendor_user_updated_by" FOREIGN KEY ("updated_by_user_id") REFERENCES "user" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
 
 ALTER TABLE "sessions" ADD CONSTRAINT "user_active" FOREIGN KEY ("user_id") REFERENCES "user" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
 

@@ -79,6 +79,6 @@ volumes:
 # docker compose up --build backend frontend db pgadmin 
 
 # SEED DATABASE INSTRUCTIONS
-# db compose build seed
-# db compose up --build -d db pgadmin
-# db compose --profile seed run --rm seed
+# docker compose build seed
+# docker compose up --build -d db pgadmin
+# docker compose --profile seed run --rm seed
