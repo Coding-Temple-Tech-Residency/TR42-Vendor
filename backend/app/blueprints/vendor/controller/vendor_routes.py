@@ -50,6 +50,7 @@ def get_all_vendors():
 
 
 @vendor_bp.get("/<vendor_id>")
+@token_required
 def get_vendor_by_id(vendor_id: str):
     try:
         logger.debug("Fetching vendor with id")
