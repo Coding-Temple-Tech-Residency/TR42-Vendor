@@ -7,9 +7,10 @@ interface DataTableProps {
   columns: Column[];
   data: any[];
   emptyMessage?: string;
+  onRowClick?: (row: any) => void;
 }
 
-function DataTable({ columns, data, emptyMessage }: DataTableProps) {
+function DataTable({ columns, data, emptyMessage, onRowClick }: DataTableProps) {
   return (
     <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
       <table className="min-w-full text-sm">
@@ -40,7 +41,8 @@ function DataTable({ columns, data, emptyMessage }: DataTableProps) {
             data.map((row, index) => (
               <tr
                 key={index}
-                className="hover:bg-slate-50 transition-colors border-b border-slate-100"
+                className={`border-b border-slate-100 transition-colors ${onRowClick ? "cursor-pointer hover:bg-slate-50" : ""}`}
+                onClick={() => onRowClick?.(row)}
               >
                 {columns.map((col) => (
                   <td key={col.key} className="px-4 py-2 text-slate-700">
