@@ -8,9 +8,12 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from app.blueprints.user.model import User
     from app.blueprints.vendor_contractor.model import VendorContractor
-    from app.blueprints.compliance_document.model import BackgroundCheck
-    from app.blueprints.compliance_document.model import DrugTest
-    from app.blueprints.compliance_document.model import License
+    from app.blueprints.contractor_data.background_check.model import BackgroundCheck
+    from app.blueprints.contractor_data.drug_test.model import DrugTest
+    from app.blueprints.contractor_data.license.model import License
+    from app.blueprints.contractor_data.biometric_data.model import BiometricData
+    from app.blueprints.contractor_data.insurance.model import Insurance
+    from app.blueprints.contractor_data.certification.model import Certification
 
 
 class ContractorStatus(enum.Enum):
@@ -33,9 +36,9 @@ class Contractor(BaseModel):
 
     employee_number: Mapped[str] = mapped_column(String, nullable=False)
 
-    vendor_manager_id: Mapped[str] = mapped_column(
+    vendor_manager_id: Mapped[str | None] = mapped_column(
         ForeignKey("user.user_id"),
-        unique=False,
+        nullable=True,
     )
 
     status: Mapped[ContractorStatus] = mapped_column(
@@ -50,34 +53,25 @@ class Contractor(BaseModel):
     biometric_enrolled: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=False
     )
-    is_onboarded: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    is_onboarded: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     is_subcontractor: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=False
     )
     is_fte: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    is_licensed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
-    is_insured: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
-    is_certified: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    is_licensed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    is_insured: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    is_certified: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
-    average_rating: Mapped[float] = mapped_column(Float, nullable=False, default=0.00)
-    years_experience: Mapped[int] = mapped_column(Integer, nullable=True)
+    average_rating: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    years_experience: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
-    background_check_id: Mapped[str] = mapped_column(
-        String, nullable=True, default=generate_uuid
-    )
-    drug_test_id: Mapped[str] = mapped_column(
-        String, nullable=True, default=generate_uuid
-    )
-    # preferred_job_types
-
-    # Relationships
     user: Mapped["User"] = relationship(
         "User",
         back_populates="contractor_profile",
         foreign_keys=[user_id],
     )
 
-    vendor_manager: Mapped["User"] = relationship(
+    vendor_manager: Mapped["User | None"] = relationship(
         "User",
         foreign_keys=[vendor_manager_id],
     )
@@ -89,23 +83,44 @@ class Contractor(BaseModel):
         cascade="all, delete-orphan",
     )
 
-    background_check: Mapped["BackgroundCheck"] = relationship(
+    background_check: Mapped["BackgroundCheck | None"] = relationship(
         "BackgroundCheck",
         back_populates="contractor",
         uselist=False,
         cascade="all, delete-orphan",
+        single_parent=True,
     )
 
-    drug_test: Mapped["DrugTest"] = relationship(
+    drug_test: Mapped["DrugTest | None"] = relationship(
         "DrugTest",
         back_populates="contractor",
         uselist=False,
         cascade="all, delete-orphan",
+        single_parent=True,
     )
 
-    license: Mapped["License"] = relationship(
+    license: Mapped["License | None"] = relationship(
         "License",
         back_populates="contractor",
         uselist=False,
+        cascade="all, delete-orphan",
+        single_parent=True,
+    )
+
+    biometrics: Mapped[list["BiometricData"]] = relationship(
+        "BiometricData",
+        back_populates="contractor",
+        cascade="all, delete-orphan",
+    )
+
+    insurances: Mapped[list["Insurance"]] = relationship(
+        "Insurance",
+        back_populates="contractor",
+        cascade="all, delete-orphan",
+    )
+
+    certifications: Mapped[list["Certification"]] = relationship(
+        "Certification",
+        back_populates="contractor",
         cascade="all, delete-orphan",
     )

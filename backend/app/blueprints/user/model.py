@@ -43,7 +43,7 @@ class User(db.Model):
     )
     is_admin: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
-    profile_photo: Mapped[bytes] = mapped_column(LargeBinary, nullable=True)
+    profile_photo: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, default=utc_now, index=True
@@ -52,29 +52,27 @@ class User(db.Model):
         DateTime, default=utc_now, nullable=False, onupdate=utc_now, index=True
     )
 
-    created_by_user_id: Mapped[str] = mapped_column(
+    created_by_user_id: Mapped[str | None] = mapped_column(
         ForeignKey("user.user_id"), nullable=True
     )
-    updated_by_user_id: Mapped[str] = mapped_column(
+    updated_by_user_id: Mapped[str | None] = mapped_column(
         ForeignKey("user.user_id"), nullable=True
     )
 
     first_name: Mapped[str] = mapped_column(String(50), nullable=False)
     last_name: Mapped[str] = mapped_column(String(50), nullable=False)
 
-    created_by_user: Mapped["User"] = relationship(
+    created_by_user: Mapped["User | None"] = relationship(
         "User",
         foreign_keys=[created_by_user_id],
         remote_side=[user_id],
     )
 
-    updated_by_user: Mapped["User"] = relationship(
+    updated_by_user: Mapped["User | None"] = relationship(
         "User",
         foreign_keys=[updated_by_user_id],
         remote_side=[user_id],
     )
-
-    # Relationships
 
     vendor_links: Mapped[list["VendorUser"]] = relationship(
         "VendorUser",
