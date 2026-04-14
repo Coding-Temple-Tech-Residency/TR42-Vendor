@@ -1,6 +1,8 @@
-import { Routes, Route, Outlet } from "react-router-dom";
-import RegisterPage from "../features/auth/pages/RegisterPage";
+import { Outlet, Route, Routes } from "react-router-dom";
+import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
+import LoginPage from "../features/auth/pages/LoginPage";
 import ProfileSetupPage from "../features/auth/pages/ProfileSetupPage";
+import RegisterPage from "../features/auth/pages/RegisterPage";
 import SuccessPage from "../features/auth/pages/SuccessPage";
 import DashboardPage from "../features/dashboard/pages/DashboardPage";
 import WorkOrdersPage from "../features/pages/WorkOrdersDashboardPage";
