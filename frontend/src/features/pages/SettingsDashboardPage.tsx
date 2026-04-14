@@ -1,5 +1,5 @@
 import AppLayout from "../components/layout/AppLayout";
-import Sidebar from "../components/layout/Sidebar";
+import Sidebar from "../components/layout/SideBar";
 import Topbar from "../components/layout/Topbar";
 import PageHeader from "../components/UI/PageHeader";
 // import SectionCard from "../components/SectionCard";
@@ -16,7 +16,6 @@ export default function SettingsPage() {
         title="Settings"
         description="Update user settings."
       />
-
 
     </AppLayout>
   );
