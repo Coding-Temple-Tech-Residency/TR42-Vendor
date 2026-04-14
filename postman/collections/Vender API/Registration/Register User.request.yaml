@@ -6,23 +6,25 @@ body:
   type: json
   content: |
     {
-      "user": {
-        "username": "jcole",
-        "password": "245589",
-        "email": "jcole@email.com",
-        "first_name": "Julian",
-        "last_name": "Cole"
-      },
-      "vendor": {
-        "company_name": "Oil & Gas Co.",
-        "address": "3 Stewart St",
-        "city": "Dallas",
-        "state": "TX",
-        "zipcode": "75202",
-        "company_email": "info@oilandgas.com",
-        "company_phone": "544-753-9876",
-        "primary_contact_name": "Julian Cole",
-        "service_type": "Oil & Gas"
-      }
+    "user": {
+        "first_name": "Jane",
+        "last_name": "Doe",
+        "email": "jane@example.com",
+        "username": "janedoe",
+        "password": "password44$$C"
+    },
+    "vendor": {
+        "company_name": "Doe Catering",
+        "primary_contact_name": "John Doe",
+        "company_email": "contact@doecatering.com",
+        "company_phone": "555-123-4567",
+        "service_type": "HVAC",
+        "address": {
+            "street": "123 Main St",
+            "city": "Denver",
+            "state": "CO",
+            "zipcode": "80202"
+        }
     }
+
 order: 1775922404528
