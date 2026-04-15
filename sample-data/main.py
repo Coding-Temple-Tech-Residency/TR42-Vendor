@@ -164,22 +164,28 @@ def generate_users(n=20, addresses=None):
                 "updated_at": now(),
                 "created_by_user_id": user_id,
                 "updated_by_user_id": user_id,
-                "address_id": address_id,
+                "address_id": None,
             }
         )
 
     return users
 
 
-def generate_addresses(n=30, users=[]):
+def generate_addresses_for_users(users, assign_ratio=1.0):
     addresses = []
 
-    for _ in range(n):
-        creator = random.choice(users)["user_id"]
+    if not users:
+        return addresses
+
+    num_to_assign = int(len(users) * assign_ratio)
+    selected_users = random.sample(users, num_to_assign)
+
+    for user in selected_users:
+        address_id = gen_id()
 
         addresses.append(
             {
-                "address_id": gen_id(),
+                "address_id": address_id,
                 "street": fake.street_address(),
                 "city": fake.city(),
                 "state": fake.state(),
@@ -187,21 +193,22 @@ def generate_addresses(n=30, users=[]):
                 "country": "US",
                 "created_at": generate_time_span(),
                 "updated_at": now(),
-                "created_by_user_id": creator,
-                "updated_by_user_id": creator,
+                "created_by_user_id": user["user_id"],
+                "updated_by_user_id": user["user_id"],
             }
         )
+
+        user["address_id"] = address_id
 
     return addresses
 
 
-def generate_vendors(n=10, users=[], addresses=[]):
+def generate_vendors(n=10, users=[]):
     vendors = []
 
     for _ in range(n):
         creator = random.choice(users)["user_id"]
         updater = random.choice(users)["user_id"]
-        address = random.choice(addresses)["address_id"]
 
         vendors.append(
             {
@@ -223,12 +230,38 @@ def generate_vendors(n=10, users=[], addresses=[]):
                 "updated_at": now(),
                 "created_by_user_id": creator,
                 "updated_by_user_id": updater,
-                "address_id": address,
+                "address_id": None,
             }
         )
 
     return vendors
 
+def generate_addresses_for_vendors(vendors, users):
+    addresses = []
+
+    for vendor in vendors:
+        creator = random.choice(users)["user_id"]
+        updater = random.choice(users)["user_id"]
+        address_id = gen_id()
+
+        addresses.append(
+            {
+                "address_id": address_id,
+                "street": fake.street_address(),
+                "city": fake.city(),
+                "state": fake.state(),
+                "zipcode": fake.zipcode(),
+                "country": "US",
+                "created_at": generate_time_span(),
+                "updated_at": now(),
+                "created_by_user_id": creator,
+                "updated_by_user_id": updater,
+            }
+        )
+
+        vendor["address_id"] = address_id
+
+    return addresses
 
 def generate_vendor_users(users, vendors, max_ratio=0.6):
     vendor_users = []
@@ -482,6 +515,7 @@ def generate_work_orders(n, vendor_wells, users, wells, vendor_services):
                 "assigned_at": assigned_at,
                 "completed_at": completed_at,
                 "description": fake.text(max_nb_chars=200),
+                "work_order_name": fake.unique.bothify("WO-#####"),
                 "estimated_start_date": est_start,
                 "estimated_end_date": est_end,
                 "current_status": status,
@@ -1094,13 +1128,12 @@ def generate_services(users):
 
     return services
 
-def generate_clients(n, users, addresses):
+def generate_clients(n, users):
     clients = []
 
     for _ in range(n):
         creator = random.choice(users)["user_id"]
         updater = random.choice(users)["user_id"]
-        address = random.choice(addresses)["address_id"]
 
         clients.append({
             "client_id": gen_id(),
@@ -1113,10 +1146,37 @@ def generate_clients(n, users, addresses):
             "updated_at": now(),
             "created_by": creator,
             "updated_by": updater,
-            "address_id": address,
+            "address_id": None,
         })
 
     return clients
+
+def generate_addresses_for_clients(clients, users):
+    addresses = []
+
+    for client in clients:
+        creator = random.choice(users)["user_id"]
+        updater = random.choice(users)["user_id"]
+        address_id = gen_id()
+
+        addresses.append(
+            {
+                "address_id": address_id,
+                "street": fake.street_address(),
+                "city": fake.city(),
+                "state": fake.state(),
+                "zipcode": fake.zipcode(),
+                "country": "US",
+                "created_at": generate_time_span(),
+                "updated_at": now(),
+                "created_by_user_id": creator,
+                "updated_by_user_id": updater,
+            }
+        )
+
+        client["address_id"] = address_id
+
+    return addresses
 
 def generate_client_users(users, clients, vendor_users, contractors, max_ratio=0.15):
     client_users = []
@@ -1378,14 +1438,18 @@ def export_to_csv(data_dict, folder="data"):
 
 
 def main():
-    # create addresses first so users can reference them
-    system_users = generate_users(5)
-    addresses = generate_addresses(30, system_users)
+    
+    users = generate_users(500)
 
-    users = generate_users(500, addresses)
-    vendors = generate_vendors(10, users, addresses)
+    user_addresses = generate_addresses_for_users(users, assign_ratio=0.7)
 
-    clients = generate_clients(25, users, addresses)
+    vendors = generate_vendors(10, users)
+    vendor_addresses = generate_addresses_for_vendors(vendors, users)
+
+    clients = generate_clients(25, users)
+    client_addresses = generate_addresses_for_clients(clients, users)
+
+    addresses = user_addresses + vendor_addresses + client_addresses
 
     services = generate_services(users)
     vendor_services = generate_vendor_services(vendors, services, users)

@@ -316,6 +316,7 @@ CREATE TABLE
     "assigned_at" timestamptz,
     "completed_at" timestamptz,
     "description" varchar(500),
+    "work_order_name" varchar(10) UNIQUE,
     "estimated_start_date" timestamptz,
     "estimated_end_date" timestamptz,
     "current_status" core.order_status NOT NULL,
@@ -725,6 +726,10 @@ CREATE TABLE
     "created_by" text NOT NULL,
     "updated_by" text NOT NULL
   );
+
+ALTER TABLE "address" ADD CONSTRAINT "address_created_by" FOREIGN KEY ("created_by_user_id") REFERENCES "user" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
+
+ALTER TABLE "address" ADD CONSTRAINT "address_updated_by" FOREIGN KEY ("updated_by_user_id") REFERENCES "user" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
 
 ALTER TABLE "client" ADD CONSTRAINT "client_address" FOREIGN KEY ("address_id") REFERENCES "address" ("address_id") DEFERRABLE INITIALLY IMMEDIATE;
 
