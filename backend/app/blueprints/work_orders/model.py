@@ -48,14 +48,14 @@ class FrequencyType(enum.Enum):
 class WorkOrder(BaseModel):
     __tablename__ = "work_orders"
 
-    work_order_id: Mapped[str] = mapped_column(
+    id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
         default=generate_uuid,
     )
 
     assigned_vendor: Mapped[str | None] = mapped_column(
-        ForeignKey("vendor.vendor_id"),
+        ForeignKey("vendor.id"),
         nullable=True,
     )
 
@@ -145,12 +145,12 @@ class WorkOrder(BaseModel):
     )
 
     well_id: Mapped[str | None] = mapped_column(
-        ForeignKey("well.well_id"),
+        ForeignKey("well.id"),
         nullable=True,
     )
 
     service_type: Mapped[str | None] = mapped_column(
-        ForeignKey("services.service_id"),
+        ForeignKey("services.id"),
         nullable=True,
     )
 
@@ -188,31 +188,6 @@ class WorkOrder(BaseModel):
         nullable=True,
     )
 
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        default=utc_now,
-    )
-
-    updated_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True),
-        nullable=True,
-        default=utc_now,
-        onupdate=utc_now,
-    )
-
-    created_by_user_id: Mapped[str] = mapped_column(
-        "created_by",
-        ForeignKey("user.user_id"),
-        nullable=False,
-    )
-
-    updated_by_user_id: Mapped[str] = mapped_column(
-        "updated_by",
-        ForeignKey("user.user_id"),
-        nullable=False,
-    )
-
     # ----------------------
     # 🔗 Relationships
     # ----------------------
@@ -231,14 +206,4 @@ class WorkOrder(BaseModel):
     service: Mapped["Service | None"] = relationship(
         "Service",
         foreign_keys=[service_type],
-    )
-
-    creator: Mapped["User"] = relationship(
-        "User",
-        foreign_keys=[created_by_user_id],
-    )
-
-    updater: Mapped["User"] = relationship(
-        "User",
-        foreign_keys=[updated_by_user_id],
     )

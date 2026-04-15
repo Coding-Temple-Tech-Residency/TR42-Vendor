@@ -7,19 +7,19 @@ from app.base import BaseModel
 class Contractor(BaseModel):
     __tablename__ = 'contractors'
 
-    contractor_id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String, primary_key=True)
 
     employee_number = db.Column(db.String, nullable=False)
 
     vendor_id = db.Column(
         db.String,
-        db.ForeignKey('vendor.vendor_id'),
+        db.ForeignKey('vendor.id'),
         nullable=False
     )
 
     vendor_manager_id = db.Column(
         db.String,
-        db.ForeignKey('contractors.contractor_id'),
+        db.ForeignKey('contractors.id'),
         nullable=True  # allow null for top-level managers
     )
 
@@ -55,7 +55,7 @@ class Contractor(BaseModel):
     # 📍 Address
     address_id = db.Column(
         db.String,
-        db.ForeignKey('address.address_id')
+        db.ForeignKey('address.id')
     )
 
     # 📈 Metrics
@@ -65,17 +65,17 @@ class Contractor(BaseModel):
     # 🔍 Compliance Links
     background_check_id = db.Column(
         db.String,
-        db.ForeignKey('background_check.background_check_id')
+        db.ForeignKey('background_check.id')
     )
 
     drug_test_id = db.Column(
         db.String,
-        db.ForeignKey('drug_test.drug_test_id')
+        db.ForeignKey('drug_test.id')
     )
 
     drivers_license_id = db.Column(
         db.String,
-        db.ForeignKey('drivers_license.license_id')
+        db.ForeignKey('drivers_license.id')
     )
 
     preferred_job_types = db.Column(JSON)
@@ -88,7 +88,7 @@ class Contractor(BaseModel):
 
     manager = db.relationship(
         'Contractor',
-        remote_side=[contractor_id],
+        remote_side=[id],
         backref='subordinates'
     )
 

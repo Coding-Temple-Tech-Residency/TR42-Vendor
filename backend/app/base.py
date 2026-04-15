@@ -24,12 +24,12 @@ class BaseModel(db.Model):
         onupdate=utc_now,
     )
 
-    created_by_user_id: Mapped[str] = mapped_column(
-        ForeignKey("user.user_id"),
+    created_by: Mapped[str] = mapped_column(
+        ForeignKey("user.id"),
         nullable=False,
     )
 
-    updated_by_user_id: Mapped[str | None] = mapped_column(
-        ForeignKey("user.user_id"),
+    updated_by: Mapped[str | None] = mapped_column(
+        ForeignKey("user.id"),
         nullable=True,
     )
