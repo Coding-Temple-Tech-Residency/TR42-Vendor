@@ -1,15 +1,15 @@
 from app.extensions import db
-from app.models.base import BaseModel
+from app.base import BaseModel
 from sqlalchemy import JSON
 
 class MSA(BaseModel):
     __tablename__ = 'msa'
 
-    msa_id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String, primary_key=True)
 
     vendor_id = db.Column(
         db.String,
-        db.ForeignKey('vendor.vendor_id'),
+        db.ForeignKey('vendor.id'),
         nullable=False
     )
 
@@ -22,7 +22,7 @@ class MSA(BaseModel):
 
     uploaded_by = db.Column(
         db.String,
-        db.ForeignKey('user.user_id')
+        db.ForeignKey('user.id')
     )
 
     # relationships
@@ -37,7 +37,7 @@ class MSARequirement(BaseModel):
 
     msa_id = db.Column(
         db.String,
-        db.ForeignKey('msa.msa_id'),
+        db.ForeignKey('msa.id'),
         nullable=False
     )
 

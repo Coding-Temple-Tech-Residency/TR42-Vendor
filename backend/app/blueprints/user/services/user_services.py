@@ -40,7 +40,7 @@ class UserService:
             logger.warning("Login failed: Incorrect password for user: %s", email)
             raise BadRequest("Invalid username or password")
 
-        vendor_links = VendorUserRepository.get_all_by_user(user.user_id)
+        vendor_links = VendorUserRepository.get_all_by_user(user.id)
         active_vendor_id = vendor_links[0].vendor_id if vendor_links else None
 
         token = encode_token(user, active_vendor_id=active_vendor_id)
@@ -50,7 +50,8 @@ class UserService:
             "message": "Login successful",
             "token": token,
             "active_vendor_id": active_vendor_id,
-            "user_id": user.user_id,
+            "user_id": user.id,
+            "id": user.id,
             "username": user.username,
             "email": user.email,
             "type": user.user_type.value,
@@ -140,7 +141,7 @@ class UserService:
             logger.debug("User added to session: %s", user.username)
 
             db.session.commit()
-            logger.info("User created successfully: %s", user.user_id)
+            logger.info("User created successfully: %s", user.id)
 
             return user
 
@@ -164,7 +165,7 @@ class UserService:
 
     @staticmethod
     def update(user, data: dict):
-        logger.info("Updating user: %s", user.user_id)
+        logger.info("Updating user: %s", user.id)
 
         # Handle password update safely
         if "password" in data and data["password"]:
@@ -177,6 +178,6 @@ class UserService:
 
     @staticmethod
     def delete(user):
-        logger.info("Deleting user: %s", user.user_id)
+        logger.info("Deleting user: %s", user.id)
         UserRepository.delete(user)
         return True

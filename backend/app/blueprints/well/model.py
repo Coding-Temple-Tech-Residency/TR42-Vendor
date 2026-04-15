@@ -5,7 +5,7 @@ from sqlalchemy import func
 class Well(BaseModel):
     __tablename__ = 'well'
 
-    well_id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String, primary_key=True)
 
     api_number = db.Column(db.String)
     well_name = db.Column(db.String)
@@ -17,11 +17,11 @@ class Well(BaseModel):
 class WellLocation(db.Model):
     __tablename__ = 'well_location'
 
-    well_location_id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String, primary_key=True)
 
     well_id = db.Column(
         db.String,
-        db.ForeignKey('well.well_id'),
+        db.ForeignKey('well.id'),
         nullable=False
     )
 
@@ -39,19 +39,15 @@ class WellLocation(db.Model):
     section = db.Column(db.Integer)
     township = db.Column(db.String(2))
 
-    # audit
-    created_at = db.Column(db.DateTime, server_default=func.now())
-    updated_at = db.Column(db.DateTime, onupdate=func.now())
-
     created_by = db.Column(
         db.String,
-        db.ForeignKey('user.user_id'),
+        db.ForeignKey('user.id'),
         nullable=False
     )
 
     updated_by = db.Column(
         db.String,
-        db.ForeignKey('user.user_id')
+        db.ForeignKey('user.id')
     )
 
     # relationships
@@ -65,13 +61,13 @@ class VendorWell(db.Model):
 
     vendor_id = db.Column(
         db.String,
-        db.ForeignKey('vendor.vendor_id'),
+        db.ForeignKey('vendor.id'),
         nullable=False
     )
 
     well_id = db.Column(
         db.String,
-        db.ForeignKey('well.well_id'),
+        db.ForeignKey('well.id'),
         nullable=False
     )
 
@@ -81,13 +77,13 @@ class VendorWell(db.Model):
 
     created_by = db.Column(
         db.String,
-        db.ForeignKey('user.user_id'),
+        db.ForeignKey('user.id'),
         nullable=False
     )
 
     updated_by = db.Column(
         db.String,
-        db.ForeignKey('user.user_id')
+        db.ForeignKey('user.id')
     )
 
     # relationships

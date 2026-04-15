@@ -4,7 +4,7 @@ from app.models.base import BaseModel
 class Role(BaseModel):
     __tablename__ = 'role'
 
-    role_id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String, primary_key=True)
 
     role_name = db.Column(db.String(100))
     description = db.Column(db.Text)

@@ -39,7 +39,8 @@ type GetVendorWorkOrdersParams = {
 };
 
 type WorkOrderApiResponse = {
-  work_order_id: string;
+  id?: string;
+  work_order_id?: string;
   client_id: string;
   description?: string | null;
   location?: string | null;
@@ -111,6 +112,11 @@ function formatScheduleWindow(
 }
 
 function mapWorkOrder(wo: WorkOrderApiResponse): WorkOrderRow {
+  const workOrderId = wo.id ?? wo.work_order_id;
+  if (!workOrderId) {
+    throw new Error("Work order payload is missing an id");
+  }
+
   const assignedVendorId = wo.assigned_vendor ?? null;
   const isRecurring = Boolean(wo.is_recurring);
   const quantityLabel =
@@ -122,7 +128,7 @@ function mapWorkOrder(wo: WorkOrderApiResponse): WorkOrderRow {
     : formatEnumLabel(wo.location_type);
 
   return {
-    id: wo.work_order_id,
+    id: workOrderId,
     clientId: wo.client_id,
     description: wo.description ?? "No description provided",
     location: wo.location ?? "Location unavailable",
@@ -172,7 +178,8 @@ export async function getVendorWorkOrders(
     query.set("status", status);
   }
 
-  const endpoint = scope === "vendor" ? "/api/work_orders/vendor" : "/api/work_orders/";
+  const endpoint =
+    scope === "vendor" ? "/api/work_orders/vendor" : "/api/work_orders/";
 
   const response = await fetch(`${endpoint}?${query.toString()}`, {
     method: "GET",

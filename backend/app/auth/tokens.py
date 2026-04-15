@@ -20,7 +20,7 @@ def encode_token(user: User, active_vendor_id: str | None = None) -> str:
     payload = {
         "exp": datetime.now(timezone.utc) + timedelta(hours=1),
         "iat": datetime.now(timezone.utc),
-        "user_id": user.user_id,
+        "user_id": user.id,
         "token_version": user.token_version,
         "is_admin": user.is_admin,
     }
@@ -83,7 +83,7 @@ def token_required(f):
             g.active_vendor_id = None
             if isinstance(active_vendor_id, str) and active_vendor_id:
                 vendor_link = VendorUserRepository.get_by_user_and_vendor(
-                    user.user_id,
+                    user.id,
                     active_vendor_id,
                 )
                 if vendor_link:
@@ -125,7 +125,7 @@ def vendor_membership_required(f):
             return jsonify({"message": "Vendor ID is required"}), 400
 
         vendor_link = VendorUserRepository.get_by_user_and_vendor(
-            current_user.user_id,
+            current_user.id,
             vendor_id,
         )
 
