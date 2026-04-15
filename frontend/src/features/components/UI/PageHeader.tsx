@@ -10,7 +10,7 @@ export default function PageHeader({
     action,
 }: PageHeaderProps) {
     return(
-        <div className="mb-6 flex flex-col gap-4 border-b border-[#1F2A44] pb-4" sm:flex-row sm:items-center sm:justify-between>
+        <div className="mb-6 flex flex-col gap-4 border-b border-[#1F2A44] pb-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h1 className="text-2xl font-semibold text-slate-900">{title}</h1>
                 {description && (

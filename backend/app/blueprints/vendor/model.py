@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from app.blueprints.address.model import Address
     from app.blueprints.vendor_user.model import VendorUser
     from app.blueprints.invoices.model import Invoice
+    from app.blueprints.work_orders.model import WorkOrder
 
 
 class VendorStatus(enum.Enum):
@@ -95,4 +96,9 @@ class Vendor(BaseModel):
 
     invoices: Mapped[list["Invoice"]] = relationship(
         back_populates="vendor", cascade="all, delete-orphan"
+    )
+
+    work_orders: Mapped[list["WorkOrder"]] = relationship(
+        "WorkOrder",
+        back_populates="vendor",
     )

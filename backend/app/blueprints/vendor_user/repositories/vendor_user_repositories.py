@@ -41,6 +41,17 @@ class VendorUserRepository:
             raise
 
     @staticmethod
+    def get_all_by_user(user_id: str) -> list[VendorUser]:
+        try:
+            logger.debug("Fetching vendor links for user_id=%s", user_id)
+            return db.session.scalars(
+                select(VendorUser).where(VendorUser.user_id == user_id)
+            ).all()
+        except Exception:
+            logger.exception("Failed to fetch vendor links for user_id=%s", user_id)
+            raise
+
+    @staticmethod
     def create(vendor_user: VendorUser):
         try:
             logger.debug("Creating vendor user with id")

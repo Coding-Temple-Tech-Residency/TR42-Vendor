@@ -1,4 +1,4 @@
-import DataTable from "../../components/UI/DataTable";
+import DataTable from "../UI/DataTable";
 import { useNavigate } from "react-router-dom";
 import type { WorkOrderRow } from "../../auth/services/workOrderService";
 
@@ -6,16 +6,16 @@ type Props = {
   data: WorkOrderRow[];
 };
 
-function OpenWorkOrdersTable({ data }: Props) {
+function CompletedWorkOrdersTable({ data }: Props) {
   const navigate = useNavigate();
+  // Dummy data for now (backend will replace this later)
   const columns = [
     { key: "id", label: "Work Order ID" },
     { key: "serviceType", label: "Service" },
     { key: "locationSummary", label: "Location" },
-    { key: "currentStatus", label: "Status" },
-    { key: "assignmentLabel", label: "Assignment" },
-    { key: "scheduleWindow", label: "Schedule" },
-    { key: "priority", label: "Priority" },
+    { key: "quantityLabel", label: "Quantity" },
+    { key: "recurrenceLabel", label: "Recurrence" },
+    { key: "completedAtLabel", label: "Completed At" },
   ];
 
   const handleRowClick = (row: WorkOrderRow) => {
@@ -27,11 +27,11 @@ function OpenWorkOrdersTable({ data }: Props) {
       <DataTable
         columns={columns}
         data={data}
-        emptyMessage="No active work orders found"
+        emptyMessage="No recently completed work orders found"
         onRowClick={handleRowClick}
       />
     </div>
   );
 }
 
-export default OpenWorkOrdersTable;
+export default CompletedWorkOrdersTable;
