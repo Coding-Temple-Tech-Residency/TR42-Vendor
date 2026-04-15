@@ -10,7 +10,7 @@ const LoginForm = () => {
 
   // Form state
   const [formData, setFormData] = useState({
-    email: "",
+    identifier: "",
     password: "",
   });
 
@@ -20,10 +20,13 @@ const LoginForm = () => {
 
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
     setError(null);
   };
 
@@ -31,8 +34,8 @@ const LoginForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.email || !formData.password) {
-      setError("Please enter both email and password.");
+    if (!formData.identifier || !formData.password) {
+      setError("Please enter login infomation.");
       return;
     }
 
@@ -45,28 +48,27 @@ const LoginForm = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(formData),
       });
 
       const result = await response.json();
-      console.log(result);
 
       if (!response.ok) {
-        throw result;
+        throw new Error(result.error || result.message || "Login failed.");
       }
 
       console.log("Login successful!");
 
-      // Save auth context to localStorage for protected API calls
-      localStorage.setItem("token", result.token);
-      localStorage.setItem("user_id", result.id ?? result.user_id);
-      // TODO: Backend should return id for vendor in login response, or we need separate endpoint
-      // For now, this will be fetched/set by dashboard after auth
-
       navigate("/vendor/dashboard");
     } catch (err: any) {
       console.log("Login error:", err);
-      setError(err.message);
+      setError(err.message || "Login failed.");
+
+      setFormData({
+        identifier: "",
+        password: "",
+      });
     } finally {
       setLoading(false);
     }
@@ -75,12 +77,12 @@ const LoginForm = () => {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <TextInput
-        label="Email"
-        name="email"
-        type="email"
-        value={formData.email}
+        label="Email / Username"
+        name="identifier"
+        type="text"
+        value={formData.identifier}
         onChange={handleChange}
-        placeholder="Enter your email"
+        placeholder="Enter your email or username"
       />
 
       <PasswordInput
