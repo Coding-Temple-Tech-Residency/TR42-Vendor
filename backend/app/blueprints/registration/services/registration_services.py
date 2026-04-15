@@ -64,8 +64,8 @@ class RegistrationService:
                 city=vendor_data["city"],
                 state=vendor_data["state"],
                 zipcode=vendor_data["zipcode"],
-                created_by_user_id=user.user_id,
-                updated_by_user_id=user.user_id,
+                created_by_user_id=user.id,
+                updated_by_user_id=user.id,
             )
             AddressRepository.create(address)
             db.session.flush()
@@ -76,19 +76,19 @@ class RegistrationService:
                 company_phone=vendor_data["company_phone"],
                 primary_contact_name=vendor_data["primary_contact_name"],
                 service_type=vendor_data["service_type"],
-                address_id=address.address_id,
-                created_by_user_id=user.user_id,
-                updated_by_user_id=user.user_id,
+                address_id=address.id,
+                created_by_user_id=user.id,
+                updated_by_user_id=user.id,
             )
             VendorRepository.create(vendor)
             db.session.flush()
 
             vendor_user = VendorUser(
-                vendor_id=vendor.vendor_id,
-                user_id=user.user_id,
+                vendor_id=vendor.id,
+                user_id=user.id,
                 vendor_user_role=VendorUserRole.ADMIN,
-                created_by_user_id=user.user_id,
-                updated_by_user_id=user.user_id,
+                created_by_user_id=user.id,
+                updated_by_user_id=user.id,
             )
             VendorUserRepository.create(vendor_user)
             db.session.flush()
@@ -113,7 +113,7 @@ class RegistrationService:
 
         return {
             "message": "Registration successful.",
-            "user_id": user.user_id,
-            "vendor_id": vendor.vendor_id,
-            "address_id": address.address_id,
+            "user_id": user.id,
+            "vendor_id": vendor.id,
+            "address_id": address.id,
         }

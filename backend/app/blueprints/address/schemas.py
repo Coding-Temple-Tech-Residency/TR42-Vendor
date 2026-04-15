@@ -10,7 +10,7 @@ class AddressSchema(ma.SQLAlchemyAutoSchema):
         load_instance = False
         include_fk = True
 
-    address_id = fields.String(dump_only=True)
+    id = fields.String(dump_only=True)
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
     created_by_user_id = fields.String(dump_only=True)
