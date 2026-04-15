@@ -8,6 +8,9 @@ from app.blueprints.user.schemas import users_schema
 
 from app.auth.passwords import hash_password, verify_password
 from app.auth.tokens import encode_token
+from app.blueprints.vendor_user.repositories.vendor_user_repositories import (
+    VendorUserRepository,
+)
 
 from logging import getLogger
 
@@ -35,15 +38,19 @@ class UserService:
             raise BadRequest("Invalid credentials")
 
         if not verify_password(password, user.password_hash):
-            logger.warning("Authentication failed")
-            raise BadRequest("Invalid credentials")
+            logger.warning("Login failed: Incorrect password for user: %s", email)
+            raise BadRequest("Invalid username or password")
 
-        token = encode_token(user)
-        logger.info("Login successful for user_id=%s", user.user_id)
+        vendor_links = VendorUserRepository.get_all_by_user(user.user_id)
+        active_vendor_id = vendor_links[0].vendor_id if vendor_links else None
+
+        token = encode_token(user, active_vendor_id=active_vendor_id)
+        logger.info("Login successful for user: %s", email)
 
         return {
             "message": "Login successful",
             "token": token,
+            "active_vendor_id": active_vendor_id,
             "user_id": user.user_id,
             "username": user.username,
             "email": user.email,
