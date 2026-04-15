@@ -23,16 +23,16 @@ class UserService:
     @staticmethod
     def login(data: dict):
 
-        email = data.get("email")
+        identifier = data.get("identifier")
         password = data.get("password")
 
         logger.info("Login attempt received")
 
-        if not email or not password:
+        if not identifier or not password:
             logger.warning("Login failed: missing email or password")
-            raise BadRequest("Email and password are required")
+            raise BadRequest("Email/username and password are required")
 
-        user = UserRepository.get_by_email(email)
+        user = UserRepository.get_by_email_or_username(identifier)
         if not user:
             logger.warning("Authentication failed")
             raise BadRequest("Invalid credentials")
@@ -45,7 +45,7 @@ class UserService:
         active_vendor_id = vendor_links[0].vendor_id if vendor_links else None
 
         token = encode_token(user, active_vendor_id=active_vendor_id)
-        logger.info("Login successful for user: %s", email)
+        logger.info("Login successful for user: %s", identifier)
 
         return {
             "message": "Login successful",
