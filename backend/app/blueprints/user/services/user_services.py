@@ -8,6 +8,9 @@ from app.blueprints.user.schemas import users_schema
 
 from app.auth.passwords import hash_password, verify_password
 from app.auth.tokens import encode_token
+from app.blueprints.vendor_user.repositories.vendor_user_repositories import (
+    VendorUserRepository,
+)
 
 from logging import getLogger
 
@@ -20,16 +23,16 @@ class UserService:
     @staticmethod
     def login(data: dict):
 
-        email = data.get("email")
+        identifier = data.get("identifier")
         password = data.get("password")
 
         logger.info("Login attempt received")
 
-        if not email or not password:
+        if not identifier or not password:
             logger.warning("Login failed: missing email or password")
-            raise BadRequest("Email and password are required")
+            raise BadRequest("Email/username and password are required")
 
-        user = UserRepository.get_by_email(email)
+        user = UserRepository.get_by_email_or_username(identifier)
         if not user:
             logger.warning("Authentication failed")
             raise BadRequest("Invalid credentials")
@@ -38,13 +41,18 @@ class UserService:
             logger.warning("Authentication failed")
             raise BadRequest("Invalid credentials")
 
-        token = encode_token(user)
-        logger.info("Login successful for user_id=%s", user.user_id)
+        vendor_links = VendorUserRepository.get_all_by_user(user.id)
+        active_vendor_id = vendor_links[0].vendor_id if vendor_links else None
+
+        token = encode_token(user, active_vendor_id=active_vendor_id)
+        logger.info("Login successful for user: %s", identifier)
 
         return {
             "message": "Login successful",
             "token": token,
-            "user_id": user.user_id,
+            "active_vendor_id": active_vendor_id,
+            "user_id": user.id,
+            "id": user.id,
             "username": user.username,
             "email": user.email,
             "type": user.user_type.value,
@@ -134,7 +142,7 @@ class UserService:
             logger.debug("User added to session: %s", user.username)
 
             db.session.commit()
-            logger.info("User created successfully: %s", user.user_id)
+            logger.info("User created successfully: %s", user.id)
 
             return user
 
@@ -158,7 +166,7 @@ class UserService:
 
     @staticmethod
     def update(user, data: dict):
-        logger.info("Updating user: %s", user.user_id)
+        logger.info("Updating user: %s", user.id)
 
         # Handle password update safely
         if "password" in data and data["password"]:
@@ -171,6 +179,6 @@ class UserService:
 
     @staticmethod
     def delete(user):
-        logger.info("Deleting user: %s", user.user_id)
+        logger.info("Deleting user: %s", user.id)
         UserRepository.delete(user)
         return True

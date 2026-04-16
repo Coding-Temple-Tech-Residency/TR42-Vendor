@@ -17,6 +17,8 @@ if TYPE_CHECKING:
     from app.blueprints.vendor_user.model import VendorUser
     from app.blueprints.vendor_contractor.model import VendorContractor
     from app.blueprints.compliance_document.model import ComplianceDocument
+    from app.blueprints.invoices.model import Invoice
+    from app.blueprints.work_orders.model import WorkOrder
 
 
 class VendorStatus(enum.Enum):
@@ -33,7 +35,7 @@ class ComplianceStatus(enum.Enum):
 class Vendor(BaseModel):
     __tablename__ = "vendor"
 
-    vendor_id: Mapped[str] = mapped_column(
+    id: Mapped[str] = mapped_column(
         String(36), primary_key=True, nullable=False, default=generate_uuid
     )
 
@@ -78,7 +80,7 @@ class Vendor(BaseModel):
     description: Mapped[str] = mapped_column(String, nullable=True)
 
     address_id: Mapped[str] = mapped_column(
-        ForeignKey("address.address_id"),
+        ForeignKey("address.id"),
         unique=True,
     )
 
@@ -99,4 +101,13 @@ class Vendor(BaseModel):
         "ComplianceDocument",
         back_populates="vendor",
         cascade="all, delete-orphan",
+    )
+
+    invoices: Mapped[list["Invoice"]] = relationship(
+        back_populates="vendor", cascade="all, delete-orphan"
+    )
+
+    work_orders: Mapped[list["WorkOrder"]] = relationship(
+        "WorkOrder",
+        back_populates="vendor",
     )

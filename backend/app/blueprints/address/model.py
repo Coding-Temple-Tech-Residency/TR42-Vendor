@@ -13,13 +13,13 @@ if TYPE_CHECKING:
 class Address(BaseModel):
     __tablename__ = "address"
 
-    address_id: Mapped[str] = mapped_column(
+    id: Mapped[str] = mapped_column(
         String(36), primary_key=True, nullable=False, default=generate_uuid
     )
     street: Mapped[str] = mapped_column(String(255), nullable=False)
     city: Mapped[str] = mapped_column(String(255), nullable=False)
     state: Mapped[str] = mapped_column(String(255), nullable=False)
-    zipcode: Mapped[str] = mapped_column(String(255), nullable=False)
+    zip: Mapped[str] = mapped_column(String(255), nullable=False)
     country: Mapped[str] = mapped_column(String(255), nullable=False, default="USA")
 
     # relationships

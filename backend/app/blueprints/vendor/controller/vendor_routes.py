@@ -20,20 +20,23 @@ vendor_bp = Blueprint(
 )
 
 
-# @vendor_bp.get("/")
-# @token_required
-# def get_all_vendors():
-#     try:
-#         logger.debug("Fetching all vendors")
-#         vendors = VendorService.get_all_vendors()
-#         logger.info(f"Retrieved {len(vendors)} vendors")
-#         return jsonify(vendors_schema.dump(vendors)), 200
-#     except Exception:
-#         logger.exception("Error fetching vendors")
-#         return {"error": "An error occurred while fetching vendors"}, 500
-
-
 @vendor_bp.get("/")
+@token_required
+@vendor_membership_required
+def get_active_vendor(current_user, vendor_link, vendor_id):
+    try:
+        vendor = VendorService.get_vendor_by_id(vendor_id)
+
+        if not vendor:
+            return jsonify({"error": "Vendor not found"}), 404
+
+        return jsonify(vendor_schema.dump(vendor)), 200
+    except Exception:
+        logger.exception("Error fetching active vendor")
+        return jsonify({"error": "An error occurred while fetching the vendor"}), 500
+
+
+@vendor_bp.get("/get-all")
 # @token_required
 def get_all_vendors():
     try:
@@ -47,24 +50,6 @@ def get_all_vendors():
     except Exception:
         logger.exception("Error fetching vendors")
         return {"error": "An error occurred while fetching vendors"}, 500
-
-
-@vendor_bp.get("/<vendor_id>")
-@token_required
-def get_vendor_by_id(vendor_id: str):
-    try:
-        logger.debug("Fetching vendor with id")
-        vendor = VendorService.get_vendor_by_id(vendor_id)
-
-        if not vendor:
-            logger.debug(f"Vendor with id not found")
-            return {"error": "Vendor not found"}, 404
-
-        logger.info("Vendor retrieved successfully")
-        return jsonify(vendor_schema.dump(vendor)), 200
-    except Exception:
-        logger.exception("Error fetching vendor with id")
-        return {"error": "An error occurred while fetching the vendor"}, 500
 
 
 @vendor_bp.post("/")
@@ -86,7 +71,7 @@ def create_vendor(current_user):
 
         new_vendor = VendorService.create_vendor(
             validated_data,
-            current_user.user_id,
+            current_user.id,
         )
 
         logger.info("Vendor created successfully")
@@ -99,7 +84,7 @@ def create_vendor(current_user):
         return {"error": "An error occurred while creating the vendor"}, 500
 
 
-@vendor_bp.put("/<vendor_id>")
+@vendor_bp.put("/")
 @token_required
 @vendor_membership_required
 @vendor_roles_required([VendorUserRole.ADMIN])
@@ -129,7 +114,7 @@ def update_vendor(current_user, vendor_link, vendor_id: str):
         return {"error": "An error occurred while updating the vendor"}, 500
 
 
-@vendor_bp.delete("/<vendor_id>")
+@vendor_bp.delete("/active")
 @token_required
 @vendor_membership_required
 @vendor_roles_required([VendorUserRole.ADMIN])

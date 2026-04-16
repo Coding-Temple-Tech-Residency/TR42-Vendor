@@ -15,13 +15,12 @@ class AddressSchema(ma.SQLAlchemyAutoSchema):
         model = Address
         load_instance = False
         include_fk = True
-        dump_only = (
-            "address_id",
-            "created_at",
-            "updated_at",
-            "created_by_user_id",
-            "updated_by_user_id",
-        )
+
+    id = fields.String(dump_only=True)
+    created_at = fields.DateTime(dump_only=True)
+    updated_at = fields.DateTime(dump_only=True)
+    created_by = fields.String(dump_only=True)
+    updated_by = fields.String(dump_only=True)
 
     @pre_load
     def preprocess(self, data, **kwargs):
@@ -39,7 +38,7 @@ class AddressSchema(ma.SQLAlchemyAutoSchema):
     def validate_state_field(self, value, **kwargs):
         validate_state(value)
 
-    @validates("zipcode")
+    @validates("zip")
     def validate_zipcode_field(self, value, **kwargs):
         validate_zipcode(value)
 

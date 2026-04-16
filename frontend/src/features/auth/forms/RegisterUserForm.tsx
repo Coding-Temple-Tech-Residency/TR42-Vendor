@@ -58,7 +58,8 @@ function RegisterUserForm() {
   const passwordValid = Object.values(checks).every(Boolean);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-3">
+
       {/* First + Last Name */}
       <div className="grid grid-cols-2 gap-5">
         <div>
@@ -124,7 +125,7 @@ function RegisterUserForm() {
           <p className="text-red-500 text-sm">{errors.password}</p>
         )}
 
-        {/* password checklist */}
+        {/* password checklist + strength */}
         {form.password && (
           <div className="text-sm mt-2 space-y-1">
             <p
