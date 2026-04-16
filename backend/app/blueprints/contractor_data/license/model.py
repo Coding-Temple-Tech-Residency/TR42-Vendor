@@ -22,7 +22,7 @@ class License(BaseModel):
     )
 
     contractor_id: Mapped[str] = mapped_column(
-        ForeignKey("contractor.contractor_id"),
+        ForeignKey("contractor.id"),
         nullable=False,
         unique=True,
     )
@@ -59,7 +59,7 @@ class License(BaseModel):
     )
 
     license_verified_by: Mapped[str | None] = mapped_column(
-        ForeignKey("user.user_id"),
+        ForeignKey("user.id"),
         nullable=True,
     )
 

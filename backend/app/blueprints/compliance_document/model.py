@@ -21,7 +21,7 @@ class ComplianceDocument(BaseModel):
     )
 
     vendor_id: Mapped[str] = mapped_column(
-        ForeignKey("vendor.vendor_id"),
+        ForeignKey("vendor.id"),
         nullable=False,
     )
 

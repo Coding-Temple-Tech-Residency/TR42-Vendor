@@ -34,12 +34,12 @@ class VendorContractor(BaseModel):
     )
 
     contractor_id: Mapped[str] = mapped_column(
-        ForeignKey("contractor.contractor_id"),
+        ForeignKey("contractor.id"),
         nullable=False,
     )
 
     vendor_id: Mapped[str] = mapped_column(
-        ForeignKey("vendor.vendor_id"),
+        ForeignKey("vendor.id"),
         nullable=False,
     )
 

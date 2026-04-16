@@ -21,7 +21,7 @@ class DrugTest(BaseModel):
     )
 
     contractor_id: Mapped[str] = mapped_column(
-        ForeignKey("contractor.contractor_id"),
+        ForeignKey("contractor.id"),
         nullable=False,
         unique=True,
     )

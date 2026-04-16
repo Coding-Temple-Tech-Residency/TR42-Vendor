@@ -24,12 +24,12 @@ class ContractorStatus(enum.Enum):
 class Contractor(BaseModel):
     __tablename__ = "contractor"
 
-    contractor_id: Mapped[str] = mapped_column(
+    id: Mapped[str] = mapped_column(
         String(36), primary_key=True, nullable=False, default=generate_uuid
     )
 
     user_id: Mapped[str] = mapped_column(
-        ForeignKey("user.user_id"),
+        ForeignKey("user.id"),
         nullable=False,
         unique=True,
     )
@@ -37,7 +37,7 @@ class Contractor(BaseModel):
     employee_number: Mapped[str] = mapped_column(String, nullable=False)
 
     vendor_manager_id: Mapped[str | None] = mapped_column(
-        ForeignKey("user.user_id"),
+        ForeignKey("user.id"),
         nullable=True,
     )
 
