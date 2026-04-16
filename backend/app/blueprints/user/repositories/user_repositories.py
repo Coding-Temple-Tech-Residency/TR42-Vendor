@@ -10,10 +10,18 @@ logger = getLogger(__name__)
 class UserRepository:
 
     @staticmethod
+    def get_by_email_or_username(identifier: str):
+        return db.session.execute(
+            select(User).where(
+                (User.email == identifier) | (User.username == identifier)
+            )
+        ).scalar_one_or_none()
+
+    @staticmethod
     def get_by_vendor_paginated(vendor_id: str, page: int = 1, per_page: int = 10):
         stmt = (
             select(User)
-            .join(VendorUser, VendorUser.user_id == User.user_id)
+            .join(VendorUser, VendorUser.user_id == User.id)
             .where(VendorUser.vendor_id == vendor_id)
         )
         return db.paginate(stmt, page=page, per_page=per_page)

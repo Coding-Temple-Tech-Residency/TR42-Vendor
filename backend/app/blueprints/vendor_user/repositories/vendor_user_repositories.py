@@ -54,9 +54,9 @@ class VendorUserRepository:
     @staticmethod
     def create(vendor_user: VendorUser):
         try:
-            logger.debug("Creating vendor user with ID: %s", vendor_user.id)
+            logger.debug("Creating vendor user with id")
             db.session.add(vendor_user)
             return vendor_user
         except Exception:
-            logger.exception("Failed to create vendor user: %s", vendor_user.id)
+            logger.exception("Failed to create vendor user")
             raise

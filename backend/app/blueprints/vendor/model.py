@@ -1,8 +1,10 @@
-from app.extensions import db
-from app.functions import generate_uuid
+from datetime import datetime
+
+from app.functions import generate_uuid, utc_now
 from typing import TYPE_CHECKING
 from sqlalchemy import (
     Boolean,
+    DateTime,
     Enum,
     String,
     ForeignKey,
@@ -20,6 +22,7 @@ if TYPE_CHECKING:
     from app.blueprints.invoices.model import Invoice
     from app.blueprints.work_orders.model import WorkOrder
 
+
 class VendorStatus(enum.Enum):
     ACTIVE = "active"
     INACTIVE = "inactive"
@@ -34,7 +37,7 @@ class ComplianceStatus(enum.Enum):
 class Vendor(BaseModel):
     __tablename__ = "vendor"
 
-    vendor_id: Mapped[str] = mapped_column(
+    id: Mapped[str] = mapped_column(
         String(36), primary_key=True, nullable=False, default=generate_uuid
     )
 
@@ -43,6 +46,17 @@ class Vendor(BaseModel):
     company_code: Mapped[str] = mapped_column(String, nullable=True)
 
     primary_contact_name: Mapped[str] = mapped_column(String)
+
+    start_date: Mapped[datetime] = mapped_column(
+        DateTime,
+        nullable=False,
+        default=utc_now,
+    )
+
+    end_date: Mapped[datetime] = mapped_column(
+        DateTime,
+        nullable=True,
+    )
 
     company_email: Mapped[str] = mapped_column(String, nullable=False)
     company_phone: Mapped[str] = mapped_column(String, nullable=False)
@@ -55,6 +69,8 @@ class Vendor(BaseModel):
         default=VendorStatus.ACTIVE,
     )
 
+    vendor_code: Mapped[str] = mapped_column(String, unique=True)
+
     onboarding: Mapped[bool] = mapped_column(Boolean, nullable=True, default=False)
 
     compliance_status: Mapped[ComplianceStatus] = mapped_column(
@@ -66,7 +82,7 @@ class Vendor(BaseModel):
     description: Mapped[str] = mapped_column(String, nullable=True)
 
     address_id: Mapped[str] = mapped_column(
-        ForeignKey("address.address_id"),
+        ForeignKey("address.id"),
         unique=True,
     )
 

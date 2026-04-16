@@ -20,6 +20,8 @@ from app.blueprints.vendor_user.repositories.vendor_user_repositories import (
 
 from logging import getLogger
 
+from app.functions import generate_uuid
+
 
 logger = getLogger(__name__)
 
@@ -53,45 +55,52 @@ class RegistrationService:
                 user_type=UserType.VENDOR,
                 is_active=True,
                 is_admin=True,
-                
             )
             user.set_password(user_data["password"])
             UserRepository.create(user)
             db.session.flush()
 
+            address_data = vendor_data["address"]
+
             address = Address(
-                street=vendor_data["address"],
-                city=vendor_data["city"],
-                state=vendor_data["state"],
-                zipcode=vendor_data["zipcode"],
-                created_by_user_id=user.user_id,
-                updated_by_user_id=user.user_id,
+                street=address_data["street"],
+                city=address_data["city"],
+                state=address_data["state"],
+                zipcode=address_data["zipcode"],
+                created_by_user_id=user.id,
+                updated_by_user_id=user.id,
             )
             AddressRepository.create(address)
             db.session.flush()
 
+            vendor_id = generate_uuid()
+
             vendor = Vendor(
+                id=vendor_id,
                 company_name=vendor_data["company_name"],
                 company_email=vendor_data["company_email"],
                 company_phone=vendor_data["company_phone"],
                 primary_contact_name=vendor_data["primary_contact_name"],
                 service_type=vendor_data["service_type"],
-                address_id=address.address_id,
-                created_by_user_id=user.user_id,
-                updated_by_user_id=user.user_id,
+                vendor_code=f"Vendor-{vendor_id[:8].upper()},
+                address_id=address.id,
+                created_by_user_id=user.id,
+                updated_by_user_id=user.id,
             )
             VendorRepository.create(vendor)
             db.session.flush()
 
             vendor_user = VendorUser(
-                vendor_id=vendor.vendor_id,
-                user_id=user.user_id,
+                vendor_id=vendor.id,
+                user_id=user.id,
                 vendor_user_role=VendorUserRole.ADMIN,
-                created_by_user_id=user.user_id,
-                updated_by_user_id=user.user_id,
+                created_by_user_id=user.id,
+                updated_by_user_id=user.id,
             )
             VendorUserRepository.create(vendor_user)
             db.session.flush()
+
+            vendor.vendor_code = f"Vendor-{vendor.vendor_id[:8].upper()}"
 
             db.session.commit()
 
@@ -113,7 +122,7 @@ class RegistrationService:
 
         return {
             "message": "Registration successful.",
-            "user_id": user.user_id,
-            "vendor_id": vendor.vendor_id,
-            "address_id": address.address_id,
+            "user_id": user.id,
+            "vendor_id": vendor.id,
+            "address_id": address.id,
         }

@@ -5,17 +5,17 @@ from app.base import BaseModel
 class Ticket(BaseModel):
     __tablename__ = 'ticket'
 
-    ticket_id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String, primary_key=True)
 
     invoice_id = db.Column(
         db.String,
-        db.ForeignKey('invoice.invoice_id'),
+        db.ForeignKey('invoice.id'),
         nullable=True
     )
 
     work_order_id = db.Column(
         db.String,
-        db.ForeignKey('work_orders.work_order_id'),
+        db.ForeignKey('work_orders.id'),
         nullable=False
     )
 
@@ -23,12 +23,12 @@ class Ticket(BaseModel):
 
     assigned_contractor = db.Column(
         db.String,
-        db.ForeignKey('contractors.contractor_id')
+        db.ForeignKey('contractors.id')
     )
 
     vendor_id = db.Column(
         db.String,
-        db.ForeignKey('vendor.vendor_id')
+        db.ForeignKey('vendor.id')
     )
 
     priority = db.Column(db.String)
@@ -62,13 +62,13 @@ class Ticket(BaseModel):
 
     created_by = db.Column(
         db.String,
-        db.ForeignKey('user.user_id'),
+        db.ForeignKey('user.id'),
         nullable=False
     )
 
     updated_by = db.Column(
         db.String,
-        db.ForeignKey('user.user_id')
+        db.ForeignKey('user.id')
     )
 
     # ----------------------

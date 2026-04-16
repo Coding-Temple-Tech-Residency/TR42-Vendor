@@ -1,14 +1,14 @@
 from app.extensions import db
-from app.models.base import BaseModel
+from app.base import BaseModel
 
 class Insurance(BaseModel):
 
     __tablename__ = 'insurance'
 
-    insurance_id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String, primary_key=True)
     contractor_id = db.Column(
         db.String,
-        db.ForeignKey('contractors.contractor_id'),
+        db.ForeignKey('contractors.id'),
         nullable=False
     )
     insurance_type = db.Column(db.String, nullable=False)

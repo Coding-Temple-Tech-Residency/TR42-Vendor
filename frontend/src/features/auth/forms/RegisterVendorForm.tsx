@@ -1,27 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthButton from "../components/AuthButton";
 import TextInput from "../components/TextInput";
+import type { User, Vendor } from "../types/types";
 import {
   formatPhoneNumber,
-  validateProfileForm,
+  toBackendPhoneFormat,
+  validateVenderRegisterForm,
 } from "../utils/authValidation";
 
-function ProfileSetupForm() {
+function RegisterVendorForm() {
   const navigate = useNavigate();
 
-  // Get step 1 data from localStorage
-  let userData: any = null;
-
-  try {
-    const saved = localStorage.getItem("registerData");
-    userData = saved ? JSON.parse(saved) : null;
-  } catch (err) {
-    console.log("Error reading localStorage");
-  }
+  const [userData, setUserData] = useState<User | null>(null);
+  const [isLoadingUserData, setIsLoadingUserData] = useState(true);
 
   // Form state
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<Vendor>({
     companyName: "",
     address: "",
     primaryContactName: "",
@@ -36,6 +31,25 @@ function ProfileSetupForm() {
   // Store errors
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("registerData");
+      const parsed = saved ? JSON.parse(saved) : null;
+
+      if (!parsed) {
+        navigate("/vendor/register");
+        return;
+      }
+
+      setUserData(parsed);
+    } catch (err) {
+      console.log("Error reading localStorage");
+      navigate("/vendor/register");
+    } finally {
+      setIsLoadingUserData(false);
+    }
+  }, [navigate]);
+
   // Handle input changes
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -44,11 +58,10 @@ function ProfileSetupForm() {
     const value = e.target.value;
 
     // Format phone number
-    if (name === "companyPhone") {
-      setForm({ ...form, [name]: formatPhoneNumber(value) });
-    } else {
-      setForm({ ...form, [name]: value });
-    }
+    setForm((prev) => ({
+      ...prev,
+      [name]: name === "companyPhone" ? formatPhoneNumber(value) : value,
+    }));
 
     // Clear error for that field
     setErrors((prev) => ({
@@ -61,7 +74,7 @@ function ProfileSetupForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const newErrors = validateProfileForm(form);
+    const newErrors = validateVenderRegisterForm(form);
 
     // Stop if there are errors
     if (Object.keys(newErrors).length > 0) {
@@ -70,18 +83,9 @@ function ProfileSetupForm() {
     }
     if (!userData) {
       console.log("Missing registration data. Please start again.");
+      navigate("/vendor/register");
       return;
     }
-
-    console.log("Step 1 data:", userData);
-
-    const cleanedPhone = form.companyPhone.replace(/\D/g, "");
-    const formattedPhone =
-      cleanedPhone.slice(0, 3) +
-      "-" +
-      cleanedPhone.slice(3, 6) +
-      "-" +
-      cleanedPhone.slice(6);
 
     const payload = {
       user: {
@@ -94,17 +98,18 @@ function ProfileSetupForm() {
       vendor: {
         company_name: form.companyName,
         company_email: form.companyEmail,
-        company_phone: formattedPhone,
+        company_phone: toBackendPhoneFormat(form.companyPhone),
         primary_contact_name: form.primaryContactName,
         service_type: form.serviceType,
-        address: form.address,
-        city: form.city,
-        state: form.state,
-        zipcode: form.zip,
+        address: {
+          street: form.address,
+          city: form.city,
+          state: form.state,
+          zipcode: form.zip,
+        },
       },
     };
-    console.log(payload);
-    console.log("Step 2 data:", form);
+
     try {
       const response = await fetch("/api/registration", {
         method: "POST",
@@ -115,7 +120,6 @@ function ProfileSetupForm() {
       });
 
       const result = await response.json();
-      console.log(result);
 
       if (!response.ok) {
         throw result;
@@ -124,9 +128,13 @@ function ProfileSetupForm() {
       localStorage.removeItem("registerData");
 
       navigate("/vendor/success");
-    } catch {
-      console.log("Request failed");
+    } catch (err) {
+      console.log("error", err);
     }
+  }
+
+  if (isLoadingUserData) {
+    return null;
   }
 
   return (
@@ -260,4 +268,4 @@ function ProfileSetupForm() {
   );
 }
 
-export default ProfileSetupForm;
+export default RegisterVendorForm;
