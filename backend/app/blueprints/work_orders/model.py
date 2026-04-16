@@ -8,6 +8,7 @@ from app.base import BaseModel
 if TYPE_CHECKING:
     from app.blueprints.vendor.model import Vendor
     from app.blueprints.well.model import Well
+    from app.blueprints.fraud_alerts.model import FraudAlert
 
 class OrderStatus(enum.Enum):
     PENDING = "pending"
@@ -117,3 +118,9 @@ class WorkOrder(BaseModel):
         "Well",
         foreign_keys=[well_id],
     )
+
+    fraud_alerts: Mapped[list["FraudAlert"]] = relationship(
+    "FraudAlert",
+    back_populates="work_order",
+    cascade="all, delete-orphan"
+)

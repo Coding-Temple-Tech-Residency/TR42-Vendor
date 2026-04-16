@@ -1,3 +1,4 @@
+
 from flask import Blueprint, jsonify, request
 from marshmallow import ValidationError
 from app.blueprints.vendor_user.services.vendor_user_services import VendorUserService
@@ -44,3 +45,46 @@ def create_vendor_user():
     except Exception as e:
         logger.exception(f"Error creating vendor user: {str(e)}")
         return jsonify({"error": "An error occurred while creating the user"}), 500
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

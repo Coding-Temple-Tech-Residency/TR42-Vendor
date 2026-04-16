@@ -1,12 +1,14 @@
 from app.extensions import ma
-from .model import VendorUser
+from app.blueprints.msa.model import MSA
 
 
-class VendorUserSchema(ma.SQLAlchemyAutoSchema):
+class MSASchema(ma.SQLAlchemyAutoSchema):
     class Meta:
-        model = VendorUser
+        model = MSA
         load_instance = True
+        include_fk = True
+        
 
 
-vendor_user_schema = VendorUserSchema()
-vendor_users_schema = VendorUserSchema(many=True)
+msa_schema = MSASchema()
+msas_schema = MSASchema(many=True)

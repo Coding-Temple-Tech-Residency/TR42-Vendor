@@ -1,3 +1,4 @@
+
 from sqlalchemy import select
 from app.extensions import db
 from app.blueprints.vendor_user.model import VendorUser
@@ -41,11 +42,22 @@ class VendorUserRepository:
             raise
 
     @staticmethod
+    def get_all_by_user(user_id: str) -> list[VendorUser]:
+        try:
+            logger.debug("Fetching vendor links for user_id=%s", user_id)
+            return db.session.scalars(
+                select(VendorUser).where(VendorUser.user_id == user_id)
+            ).all()
+        except Exception:
+            logger.exception("Failed to fetch vendor links for user_id=%s", user_id)
+            raise
+
+    @staticmethod
     def create(vendor_user: VendorUser):
         try:
-            logger.debug("Creating vendor user with ID: %s", vendor_user.id)
+            logger.debug("Creating vendor user with id")
             db.session.add(vendor_user)
             return vendor_user
         except Exception:
-            logger.exception("Failed to create vendor user: %s", vendor_user.id)
+            logger.exception("Failed to create vendor user")
             raise

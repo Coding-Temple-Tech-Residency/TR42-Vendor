@@ -8,8 +8,10 @@ from app.auth.passwords import hash_password, verify_password
 
 from app.extensions import db
 
+
 if TYPE_CHECKING:
     from app.blueprints.vendor_user.model import VendorUser
+    from app.blueprints.msa.model import MSA
 
 
 class UserType(enum.Enum):
@@ -79,6 +81,13 @@ class User(db.Model):
         foreign_keys=[updated_by_user_id],
         remote_side=[user_id],
     )
+
+    msas_uploaded = relationship(
+        "MSA",
+        back_populates="uploaded_by_user",
+        foreign_keys="MSA.uploaded_by"
+    )
+
 
     def set_password(self, raw_password: str) -> None:
         self.password_hash = hash_password(raw_password)

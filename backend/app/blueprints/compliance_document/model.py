@@ -4,7 +4,7 @@ from app.models.base import BaseModel
 class BackgroundCheck(BaseModel):
     __tablename__ = 'background_check'
 
-    background_check_id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String, primary_key=True)
 
     background_check_passed = db.Column(db.Boolean)
     background_check_date = db.Column(db.DateTime)
@@ -14,7 +14,7 @@ class BackgroundCheck(BaseModel):
 class DrugTest(BaseModel):
     __tablename__ = 'drug_test'
 
-    drug_test_id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String, primary_key=True)
 
     drug_test_passed = db.Column(db.Boolean)
     drug_test_date = db.Column(db.DateTime)
@@ -23,9 +23,9 @@ class DrugTest(BaseModel):
 class ComplianceDocument(BaseModel):
     __tablename__ = 'compliance_document'
 
-    compliance_id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String, primary_key=True)
 
-    vendor_id = db.Column(db.String, db.ForeignKey('vendor.vendor_id'))
+    vendor_id = db.Column(db.String, db.ForeignKey('vendor.id'))
 
     compliance_document = db.Column(db.LargeBinary)
     compliance_status = db.Column(db.Boolean, default=False)
@@ -36,7 +36,7 @@ class ComplianceDocument(BaseModel):
 class DriversLicense(BaseModel):
     __tablename__ = 'drivers_license'
 
-    license_id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String, primary_key=True)
 
     license_number = db.Column(db.String)
     expiration_date = db.Column(db.DateTime)
