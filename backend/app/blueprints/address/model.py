@@ -8,6 +8,7 @@ from app.base import BaseModel
 
 if TYPE_CHECKING:
     from app.blueprints.vendor.model import Vendor
+    from app.blueprints.user.model import User
 
 
 class Address(BaseModel):
@@ -23,4 +24,13 @@ class Address(BaseModel):
     country: Mapped[str] = mapped_column(String(255), nullable=False, default="USA")
 
     # relationships
-    vendor: Mapped["Vendor"] = relationship(back_populates="address")
+    vendor: Mapped["Vendor"] = relationship(
+        "Vendor",
+        back_populates="address",
+        foreign_keys="Vendor.address_id",
+        uselist=False,
+    )
+
+    user: Mapped["User"] = relationship(
+        "User", back_populates="address", foreign_keys="User.address_id", uselist=False
+    )

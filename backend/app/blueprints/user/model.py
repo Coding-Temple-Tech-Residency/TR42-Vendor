@@ -1,8 +1,17 @@
-from datetime import datetime
+from datetime import date, datetime
 import enum
 from app.functions import generate_uuid, utc_now
 from typing import TYPE_CHECKING
-from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Integer, LargeBinary, String
+from sqlalchemy import (
+    Boolean,
+    Date,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Integer,
+    LargeBinary,
+    String,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.auth.passwords import hash_password, verify_password
 
@@ -11,6 +20,7 @@ from app.extensions import db
 if TYPE_CHECKING:
     from app.blueprints.vendor_user.model import VendorUser
     from app.blueprints.contractor.model import Contractor
+    from app.blueprints.address.model import Address
 
 
 class UserType(enum.Enum):
@@ -30,13 +40,12 @@ class User(db.Model):
 
     username: Mapped[str] = mapped_column(String(80), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
-
-    token_version: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
 
     user_type: Mapped[UserType] = mapped_column(
         Enum(UserType, name="user_type"), nullable=False, index=True
     )
+    token_version: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
     is_active: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=True, index=True
@@ -56,7 +65,25 @@ class User(db.Model):
     updated_by: Mapped[str | None] = mapped_column(ForeignKey("user.id"), nullable=True)
 
     first_name: Mapped[str] = mapped_column(String(50), nullable=False)
+    middle_name: Mapped[str] = mapped_column(String(50), nullable=True)
     last_name: Mapped[str] = mapped_column(String(50), nullable=False)
+
+    contact_number: Mapped[str] = mapped_column(String, nullable=False)
+    alternate_number: Mapped[str] = mapped_column(String, nullable=True)
+
+    date_of_birth: Mapped[date | None] = mapped_column(Date, nullable=True)
+
+    ssn_last_four: Mapped[str | None] = mapped_column(String(4), nullable=True)
+
+    address_id: Mapped[str] = mapped_column(ForeignKey("address.id"), unique=True)
+
+    # Relationships
+
+    address: Mapped["Address"] = relationship(
+        "Address",
+        back_populates="user",
+        foreign_keys=[address_id],
+    )
 
     created_by_user: Mapped["User | None"] = relationship(
         "User",

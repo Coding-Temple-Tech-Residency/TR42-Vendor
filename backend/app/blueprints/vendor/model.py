@@ -85,7 +85,11 @@ class Vendor(BaseModel):
     )
 
     # Relationships
-    address: Mapped["Address"] = relationship(back_populates="vendor")
+    address: Mapped["Address"] = relationship(
+        "Address",
+        back_populates="vendor",
+        foreign_keys=[address_id],
+    )
 
     user_links: Mapped[list["VendorUser"]] = relationship(
         "VendorUser", back_populates="vendor", cascade="all, delete-orphan"

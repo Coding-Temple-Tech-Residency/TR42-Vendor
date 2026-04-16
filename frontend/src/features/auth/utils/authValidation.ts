@@ -6,6 +6,8 @@ const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const ZIP_REGEX = /^\d{5}(-\d{4})?$/;
 const STATE_REGEX = /^[A-Z]{2}$/;
 const CITY_REGEX = /^[A-Za-z\s.'-]{2,50}$/;
+const SSN_LAST_FOUR_REGEX = /^\d{4}$/;
+const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 
 function isBlank(value?: string) {
   return !value || !value.trim();
@@ -71,6 +73,40 @@ function validateZip(value: string): string | null {
   return null;
 }
 
+function validateSsnLastFour(value?: string): string | null {
+  if (!value) {
+    return null;
+  }
+
+  if (!SSN_LAST_FOUR_REGEX.test(value.trim())) {
+    return "SSN last four must be exactly 4 digits.";
+  }
+
+  return null;
+}
+
+function validateDateOfBirth(value?: string): string | null {
+  if (!value) {
+    return null;
+  }
+
+  if (!DATE_REGEX.test(value.trim())) {
+    return "Date of birth must be in YYYY-MM-DD format.";
+  }
+
+  const parsed = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) {
+    return "Enter a valid date of birth.";
+  }
+
+  const today = new Date();
+  if (parsed > today) {
+    return "Date of birth cannot be in the future.";
+  }
+
+  return null;
+}
+
 function getPasswordChecks(password: string, user: User) {
   const passwordLower = (password || "").toLowerCase();
 
@@ -91,11 +127,9 @@ function getPasswordChecks(password: string, user: User) {
   };
 }
 
-// Validate register form
 function validateUserRegisterForm(form: User) {
-  const errors: any = {};
+  const errors: Record<string, string> = {};
 
-  // Required fields
   const firstNameError = validateName(form.firstName, "First name");
   if (firstNameError) {
     errors.firstName = firstNameError;
@@ -115,6 +149,52 @@ function validateUserRegisterForm(form: User) {
     errors.username = "Username is required.";
   }
 
+  const contactNumberError = validatePhoneFormat(
+    toBackendPhoneFormat(form.contactNumber || ""),
+  );
+  if (contactNumberError) {
+    errors.contactNumber = contactNumberError;
+  }
+
+  if (!isBlank(form.alternateNumber)) {
+    const alternateNumberError = validatePhoneFormat(
+      toBackendPhoneFormat(form.alternateNumber || ""),
+    );
+    if (alternateNumberError) {
+      errors.alternateNumber = alternateNumberError;
+    }
+  }
+
+  const dateOfBirthError = validateDateOfBirth(form.dateOfBirth);
+  if (dateOfBirthError) {
+    errors.dateOfBirth = dateOfBirthError;
+  }
+
+  const ssnLastFourError = validateSsnLastFour(form.ssnLastFour);
+  if (ssnLastFourError) {
+    errors.ssnLastFour = ssnLastFourError;
+  }
+
+  const streetError = validateAddress(form.address);
+  if (streetError) {
+    errors.street = streetError;
+  }
+
+  const cityError = validateCity(form.city);
+  if (cityError) {
+    errors.city = cityError;
+  }
+
+  const stateError = validateState(form.state);
+  if (stateError) {
+    errors.state = stateError;
+  }
+
+  const zipError = validateZip(form.zip);
+  if (zipError) {
+    errors.zip = zipError;
+  }
+
   const checks = getPasswordChecks(form.password, form);
 
   if (!Object.values(checks).every(Boolean)) {
@@ -122,7 +202,6 @@ function validateUserRegisterForm(form: User) {
       "Password must be at least 12 characters long and include uppercase, lowercase, number, and special character, and must not contain more than 2 identical characters in a row or contain your username, first name, or last name.";
   }
 
-  // Confirm password
   if (!form.confirmPassword) {
     errors.confirmPassword = "Confirm your password";
   } else if (form.password !== form.confirmPassword) {
@@ -132,7 +211,6 @@ function validateUserRegisterForm(form: User) {
   return errors;
 }
 
-// Format phone number (123) 456-7890
 function formatPhoneNumber(value: string) {
   const numbers = value.replace(/\D/g, "");
   const trimmed = numbers.slice(0, 10);
@@ -161,9 +239,8 @@ function toBackendPhoneFormat(value: string) {
   return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
 }
 
-// Validate Profile Setup form
-function validateVenderRegisterForm(form: Vendor) {
-  const errors: any = {};
+function validateVendorRegisterForm(form: Vendor) {
+  const errors: Record<string, string> = {};
 
   const companyNameError = validateName(form.companyName, "Company name");
   if (companyNameError) {
@@ -217,11 +294,10 @@ function validateVenderRegisterForm(form: Vendor) {
   return errors;
 }
 
-// Export functions
 export {
   formatPhoneNumber,
   getPasswordChecks,
   toBackendPhoneFormat,
-  validateVenderRegisterForm,
   validateUserRegisterForm,
+  validateVendorRegisterForm,
 };
