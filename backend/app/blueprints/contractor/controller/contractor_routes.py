@@ -22,6 +22,7 @@ contractor_bp = Blueprint("contractor_bp", __name__)
 @contractor_bp.post("/")
 @token_required
 @vendor_membership_required
+@vendor_roles_required([VendorUserRole.ADMIN, VendorUserRole.MANAGER])
 def create_contractor(current_user, vendor_link, vendor_id):
     try:
         contractor_data = request.get_json(silent=True)
@@ -35,12 +36,42 @@ def create_contractor(current_user, vendor_link, vendor_id):
 
         if not isinstance(validated_data, dict):
             logger.warning("Validated data is not a dictionary")
-            return {"error": "Invalid vendor data"}, 400
+            return {"error": "Invalid contractor data"}, 400
 
-        new_contractor = ContractorService.create_contractor(
+        new_contractor = ContractorService.create_contractor_by_manager(
             validated_data=validated_data,
             vendor_id=vendor_link.vendor_id,
             vendor_manager_id=current_user.id,
+        )
+
+        logger.info("Contractor created successfully")
+        return jsonify(contractor_schema.dump(new_contractor)), 201
+    except ValidationError as err:
+        logger.warning(f"Validation error while creating contractor: {err.messages}")
+        return {"error": "Validation error", "messages": err.messages}, 400
+    except Exception:
+        logger.exception("Error creating contractor")
+        return {"error": "An error occurred while creating the contractor"}, 500
+
+
+@contractor_bp.post("/onboarding/<invite_token>")
+def onboard_contractor(invite_token):
+    try:
+        contractor_data = request.get_json(silent=True)
+        logger.debug("Creating a new contractor")
+
+        if not contractor_data:
+            logger.debug("No input data provided for contractor creation")
+            return {"error": "No input data provided"}, 400
+
+        validated_data = contractor_create_schema.load(contractor_data)
+
+        if not isinstance(validated_data, dict):
+            logger.warning("Validated data is not a dictionary")
+            return {"error": "Invalid contractor data"}, 400
+
+        new_contractor = ContractorService.self_register_contractor(
+            validated_data=validated_data, invite_token=invite_token
         )
 
         logger.info("Contractor created successfully")

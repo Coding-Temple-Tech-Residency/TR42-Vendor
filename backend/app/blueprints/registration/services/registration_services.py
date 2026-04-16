@@ -73,7 +73,7 @@ class RegistrationService:
             AddressRepository.create(address)
             db.session.flush()
 
-            vendor_id = generate_uuid()
+            vendor_seed = generate_uuid()
 
             vendor = Vendor(
                 id=vendor_id,
@@ -82,7 +82,7 @@ class RegistrationService:
                 company_phone=vendor_data["company_phone"],
                 primary_contact_name=vendor_data["primary_contact_name"],
                 service_type=vendor_data["service_type"],
-                vendor_code=f"Vendor-{vendor_id[:8].upper()}",
+                vendor_code=f"Vendor-{vendor_seed[:8].upper()}",
                 address_id=address.id,
                 created_by=user.id,
                 updated_by=user.id,

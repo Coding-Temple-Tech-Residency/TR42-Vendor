@@ -1,5 +1,5 @@
 from app.extensions import ma
-from marshmallow import fields, pre_load, validates, validates_schema
+from marshmallow import ValidationError, fields, pre_load, validates, validates_schema
 from app.blueprints.contractor.model import ContractorStatus
 from app.functions import (
     strip_input,
@@ -14,13 +14,24 @@ from app.blueprints.contractor.model import Contractor
 from app.blueprints.vendor_contractor.model import VendorContractorRole
 
 
+from app.blueprints.address.schemas import AddressSchema
+from app.functions import validate_phone_format
+
+
 class ContractorCreateSchema(ma.Schema):
     first_name = fields.String(required=True)
+    middle_name = fields.String(load_default=None)
     last_name = fields.String(required=True)
     email = fields.Email(required=True)
     username = fields.String(required=True)
     password = fields.String(required=True, load_only=True)
     profile_photo = fields.String(allow_none=True, required=False)
+
+    contact_number = fields.String(required=True)
+    alternate_number = fields.String(load_default=None)
+    date_of_birth = fields.Date(load_default=None)
+    ssn_last_four = fields.String(load_default=None)
+    address = fields.Nested(AddressSchema, required=True)
 
     vendor_contractor_role = fields.Enum(
         VendorContractorRole,
@@ -66,11 +77,26 @@ class ContractorCreateSchema(ma.Schema):
 
     @validates("username")
     def check_username(self, value, **kwargs):
-        validate_name(value, field_name="Username")
+        if not value or not value.strip():
+            raise ValidationError("Username is required.")
 
     @validates("password")
     def check_password(self, value, **kwargs):
         validate_password(value)
+
+    @validates("contact_number")
+    def check_contact_number(self, value, **kwargs):
+        validate_phone_format(value)
+
+    @validates("alternate_number")
+    def check_alternate_number(self, value, **kwargs):
+        if value:
+            validate_phone_format(value)
+
+    @validates("ssn_last_four")
+    def check_ssn_last_four(self, value, **kwargs):
+        if value and (not value.isdigit() or len(value) != 4):
+            raise ValidationError("SSN last four must be exactly 4 digits.")
 
     @validates_schema
     def check_password_content(self, data, **kwargs):
