@@ -6,6 +6,8 @@ import PageHeader from "../../components/UI/PageHeader";
 import SectionCard from "../../components/UI/SectionCard";
 import EmptyState from "../../components/UI/EmptyState";
 
+import { Link } from "react-router-dom";
+
 // import {
 //   UserPlusIcon,
 //   TruckIcon,
@@ -20,12 +22,21 @@ import AssignContractorTable from "../components/AssignContractorTable";
 import FraudReviewTable from "../components/FraudReviewTable";
 import LineChart from "../../components/UI/LineChart";
 
+//Reusable hooks
+import { useWorkOrders } from "../../hooks/useWorkOrders";
+
 function DashboardPage() {
+  const {
+    workOrders: openWorkOrders,
+    loading: loadingWorkOrders,
+    error: workOrdersError,
+    unassignedCount: unassignedCount,
+    pendingCount,
+    workOrdersTrend,
+  } = useWorkOrders({ page: 1, perPage: 25, status: "all", scope: "vendor" });
 
   // KPI DATA (dummy for now)
   const kpiData = {
-    unassigned: 3,
-    pending: 2,
     openInvoices: 12,
   };
 
@@ -48,10 +59,13 @@ function DashboardPage() {
   const fraudRiskValue = 57;
 
   // EMPTY ARRAYS (backend will replace later)
-  const openWorkOrders: any[] = [];
   const contractors: any[] = [];
   const pendingInvoices: any[] = [];
   const fraudReview: any[] = [];
+
+  // const [workOrders, setWorkOrders] = useState<WorkOrderRow[]>([]);
+  // const [loadingWorkOrders, setLoadingWorkOrders] = useState(false);
+  // const [workOrdersError, setWorkOrdersError] = useState<string | null>(null);
 
   // KPI COLOR HELPER
   const getKpiColor = (value) => {
@@ -77,21 +91,28 @@ function DashboardPage() {
           title="Unassigned Work Orders"
           subtitle="Jobs needing assignment"
         >
-          <div className={`text-3xl font-bold ${getKpiColor(kpiData.unassigned)}`}>
-            {kpiData.unassigned}
-          </div>
+          <Link
+            to="/vendor/work-orders"
+            className="text-3xl hover:opacity-75 transition-opacity font-bold cursor-pointer"
+          >
+            <div className={`${getKpiColor(unassignedCount)}`}>
+              {unassignedCount}
+            </div>
+          </Link>
         </SectionCard>
 
         <SectionCard title="Pending Jobs" subtitle="Jobs awaiting action">
           <div className={`text-3xl font-bold ${getKpiColor(kpiData.pending)}`}>
-          {/* <div className="text-3xl font-bold text-yellow-600"> */}
+            {/* <div className="text-3xl font-bold text-yellow-600"> */}
             {kpiData.pending}
           </div>
         </SectionCard>
 
         <SectionCard title="Open Invoices" subtitle="Invoices requiring review">
-          <div className={`text-3xl font-bold ${getKpiColor(kpiData.openInvoices)}`}>
-          {/* <div className="text-3xl font-bold text-green-600"> */}
+          <div
+            className={`text-3xl font-bold ${getKpiColor(kpiData.openInvoices)}`}
+          >
+            {/* <div className="text-3xl font-bold text-green-600"> */}
             {kpiData.openInvoices}
           </div>
         </SectionCard>
@@ -115,10 +136,16 @@ function DashboardPage() {
 
           {/* Open Work Orders Table */}
           <SectionCard title="Open Work Orders">
-            {openWorkOrders.length === 0 ? (
+            {loadingWorkOrders ? (
+              <p className="text-center text-gray-500">
+                Loading work orders...
+              </p>
+            ) : workOrdersError ? (
+              <p className="text-center text-red-500">{workOrdersError}</p>
+            ) : openWorkOrders.length === 0 ? (
               <EmptyState
-                title="No work orders yet"
-                description="Work order details will appear here."
+                title="No open work orders"
+                description="Open work orders will appear here."
               />
             ) : (
               <OpenWorkOrdersTable data={openWorkOrders} />
@@ -151,8 +178,7 @@ function DashboardPage() {
               {/* Temporarily Force UI To Show */}
               {true ? (
                 <div className="bg-white rounded-xl shadow-sm p-4 flex items-center justify-center gap-10">
-                  
-                  <div className="relative h-48 w-48 flex-shrink-0">
+                  <div className="relative h-48 w-48 shrink-0">
                     <DonutChart data={invoiceChartData} />
 
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
@@ -165,11 +191,19 @@ function DashboardPage() {
 
                   <div className="space-y-5 ml-8 flex-1">
                     {invoiceChartData.map((item) => {
-                      const total = invoiceChartData.reduce((sum, i) => sum + i.value, 0);
-                      const percentage = ((item.value / total) * 100).toFixed(1);
+                      const total = invoiceChartData.reduce(
+                        (sum, i) => sum + i.value,
+                        0,
+                      );
+                      const percentage = ((item.value / total) * 100).toFixed(
+                        1,
+                      );
 
                       return (
-                        <div key={item.name} className="flex items-center gap-4">
+                        <div
+                          key={item.name}
+                          className="flex items-center gap-4"
+                        >
                           <div className="flex items-center gap-2 min-w-[140px]">
                             <span
                               className="h-3 w-3 rounded"
@@ -190,7 +224,6 @@ function DashboardPage() {
                       );
                     })}
                   </div>
-
                 </div>
               ) : (
                 <EmptyState

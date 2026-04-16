@@ -8,12 +8,12 @@ class FraudAlert(BaseModel):
 
     work_order_id = db.Column(
         db.String,
-        db.ForeignKey('work_orders.work_order_id')
+        db.ForeignKey('work_orders.id')
     )
 
     ticket_id = db.Column(
         db.String,
-        db.ForeignKey('ticket.ticket_id')
+        db.ForeignKey('ticket.id')
     )
 
     severity = db.Column(db.String(100))

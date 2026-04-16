@@ -37,15 +37,9 @@ class Service(BaseModel):
         nullable=False,
     )
 
-    # Relationships
-    created_by_user: Mapped["User"] = relationship(
-        "User",
-        foreign_keys=[created_by]
-    )
-
-    updated_by_user: Mapped["User"] = relationship(
-        "User",
-        foreign_keys=[updated_by]
+    vendor_id = db.Column(
+        db.String,
+        db.ForeignKey('vendor.id')
     )
 
     vendor_links: Mapped[list["VendorService"]] = relationship(
@@ -53,3 +47,12 @@ class Service(BaseModel):
         back_populates="service",
         cascade="all, delete-orphan"
     )
+  
+    service_id = db.Column(
+        db.String,
+        db.ForeignKey('services.id')
+    )
+
+    # relationships
+    vendor = db.relationship('Vendor', backref='services_link')
+    service = db.relationship('Service', back_populates='vendors')
