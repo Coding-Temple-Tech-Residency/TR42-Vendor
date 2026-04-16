@@ -220,7 +220,6 @@ def generate_vendors(n=10, users=[]):
                 "primary_contact_name": fake.name(),
                 "company_email": fake.company_email(),
                 "company_phone": fake.phone_number(),
-                "service_type": "ANY",
                 "status": random.choice(VENDOR_STATUS),
                 "vendor_code": fake.bothify(text="VEND-####"),
                 "onboarding": random.choice([True, False]),
@@ -674,6 +673,7 @@ def generate_tickets(n, work_orders, contractors, users):
                         "has_photo": random.choice([True, False]),
                     }
                 ),
+                "route": fake.paragraph(nb_sentences=3)
             }
         )
 
