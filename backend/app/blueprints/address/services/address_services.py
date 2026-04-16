@@ -17,7 +17,7 @@ class AddressService:
                 street=data["street"],
                 city=data["city"],
                 state=data["state"],
-                zipcode=data["zipcode"],
+                zip=data["zip"],
                 country=data.get("country", "USA"),
                 created_by_user_id=data["created_by_user_id"],
                 updated_by_user_id=data.get("updated_by_user_id"),

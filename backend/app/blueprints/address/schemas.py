@@ -39,7 +39,7 @@ class AddressSchema(ma.SQLAlchemyAutoSchema):
     def validate_state_field(self, value, **kwargs):
         validate_state(value)
 
-    @validates("zipcode")
+    @validates("zip")
     def validate_zipcode_field(self, value, **kwargs):
         validate_zipcode(value)
 

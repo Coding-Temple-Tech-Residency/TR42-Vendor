@@ -19,7 +19,7 @@ class Address(BaseModel):
     street: Mapped[str] = mapped_column(String(255), nullable=False)
     city: Mapped[str] = mapped_column(String(255), nullable=False)
     state: Mapped[str] = mapped_column(String(255), nullable=False)
-    zipcode: Mapped[str] = mapped_column(String(255), nullable=False)
+    zip: Mapped[str] = mapped_column(String(255), nullable=False)
     country: Mapped[str] = mapped_column(String(255), nullable=False, default="USA")
 
     # relationships

@@ -66,7 +66,7 @@ class RegistrationService:
                 street=address_data["street"],
                 city=address_data["city"],
                 state=address_data["state"],
-                zipcode=address_data["zipcode"],
+                zip=address_data["zip"],
                 created_by_user_id=user.user_id,
                 updated_by_user_id=user.user_id,
             )
