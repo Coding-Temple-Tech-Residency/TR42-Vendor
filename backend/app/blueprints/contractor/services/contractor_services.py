@@ -13,7 +13,7 @@ from app.blueprints.vendor_contractor.repositories.vendor_contractor_repositorie
 from app.blueprints.user.model import User, UserType
 from app.blueprints.contractor.model import Contractor
 from app.blueprints.contractor.schemas import (
-    contractor_schema,
+    contractors_schema,
 )
 from app.blueprints.vendor_contractor.model import (
     VendorContractor,
@@ -33,8 +33,24 @@ logger = logging.getLogger(__name__)
 class ContractorService:
 
     @staticmethod
-    def get_all_contractors():
-        return ContractorRepository.get_all()
+    def get_all_vendor_contractors_paginated(
+        vendor_id: str,
+        page: int = 1,
+        per_page: int = 10,
+    ):
+        pagination = ContractorRepository.get_by_vendor_paginated(
+            vendor_id=vendor_id,
+            page=page,
+            per_page=per_page,
+        )
+
+        return {
+            "total": pagination.total,
+            "page": pagination.page,
+            "pages": pagination.pages,
+            "per_page": pagination.per_page,
+            "contractors": contractors_schema.dump(pagination.items),
+        }
 
     @staticmethod
     def get_contractor(contractor_id):

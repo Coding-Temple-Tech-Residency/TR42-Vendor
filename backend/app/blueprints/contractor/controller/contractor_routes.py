@@ -84,10 +84,20 @@ def onboard_contractor(invite_token):
         return {"error": "An error occurred while creating the contractor"}, 500
 
 
-@contractor_bp.route("/", methods=["GET"])
-def get_contractors():
-    contractors = ContractorService.get_all_contractors()
-    return jsonify(contractors_schema.dump(contractors)), 200
+@contractor_bp.get("/")
+@token_required
+@vendor_membership_required
+@vendor_roles_required([VendorUserRole.ADMIN, VendorUserRole.MANAGER])
+def get_all_vendor_contractors(current_user, vendor_link, vendor_id):
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=10, type=int)
+
+    result = ContractorService.get_all_vendor_contractors_paginated(
+        vendor_id=vendor_id,
+        page=page,
+        per_page=per_page,
+    )
+    return jsonify(result), 200
 
 
 @contractor_bp.route("/<string:contractor_id>", methods=["GET"])

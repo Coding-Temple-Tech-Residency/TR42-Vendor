@@ -1,6 +1,7 @@
 from sqlalchemy import select
 
 from app.blueprints.contractor.model import Contractor
+from app.blueprints.vendor_contractor.model import VendorContractor
 import logging
 from app.extensions import db
 
@@ -21,6 +22,15 @@ class ContractorRepository:
     @staticmethod
     def get_all_paginated(page: int = 1, per_page: int = 10):
         return db.paginate(select(Contractor), page=page, per_page=per_page)
+
+    @staticmethod
+    def get_by_vendor_paginated(vendor_id: str, page: int = 1, per_page: int = 10):
+        stmt = (
+            select(Contractor)
+            .join(Contractor.vendor_links)
+            .where(VendorContractor.vendor_id == vendor_id)
+        )
+        return db.paginate(stmt, page=page, per_page=per_page)
 
     @staticmethod
     def get_by_id(contractor_id: str):
