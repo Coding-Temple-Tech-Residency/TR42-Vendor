@@ -2,6 +2,7 @@ from marshmallow import ValidationError, fields, pre_load, validates, validates_
 from app.extensions import ma
 from app.functions import (
     strip_input,
+    validate_password_content,
     validate_street,
     validate_city,
     validate_email_format,
@@ -48,24 +49,8 @@ class UserRegistrationSchema(ma.Schema):
         validate_password(value)
 
     @validates_schema
-    def validate_password_content(self, data, **kwargs):
-        password = data.get("password", "")
-        username = data.get("username", "")
-        first_name = data.get("first_name", "")
-        last_name = data.get("last_name", "")
-
-        password_lower = password.lower()
-
-        for label, field_value in {
-            "username": username,
-            "first name": first_name,
-            "last name": last_name,
-        }.items():
-            cleaned = (field_value or "").strip().lower()
-            if len(cleaned) >= 4 and cleaned in password_lower:
-                raise ValidationError(
-                    {"password": [f"Password must not contain the user's {label}."]}
-                )
+    def check_password_content(self, data, **kwargs):
+        validate_password_content(data)
 
     # @validates_schema
     # def validate_password_match(self, data, **kwargs):

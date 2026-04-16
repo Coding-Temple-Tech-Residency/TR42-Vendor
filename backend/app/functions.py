@@ -83,6 +83,26 @@ def validate_zipcode(value):
         raise ValidationError("Enter a valid ZIP code.")
 
 
+def validate_password_content(data):
+    password = data.get("password", "")
+    username = data.get("username", "")
+    first_name = data.get("first_name", "")
+    last_name = data.get("last_name", "")
+
+    password_lower = password.lower()
+
+    for label, field_value in {
+        "username": username,
+        "first name": first_name,
+        "last name": last_name,
+    }.items():
+        cleaned = (field_value or "").strip().lower()
+        if len(cleaned) >= 4 and cleaned in password_lower:
+            raise ValidationError(
+                {"password": [f"Password must not contain the user's {label}."]}
+            )
+
+
 def utc_now():
     return datetime.now(timezone.utc)
 

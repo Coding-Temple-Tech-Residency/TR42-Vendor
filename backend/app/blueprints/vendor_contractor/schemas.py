@@ -1,12 +1,20 @@
 from app.extensions import ma
-from app.models.role import Role
+from marshmallow import fields
+from app.blueprints.vendor_contractor.model import (
+    VendorContractor,
+    VendorContractorRole,
+)
 
 
-class RoleSchema(ma.SQLAlchemyAutoSchema):
+class VendorContractorSchema(ma.SQLAlchemyAutoSchema):
+    vendor_contractor_role = fields.Enum(VendorContractorRole, by_value=True)
+
     class Meta:
-        model = Role
-        load_instance = True
+        model = VendorContractor
+        load_instance = False
+        include_fk = True
+        include_relationships = False
 
 
-role_schema = RoleSchema()
-roles_schema = RoleSchema(many=True)
+vendor_contractor_create_schema = VendorContractorSchema()
+vendor_contractors_update_schema = VendorContractorSchema(many=True)
