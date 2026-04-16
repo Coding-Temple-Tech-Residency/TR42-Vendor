@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 class Address(BaseModel):
     __tablename__ = "address"
 
-    address_id: Mapped[str] = mapped_column(
+    id: Mapped[str] = mapped_column(
         String(36), primary_key=True, nullable=False, default=generate_uuid
     )
     street: Mapped[str] = mapped_column(String(255), nullable=False)

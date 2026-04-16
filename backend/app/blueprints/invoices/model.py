@@ -10,13 +10,13 @@ if TYPE_CHECKING:
 class Invoice(BaseModel):
     __tablename__ = "invoice"
 
-    invoice_id: Mapped[str] = mapped_column(String, primary_key=True)
+    id: Mapped[str] = mapped_column(String, primary_key=True)
     work_order_id: Mapped[str] = mapped_column(
-        String, ForeignKey("work_orders.work_order_id"), nullable=False
+        String, ForeignKey("work_orders.id"), nullable=False
     )
     # ticket_id: Mapped[str] = mapped_column(String, ForeignKey('ticket.ticket_id'), nullable=False)
     vendor_id: Mapped[str] = mapped_column(
-        String, ForeignKey("vendor.vendor_id"), nullable=False
+        String, ForeignKey("vendor.id"), nullable=False
     )
     invoice_date: Mapped[str] = mapped_column(String, nullable=False)
     total_amount: Mapped[Numeric] = mapped_column(Numeric)
@@ -38,9 +38,9 @@ class Invoice(BaseModel):
 class LineItem(BaseModel):
     __tablename__ = "line_item"
 
-    line_item_id: Mapped[str] = mapped_column(String, primary_key=True)
+    id: Mapped[str] = mapped_column(String, primary_key=True)
     invoice_id: Mapped[str] = mapped_column(
-        String, ForeignKey("invoice.invoice_id"), nullable=False
+        String, ForeignKey("invoice.id"), nullable=False
     )
     quantity: Mapped[int] = mapped_column(Integer)
     rate: Mapped[Numeric] = mapped_column(Numeric)

@@ -1,5 +1,6 @@
 from app.extensions import ma
 from marshmallow import ValidationError, fields, pre_load, validates
+from marshmallow import ValidationError, fields, pre_load, validates
 from app.blueprints.vendor.model import Vendor
 from app.functions import (
     strip_input,
@@ -12,6 +13,7 @@ from app.functions import (
     validate_zipcode,
 )
 from app.blueprints.address.schemas import AddressSchema
+from app.blueprints.address.schemas import AddressSchema
 
 
 class VendorSchema(ma.SQLAlchemyAutoSchema):
@@ -22,6 +24,7 @@ class VendorSchema(ma.SQLAlchemyAutoSchema):
         model = Vendor
         load_instance = False
         include_fk = True
+        exclude = ("address_id",)
         exclude = ("address_id",)
 
     @pre_load
@@ -39,26 +42,12 @@ class VendorSchema(ma.SQLAlchemyAutoSchema):
     @validates("company_email")
     def validate_company_email(self, value, **kwargs):
         validate_email_format(value)
+    def validate_company_email(self, value, **kwargs):
+        validate_email_format(value)
 
     @validates("company_phone")
     def validate_company_phone(self, value, **kwargs):
         validate_phone_format(value)
-
-    # @validates("street")
-    # def validate_address_field(self, value, **kwargs):
-    #     validate_street(value)
-
-    # @validates("city")
-    # def validate_city_field(self, value, **kwargs):
-    #     validate_city(value)
-
-    # @validates("state")
-    # def validate_state_field(self, value, **kwargs):
-    #     validate_state(value)
-
-    # @validates("zipcode")
-    # def validate_zipcode_field(self, value, **kwargs):
-    #     validate_zipcode(value)
 
     @validates("service_type")
     def validate_service_type(self, value, **kwargs):

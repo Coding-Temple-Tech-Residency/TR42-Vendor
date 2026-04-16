@@ -49,21 +49,20 @@ def get_all_vendors():
         return {"error": "An error occurred while fetching vendors"}, 500
 
 
-@vendor_bp.get("/<vendor_id>")
-def get_vendor_by_id(vendor_id: str):
+@vendor_bp.get("/active")
+@token_required
+@vendor_membership_required
+def get_active_vendor(current_user, vendor_link, vendor_id):
     try:
-        logger.debug("Fetching vendor with id")
         vendor = VendorService.get_vendor_by_id(vendor_id)
 
         if not vendor:
-            logger.debug(f"Vendor with id not found")
-            return {"error": "Vendor not found"}, 404
+            return jsonify({"error": "Vendor not found"}), 404
 
-        logger.info("Vendor retrieved successfully")
         return jsonify(vendor_schema.dump(vendor)), 200
     except Exception:
-        logger.exception("Error fetching vendor with id")
-        return {"error": "An error occurred while fetching the vendor"}, 500
+        logger.exception("Error fetching active vendor")
+        return jsonify({"error": "An error occurred while fetching the vendor"}), 500
 
 
 @vendor_bp.post("/")

@@ -37,7 +37,7 @@ class ComplianceStatus(enum.Enum):
 class Vendor(BaseModel):
     __tablename__ = "vendor"
 
-    vendor_id: Mapped[str] = mapped_column(
+    id: Mapped[str] = mapped_column(
         String(36), primary_key=True, nullable=False, default=generate_uuid
     )
 
@@ -82,7 +82,7 @@ class Vendor(BaseModel):
     description: Mapped[str] = mapped_column(String, nullable=True)
 
     address_id: Mapped[str] = mapped_column(
-        ForeignKey("address.address_id"),
+        ForeignKey("address.id"),
         unique=True,
     )
 

@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, make_response, request
 from sqlalchemy import select
 from werkzeug.exceptions import BadRequest
 from marshmallow import ValidationError
@@ -30,7 +30,18 @@ def login_user():
 
     try:
         result = UserService.login(data)
-        return jsonify(result), 200
+        token = result.pop("token")
+
+        response = make_response(jsonify(result), 200)
+        response.set_cookie(
+            "access_token",
+            token,
+            httponly=True,
+            secure=True,
+            samesite="Lax",
+            max_age=3600,
+        )
+        return response
 
     except BadRequest as err:
         return jsonify({"error": err.description}), 400
@@ -86,7 +97,7 @@ def get_all_users(current_user):
     return jsonify(result), 200
 
 
-@user_bp.get("/vendor/<vendor_id>/users")
+@user_bp.get("/vendor/users")
 @token_required
 @vendor_membership_required
 @vendor_roles_required([VendorUserRole.ADMIN, VendorUserRole.MANAGER])
