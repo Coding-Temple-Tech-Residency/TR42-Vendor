@@ -1,16 +1,16 @@
 from app.extensions import db
 from sqlalchemy.sql import func
-from app.models.base import BaseModel
+from app.base import BaseModel
 
 
 class License(BaseModel):
     __tablename__ = 'licenses'
 
-    license_id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String, primary_key=True)
 
     contractor_id = db.Column(
         db.String,
-        db.ForeignKey('contractors.contractor_id'),
+        db.ForeignKey('contractors.id'),
         nullable=False
     )
 
@@ -26,7 +26,7 @@ class License(BaseModel):
 
     license_verified_by = db.Column(
         db.String,
-        db.ForeignKey('vendor.vendor_id')  # verifier is a vendor
+        db.ForeignKey('vendor.id')  # verifier is a vendor
     )
 
     license_verified_at = db.Column(db.DateTime)
@@ -37,13 +37,13 @@ class License(BaseModel):
 
     created_by = db.Column(
         db.String,
-        db.ForeignKey('user.user_id'),
+        db.ForeignKey('user.id'),
         nullable=False
     )
 
     updated_by = db.Column(
         db.String,
-        db.ForeignKey('user.user_id')
+        db.ForeignKey('user.id')
     )
 
     # ----------------------

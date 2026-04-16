@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom"
 
 type TopbarProps = {
-    title?: string;
-    userName?: string;
-    userRole?: string,
-    rightContent?: React.ReactNode;
+  title?: string;
+  userName?: string;
+  userRole?: string;
+  rightContent?: React.ReactNode;
 };
 
 export default function Topbar({
@@ -50,8 +50,8 @@ export default function Topbar({
                 <h2 className="text-xl font-semibold text-slate-900">{title}</h2>
             </div>
 
-            <div className="flex items-center gap-4">
-                {rightContent}
+      <div className="flex items-center gap-4">
+        {rightContent}
 
                 <div
                     ref={menuRef} 

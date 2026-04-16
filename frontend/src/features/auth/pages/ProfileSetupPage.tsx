@@ -1,8 +1,8 @@
-import AuthLayout from "../components/AuthLayout";
 import AuthCard from "../components/AuthCard";
-import AuthHeader from "../components/AuthHeader";
 import AuthFooterLink from "../components/AuthFooterLink";
-import ProfileSetupForm from "../forms/ProfileSetupForm";
+import AuthHeader from "../components/AuthHeader";
+import AuthLayout from "../components/AuthLayout";
+import RegisterVendorForm from "../forms/RegisterVendorForm";
 
 function ProfileSetupPage() {
   return (
@@ -13,7 +13,7 @@ function ProfileSetupPage() {
           subtitle="Enter your company details to finish creating your account."
         />
 
-        <ProfileSetupForm />
+        <RegisterVendorForm />
 
         {/* Back link (using shared component) */}
         <AuthFooterLink

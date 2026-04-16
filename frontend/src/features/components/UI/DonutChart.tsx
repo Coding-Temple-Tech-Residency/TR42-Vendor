@@ -26,8 +26,8 @@ function DonutChart({
   ];
 
   return (
-    <div className="w-full h-full flex items-center justify-center">
-      <ResponsiveContainer width="100%" height="100%">
+    <div className="w-full h-full min-h-[220px] min-w-[220px] flex items-center justify-center">
+      <ResponsiveContainer width="100%" height="100%" minWidth={220} minHeight={220}>
         <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
           <Pie
             data={data}

@@ -21,7 +21,7 @@ class UserType(enum.Enum):
 class User(db.Model):
     __tablename__ = "user"
 
-    user_id: Mapped[str] = mapped_column(
+    id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
         default=generate_uuid,
@@ -51,12 +51,8 @@ class User(db.Model):
         DateTime, default=utc_now, nullable=False, onupdate=utc_now, index=True
     )
 
-    created_by_user_id: Mapped[str | None] = mapped_column(
-        ForeignKey("user.user_id"), nullable=True
-    )
-    updated_by_user_id: Mapped[str | None] = mapped_column(
-        ForeignKey("user.user_id"), nullable=True
-    )
+    created_by: Mapped[str | None] = mapped_column(ForeignKey("user.id"), nullable=True)
+    updated_by: Mapped[str | None] = mapped_column(ForeignKey("user.id"), nullable=True)
 
     first_name: Mapped[str] = mapped_column(String(50), nullable=False)
     last_name: Mapped[str] = mapped_column(String(50), nullable=False)
@@ -70,14 +66,14 @@ class User(db.Model):
 
     created_by_user: Mapped["User | None"] = relationship(
         "User",
-        foreign_keys=[created_by_user_id],
-        remote_side=[user_id],
+        foreign_keys=[created_by],
+        remote_side=[id],
     )
 
     updated_by_user: Mapped["User | None"] = relationship(
         "User",
-        foreign_keys=[updated_by_user_id],
-        remote_side=[user_id],
+        foreign_keys=[updated_by],
+        remote_side=[id],
     )
 
     def set_password(self, raw_password: str) -> None:

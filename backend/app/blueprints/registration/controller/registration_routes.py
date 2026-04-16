@@ -17,14 +17,14 @@ registration_bp = Blueprint(
 
 @registration_bp.post("")
 def register():
-    data = request.get_json(silent=True) or {}
-    logger.debug("Registering a new vendor")
-
-    if not data:
-        logger.warning("No input data provided for vendor creation")
-        return jsonify({"error": "No input data provided"}), 400
-
     try:
+        data = request.get_json(silent=True) or {}
+        logger.debug("Registering a new vendor")
+
+        if not data:
+            logger.warning("No input data provided for vendor creation")
+            return jsonify({"error": "No input data provided"}), 400
+        
         result = RegistrationService.register_vendor_account(data)
         return jsonify(result), 201
     except ValidationError as err:

@@ -1,5 +1,5 @@
 from app.extensions import ma
-from app.models.services import Service
+from app.blueprints.services.model import Service
 
 
 class ServiceSchema(ma.SQLAlchemyAutoSchema):

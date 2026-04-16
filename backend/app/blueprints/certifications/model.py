@@ -1,15 +1,15 @@
 from app.extensions import db
 from sqlalchemy import func
-from app.models.base import BaseModel
+from app.base import BaseModel
 
 class Certification(BaseModel):
     __tablename__ = 'certifications'
 
-    certification_id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String, primary_key=True)
 
     contractor_id = db.Column(
         db.String,
-        db.ForeignKey('contractors.contractor_id'),
+        db.ForeignKey('contractors.id'),
         nullable=False
     )
 
@@ -31,13 +31,13 @@ class Certification(BaseModel):
 
     created_by = db.Column(
         db.String,
-        db.ForeignKey('user.user_id'),
+        db.ForeignKey('user.id'),
         nullable=False
     )
 
     updated_by = db.Column(
         db.String,
-        db.ForeignKey('user.user_id')
+        db.ForeignKey('user.id')
     )
 
     # ----------------------

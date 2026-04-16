@@ -32,12 +32,12 @@ class VendorUser(BaseModel):
     )
 
     user_id: Mapped[str] = mapped_column(
-        ForeignKey("user.user_id"),
+        ForeignKey("user.id"),
         nullable=False,
     )
 
     vendor_id: Mapped[str] = mapped_column(
-        ForeignKey("vendor.vendor_id"),
+        ForeignKey("vendor.id"),
         nullable=False,
     )
 

@@ -17,6 +17,8 @@ import ReportsPage from "../features/pages/ReportsDashboardPage";
 import SettingsPage from "../features/pages/SettingsDashboardPage";
 import TicketsPage from "../features/pages/TicketsDashboardPage";
 import WorkOrdersPage from "../features/pages/WorkOrdersDashboardPage";
+import EditWorkOrderPage from "../features/work orders/pages/EditWorkOrders";
+import WorkOrderOverviewPage from "../features/work orders/pages/WorkOrdersOverView";
 
 function VendorLayout() {
   return <Outlet />;
@@ -52,6 +54,13 @@ export default function AppRouter() {
           path="contractors/profile/edit"
           element={<ContractorEditPage />}
         />
+
+        {/*Work Orders Pages*/}
+        <Route
+          path="work-orders/overview"
+          element={<WorkOrderOverviewPage />}
+        />
+        <Route path="work-orders/edit" element={<EditWorkOrderPage />} />
       </Route>
     </Routes>
   );
