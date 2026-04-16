@@ -40,12 +40,6 @@ class VendorContractor(BaseModel):
         nullable=False,
     )
 
-    manager: Mapped["User"] = relationship(
-        "User",
-        foreign_keys=[manager_id],
-        back_populates="managed_contractor_links",
-    )
-
     contractor_id: Mapped[str] = mapped_column(
         ForeignKey("contractor.id"),
         nullable=False,
@@ -59,6 +53,14 @@ class VendorContractor(BaseModel):
     vendor_contractor_role: Mapped[VendorContractorRole] = mapped_column(
         Enum(VendorContractorRole, name="vendor_contractor_role"),
         nullable=False,
+    )
+
+    # Relationships
+
+    manager: Mapped["User"] = relationship(
+        "User",
+        foreign_keys=[manager_id],
+        back_populates="managed_contractor_links",
     )
 
     contractor: Mapped["Contractor"] = relationship(

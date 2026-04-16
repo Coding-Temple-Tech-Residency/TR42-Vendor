@@ -69,18 +69,20 @@ export default function ContractorCreatePage() {
           description="Add a new contractor to your vendor account."
         />
 
-        <Link
-          to="/vendor/contractors"
-          className="rounded-lg bg-[#2F4F75] px-4 py-2 text-sm font-medium text-white hover:bg-[#1E3A5F]"
-        >
-          Back to Contractors
-        </Link>
+        <div className="flex items-center">
+          <Link
+            to="/vendor/contractors"
+            className="rounded-lg bg-[#2F4F75] px-4 py-3 text-sm font-medium text-white hover:bg-[#1E3A5F]"
+          >
+            Back to Contractors
+          </Link>
 
-        {submitError && (
-          <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {submitError}
-          </div>
-        )}
+          {submitError && (
+            <div className="rounded-lg ml-4 border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {submitError}
+            </div>
+          )}
+        </div>
 
         <ContractorForm
           mode="create"
