@@ -11,6 +11,9 @@ from app.auth.tokens import encode_token
 from app.blueprints.vendor_user.repositories.vendor_user_repositories import (
     VendorUserRepository,
 )
+from app.blueprints.address.model import Address
+from app.blueprints.address.repositories.address_repositories import AddressRepository
+from app.blueprints.user.model import User, UserType
 
 from logging import getLogger
 
@@ -123,26 +126,42 @@ class UserService:
             )
             raise ValueError("Username already exists")
 
-        user = User(
-            first_name=data["first_name"],
-            last_name=data["last_name"],
-            email=data["email"],
-            username=data["username"],
-            user_type=data["user_type"],
-            is_active=True,
-            is_admin=False,
-            profile_photo=data.get("profile_photo"),
-        )
-
-        logger.debug("Setting password for user: %s", data["username"])
-        user.set_password(data["password"])
-
         try:
-            UserRepository.create(user)
-            logger.debug("User added to session: %s", user.username)
+            address_data = data["address"]
 
+            user_address = Address(
+                street=address_data["street"],
+                city=address_data["city"],
+                state=address_data["state"],
+                zip=address_data["zip"],
+            )
+            AddressRepository.create(user_address)
+            db.session.flush()
+
+            user = User(
+                first_name=data["first_name"],
+                middle_name=data.get("middle_name"),
+                last_name=data["last_name"],
+                email=data["email"],
+                username=data["username"],
+                contact_number=data["contact_number"],
+                alternate_number=data.get("alternate_number"),
+                date_of_birth=data.get("date_of_birth"),
+                ssn_last_four=data.get("ssn_last_four"),
+                address_id=user_address.id,
+                user_type=data["user_type"],
+                is_active=True,
+                is_admin=False,
+                profile_photo=data.get("profile_photo"),
+            )
+
+            user.set_password(data["password"])
+            UserRepository.create(user)
+            db.session.flush()
+
+            user_address.created_by = user.id
+            user_address.updated_by = user.id
             db.session.commit()
-            logger.info("User created successfully: %s", user.id)
 
             return user
 

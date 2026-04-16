@@ -6,7 +6,7 @@ import type { User, Vendor } from "../types/types";
 import {
   formatPhoneNumber,
   toBackendPhoneFormat,
-  validateVenderRegisterForm,
+  validateVendorRegisterForm,
 } from "../utils/authValidation";
 
 function RegisterVendorForm() {
@@ -18,8 +18,8 @@ function RegisterVendorForm() {
   // Form state
   const [form, setForm] = useState<Vendor>({
     companyName: "",
-    address: "",
     primaryContactName: "",
+    address: "",
     city: "",
     state: "",
     zip: "",
@@ -74,7 +74,7 @@ function RegisterVendorForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const newErrors = validateVenderRegisterForm(form);
+    const newErrors = validateVendorRegisterForm(form);
 
     // Stop if there are errors
     if (Object.keys(newErrors).length > 0) {
@@ -90,10 +90,23 @@ function RegisterVendorForm() {
     const payload = {
       user: {
         first_name: userData.firstName,
+        middle_name: userData.middleName || null,
         last_name: userData.lastName,
         email: userData.email,
         username: userData.username,
         password: userData.password,
+        contact_number: toBackendPhoneFormat(userData.contactNumber),
+        alternate_number: userData.alternateNumber
+          ? toBackendPhoneFormat(userData.alternateNumber)
+          : null,
+        date_of_birth: userData.dateOfBirth || null,
+        ssn_last_four: userData.ssnLastFour || null,
+        address: {
+          street: userData.address,
+          city: userData.city,
+          state: userData.state,
+          zip: userData.zip,
+        },
       },
       vendor: {
         company_name: form.companyName,

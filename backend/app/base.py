@@ -26,7 +26,7 @@ class BaseModel(db.Model):
 
     created_by: Mapped[str] = mapped_column(
         ForeignKey("user.id"),
-        nullable=False,
+        nullable=True,
     )
 
     updated_by: Mapped[str | None] = mapped_column(
