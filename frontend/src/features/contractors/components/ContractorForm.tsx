@@ -10,17 +10,18 @@ type ContractorFormProps = {
   mode: "create" | "edit";
   initialData?: Partial<Contractor>;
   onSave?: (data: Contractor) => void;
+  externalErrors?: Record<string, string | string[]>;
 };
 
 const contractorRoleOptions = [
-  { label: "Driver", value: "DRIVER" },
-  { label: "Worker", value: "WORKER" },
-  { label: "Private Contractor", value: "PRIVATE_CONTRACTOR" },
+  { label: "Driver", value: "driver" },
+  { label: "Worker", value: "worker" },
+  { label: "Private Contractor", value: "private_contractor" },
 ] as const;
 
 const statusOptions = [
-  { label: "Active", value: "ACTIVE" },
-  { label: "Inactive", value: "INACTIVE" },
+  { label: "Active", value: "active" },
+  { label: "Inactive", value: "inactive" },
 ] as const;
 
 const defaultFormData: Contractor = {
@@ -40,8 +41,8 @@ const defaultFormData: Contractor = {
     state: "",
     zip: "",
   },
-  status: "ACTIVE",
-  vendor_contractor_role: "WORKER",
+  status: "active",
+  vendor_contractor_role: "worker",
   tickets_completed: 0,
   tickets_open: 0,
   biometric_enrolled: false,
@@ -59,10 +60,26 @@ export default function ContractorForm({
   mode,
   initialData,
   onSave,
+  externalErrors = {},
 }: ContractorFormProps) {
   const [formData, setFormData] = useState<Contractor>(defaultFormData);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showConfirm, setShowConfirm] = useState(false);
+
+  useEffect(() => {
+    if (!externalErrors) return;
+
+    const normalizedErrors: Record<string, string> = {};
+
+    Object.entries(externalErrors).forEach(([key, value]) => {
+      normalizedErrors[key] = Array.isArray(value) ? value[0] : value;
+    });
+
+    setErrors((prev) => ({
+      ...prev,
+      ...normalizedErrors,
+    }));
+  }, [externalErrors]);
 
   useEffect(() => {
     if (initialData) {
@@ -322,6 +339,11 @@ export default function ContractorForm({
               );
             })}
           </div>
+          {errors.vendor_contractor_role && (
+            <p className="mt-2 text-xs text-red-600">
+              {errors.vendor_contractor_role}
+            </p>
+          )}
         </FormField>
 
         <FormField label="Status">
@@ -345,6 +367,9 @@ export default function ContractorForm({
               );
             })}
           </div>
+          {errors.status && (
+            <p className="mt-2 text-xs text-red-600">{errors.status}</p>
+          )}
         </FormField>
 
         {mode === "create" && (

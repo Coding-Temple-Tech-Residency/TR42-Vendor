@@ -15,7 +15,6 @@ export type User = {
   state: string;
   zip: string;
 };
-
 export type Contractor = {
   first_name: string;
   last_name: string;
@@ -33,8 +32,8 @@ export type Contractor = {
     state: string;
     zip: string;
   };
-  status: "ACTIVE" | "INACTIVE";
-  vendor_contractor_role: "DRIVER" | "WORKER" | "PRIVATE_CONTRACTOR";
+  status: "active" | "inactive";
+  vendor_contractor_role: "driver" | "worker" | "private_contractor";
   tickets_completed: number;
   tickets_open: number;
   biometric_enrolled: boolean;
