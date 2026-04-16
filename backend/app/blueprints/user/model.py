@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from app.blueprints.vendor_user.model import VendorUser
     from app.blueprints.contractor.model import Contractor
     from app.blueprints.address.model import Address
+    from app.blueprints.vendor_contractor.model import VendorContractor
 
 
 class UserType(enum.Enum):
@@ -102,6 +103,12 @@ class User(db.Model):
         back_populates="user",
         foreign_keys="VendorUser.user_id",
         cascade="all, delete-orphan",
+    )
+
+    managed_contractor_links: Mapped[list["VendorContractor"]] = relationship(
+        "VendorContractor",
+        foreign_keys="VendorContractor.manager_id",
+        back_populates="manager",
     )
 
     contractor_profile: Mapped["Contractor | None"] = relationship(

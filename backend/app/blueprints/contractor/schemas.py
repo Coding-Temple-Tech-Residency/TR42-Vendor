@@ -103,8 +103,19 @@ class ContractorCreateSchema(ma.Schema):
         validate_password_content(data)
 
 
+class VendorContractorMiniSchema(ma.Schema):
+    id = fields.String()
+    vendor_id = fields.String()
+    manager_id = fields.String()
+    vendor_contractor_role = fields.Enum(
+        VendorContractorRole,
+        by_value=True,
+    )
+
+
 class ContractorSchema(ma.SQLAlchemyAutoSchema):
     status = fields.Enum(ContractorStatus, by_value=True)
+    vendor_links = fields.Nested(VendorContractorMiniSchema, many=True)
 
     class Meta:
         model = Contractor

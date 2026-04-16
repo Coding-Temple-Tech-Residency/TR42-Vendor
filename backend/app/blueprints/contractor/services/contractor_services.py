@@ -58,15 +58,15 @@ class ContractorService:
 
     @staticmethod
     def create_contractor_by_manager(
-        validated_data: dict, vendor_id: str, vendor_manager_id: str
+        validated_data: dict, vendor_id: str, manager_id: str
     ):
         try:
             contractor = ContractorService._create_contractor_records(
                 validated_data=validated_data,
                 vendor_id=vendor_id,
-                vendor_manager_id=vendor_manager_id,
-                created_by=vendor_manager_id,
-                updated_by=vendor_manager_id,
+                manager_id=manager_id,
+                created_by=manager_id,
+                updated_by=manager_id,
             )
             db.session.commit()
             return contractor
@@ -100,7 +100,7 @@ class ContractorService:
             contractor = ContractorService._create_contractor_records(
                 validated_data=validated_data,
                 vendor_id=invite.vendor_id,
-                vendor_manager_id=getattr(invite, "vendor_manager_id", None),
+                vendor_manager_id=getattr(invite, "vendor_manager_id"),
                 created_by=None,
                 updated_by=None,
             )
@@ -129,7 +129,7 @@ class ContractorService:
     def _create_contractor_records(
         validated_data,
         vendor_id,
-        vendor_manager_id,
+        manager_id,
         created_by,
         updated_by,
     ):
@@ -181,7 +181,6 @@ class ContractorService:
             contractor = Contractor(
                 user_id=user.id,
                 employee_number=f"EMP-{employee_seed[:8].upper()}",
-                vendor_manager_id=vendor_manager_id,
                 status=validated_data["status"],
                 tickets_completed=validated_data["tickets_completed"],
                 tickets_open=validated_data["tickets_open"],
@@ -203,6 +202,7 @@ class ContractorService:
             vendor_contractor = VendorContractor(
                 vendor_id=vendor_id,
                 contractor_id=contractor.id,
+                manager_id=manager_id,
                 vendor_contractor_role=validated_data["vendor_contractor_role"],
                 created_by=created_by,
                 updated_by=updated_by,

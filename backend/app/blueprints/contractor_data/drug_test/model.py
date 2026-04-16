@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class DrugTest(BaseModel):
     __tablename__ = "drug_test"
 
-    drug_test_id: Mapped[str] = mapped_column(
+    id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
         default=generate_uuid,
@@ -23,7 +23,6 @@ class DrugTest(BaseModel):
     contractor_id: Mapped[str] = mapped_column(
         ForeignKey("contractor.id"),
         nullable=False,
-        unique=True,
     )
 
     drug_test_passed: Mapped[bool] = mapped_column(
@@ -39,5 +38,5 @@ class DrugTest(BaseModel):
 
     contractor: Mapped["Contractor"] = relationship(
         "Contractor",
-        back_populates="drug_test",
+        back_populates="drug_tests",
     )

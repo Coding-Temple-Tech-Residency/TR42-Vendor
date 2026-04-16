@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 class License(BaseModel):
     __tablename__ = "license"
 
-    license_id: Mapped[str] = mapped_column(
+    id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
         default=generate_uuid,
@@ -24,7 +24,6 @@ class License(BaseModel):
     contractor_id: Mapped[str] = mapped_column(
         ForeignKey("contractor.id"),
         nullable=False,
-        unique=True,
     )
 
     license_type: Mapped[str] = mapped_column(
@@ -70,7 +69,7 @@ class License(BaseModel):
 
     contractor: Mapped["Contractor"] = relationship(
         "Contractor",
-        back_populates="license",
+        back_populates="licenses",
     )
 
     verified_by_user: Mapped["User | None"] = relationship(

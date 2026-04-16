@@ -33,13 +33,9 @@ class Contractor(BaseModel):
         nullable=False,
         unique=True,
     )
+    # role
 
     employee_number: Mapped[str] = mapped_column(String, nullable=False)
-
-    vendor_manager_id: Mapped[str | None] = mapped_column(
-        ForeignKey("user.id"),
-        nullable=True,
-    )
 
     status: Mapped[ContractorStatus] = mapped_column(
         Enum(ContractorStatus, name="contractor_status"),
@@ -53,6 +49,7 @@ class Contractor(BaseModel):
     biometric_enrolled: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=False
     )
+
     is_onboarded: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     is_subcontractor: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=False
@@ -71,11 +68,6 @@ class Contractor(BaseModel):
         foreign_keys=[user_id],
     )
 
-    vendor_manager: Mapped["User | None"] = relationship(
-        "User",
-        foreign_keys=[vendor_manager_id],
-    )
-
     vendor_links: Mapped[list["VendorContractor"]] = relationship(
         "VendorContractor",
         back_populates="contractor",
@@ -91,20 +83,16 @@ class Contractor(BaseModel):
         single_parent=True,
     )
 
-    drug_test: Mapped["DrugTest | None"] = relationship(
+    drug_tests: Mapped[list["DrugTest"]] = relationship(
         "DrugTest",
         back_populates="contractor",
-        uselist=False,
         cascade="all, delete-orphan",
-        single_parent=True,
     )
 
-    license: Mapped["License | None"] = relationship(
+    licenses: Mapped[list["License"]] = relationship(
         "License",
         back_populates="contractor",
-        uselist=False,
         cascade="all, delete-orphan",
-        single_parent=True,
     )
 
     biometrics: Mapped[list["BiometricData"]] = relationship(

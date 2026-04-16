@@ -1,12 +1,11 @@
-from datetime import datetime
 import enum
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, Enum, ForeignKey, String, UniqueConstraint
+from sqlalchemy import Enum, ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.extensions import db
-from app.functions import generate_uuid, utc_now
+from app.functions import generate_uuid
 from app.base import BaseModel
 
 if TYPE_CHECKING:

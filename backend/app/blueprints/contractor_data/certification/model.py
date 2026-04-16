@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class Certification(BaseModel):
     __tablename__ = "certification"
 
-    certification_id: Mapped[str] = mapped_column(
+    id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
         default=generate_uuid,

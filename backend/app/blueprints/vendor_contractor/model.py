@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from app.blueprints.contractor.model import Contractor
     from app.blueprints.vendor.model import Vendor
+    from app.blueprints.user.model import User
 
 
 class VendorContractorRole(enum.Enum):
@@ -30,7 +31,19 @@ class VendorContractor(BaseModel):
     id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
+        nullable=False,
         default=generate_uuid,
+    )
+
+    manager_id: Mapped[str] = mapped_column(
+        ForeignKey("user.id"),
+        nullable=False,
+    )
+
+    manager: Mapped["User"] = relationship(
+        "User",
+        foreign_keys=[manager_id],
+        back_populates="managed_contractor_links",
     )
 
     contractor_id: Mapped[str] = mapped_column(

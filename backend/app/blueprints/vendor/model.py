@@ -98,6 +98,7 @@ class Vendor(BaseModel):
     contractor_links: Mapped[list["VendorContractor"]] = relationship(
         "VendorContractor",
         back_populates="vendor",
+        foreign_keys="VendorContractor.vendor_id",
         cascade="all, delete-orphan",
     )
 
@@ -108,7 +109,7 @@ class Vendor(BaseModel):
     )
 
     invoices: Mapped[list["Invoice"]] = relationship(
-        back_populates="vendor", cascade="all, delete-orphan"
+        "Invoice", back_populates="vendor", cascade="all, delete-orphan"
     )
 
     work_orders: Mapped[list["WorkOrder"]] = relationship(

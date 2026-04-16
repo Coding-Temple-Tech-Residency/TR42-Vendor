@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class BackgroundCheck(BaseModel):
     __tablename__ = "background_check"
 
-    background_check_id: Mapped[str] = mapped_column(
+    id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
         default=generate_uuid,
