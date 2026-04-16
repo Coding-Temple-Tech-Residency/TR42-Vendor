@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import AuthButton from "../components/AuthButton";
-import PasswordInput from "../components/PasswordInput";
-import TextInput from "../components/TextInput";
-import type { User } from "../types/types";
+import type { User } from "../../../types/models";
 import {
   formatPhoneNumber,
   getPasswordChecks,
   validateUserRegisterForm,
-} from "../utils/authValidation";
+} from "../../../utils/validation";
+import AuthButton from "../components/AuthButton";
+import PasswordInput from "../components/PasswordInput";
+import TextInput from "../components/TextInput";
 
 function RegisterUserForm() {
   const navigate = useNavigate();

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthButton from "../components/AuthButton";
-import TextInput from "../components/TextInput";
-import type { User, Vendor } from "../types/types";
+import type { User, Vendor } from "../../../types/models";
 import {
   formatPhoneNumber,
   toBackendPhoneFormat,
   validateVendorRegisterForm,
-} from "../utils/authValidation";
+} from "../../../utils/validation";
+import AuthButton from "../components/AuthButton";
+import TextInput from "../components/TextInput";
 
 function RegisterVendorForm() {
   const navigate = useNavigate();
@@ -54,8 +54,7 @@ function RegisterVendorForm() {
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) {
-    const name = e.target.name;
-    const value = e.target.value;
+    const { name, value } = e.target;
 
     // Format phone number
     setForm((prev) => ({

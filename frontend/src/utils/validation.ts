@@ -1,4 +1,4 @@
-import type { User, Vendor } from "../types/types";
+import type { Contractor, User, Vendor } from "../types/models";
 
 const PHONE_REGEX = /^\d{3}-\d{3}-\d{4}$/;
 const ADDRESS_REGEX = /^[A-Za-z0-9\s.'#,-]{5,120}$/;
@@ -107,7 +107,10 @@ function validateDateOfBirth(value?: string): string | null {
   return null;
 }
 
-function getPasswordChecks(password: string, user: User) {
+function getPasswordChecks(
+  password: string,
+  user: Pick<User, "username" | "firstName" | "lastName">,
+) {
   const passwordLower = (password || "").toLowerCase();
 
   const username = (user.username || "").trim().toLowerCase();
@@ -131,19 +134,13 @@ function validateUserRegisterForm(form: User) {
   const errors: Record<string, string> = {};
 
   const firstNameError = validateName(form.firstName, "First name");
-  if (firstNameError) {
-    errors.firstName = firstNameError;
-  }
+  if (firstNameError) errors.firstName = firstNameError;
 
   const lastNameError = validateName(form.lastName, "Last name");
-  if (lastNameError) {
-    errors.lastName = lastNameError;
-  }
+  if (lastNameError) errors.lastName = lastNameError;
 
   const emailError = validateEmailFormat(form.email);
-  if (emailError) {
-    errors.email = emailError;
-  }
+  if (emailError) errors.email = emailError;
 
   if (isBlank(form.username)) {
     errors.username = "Username is required.";
@@ -152,50 +149,38 @@ function validateUserRegisterForm(form: User) {
   const contactNumberError = validatePhoneFormat(
     toBackendPhoneFormat(form.contactNumber || ""),
   );
-  if (contactNumberError) {
-    errors.contactNumber = contactNumberError;
-  }
+  if (contactNumberError) errors.contactNumber = contactNumberError;
 
   if (!isBlank(form.alternateNumber)) {
     const alternateNumberError = validatePhoneFormat(
       toBackendPhoneFormat(form.alternateNumber || ""),
     );
-    if (alternateNumberError) {
-      errors.alternateNumber = alternateNumberError;
-    }
+    if (alternateNumberError) errors.alternateNumber = alternateNumberError;
   }
 
   const dateOfBirthError = validateDateOfBirth(form.dateOfBirth);
-  if (dateOfBirthError) {
-    errors.dateOfBirth = dateOfBirthError;
-  }
+  if (dateOfBirthError) errors.dateOfBirth = dateOfBirthError;
 
   const ssnLastFourError = validateSsnLastFour(form.ssnLastFour);
-  if (ssnLastFourError) {
-    errors.ssnLastFour = ssnLastFourError;
-  }
+  if (ssnLastFourError) errors.ssnLastFour = ssnLastFourError;
 
   const streetError = validateAddress(form.address);
-  if (streetError) {
-    errors.street = streetError;
-  }
+  if (streetError) errors.street = streetError;
 
   const cityError = validateCity(form.city);
-  if (cityError) {
-    errors.city = cityError;
-  }
+  if (cityError) errors.city = cityError;
 
   const stateError = validateState(form.state);
-  if (stateError) {
-    errors.state = stateError;
-  }
+  if (stateError) errors.state = stateError;
 
   const zipError = validateZip(form.zip);
-  if (zipError) {
-    errors.zip = zipError;
-  }
+  if (zipError) errors.zip = zipError;
 
-  const checks = getPasswordChecks(form.password, form);
+  const checks = getPasswordChecks(form.password, {
+    username: form.username,
+    firstName: form.firstName,
+    lastName: form.lastName,
+  });
 
   if (!Object.values(checks).every(Boolean)) {
     errors.password =
@@ -243,52 +228,107 @@ function validateVendorRegisterForm(form: Vendor) {
   const errors: Record<string, string> = {};
 
   const companyNameError = validateName(form.companyName, "Company name");
-  if (companyNameError) {
-    errors.companyName = companyNameError;
-  }
+  if (companyNameError) errors.companyName = companyNameError;
 
   const contactNameError = validateName(
     form.primaryContactName,
     "Primary contact name",
   );
-  if (contactNameError) {
-    errors.primaryContactName = contactNameError;
-  }
+  if (contactNameError) errors.primaryContactName = contactNameError;
 
   const addressError = validateAddress(form.address);
-  if (addressError) {
-    errors.address = addressError;
-  }
+  if (addressError) errors.address = addressError;
 
   const cityError = validateCity(form.city);
-  if (cityError) {
-    errors.city = cityError;
-  }
+  if (cityError) errors.city = cityError;
 
   const stateError = validateState(form.state);
-  if (stateError) {
-    errors.state = stateError;
-  }
+  if (stateError) errors.state = stateError;
 
   const zipError = validateZip(form.zip);
-  if (zipError) {
-    errors.zip = zipError;
-  }
+  if (zipError) errors.zip = zipError;
 
   const emailError = validateEmailFormat(form.companyEmail);
-  if (emailError) {
-    errors.companyEmail = emailError;
-  }
+  if (emailError) errors.companyEmail = emailError;
 
   const phoneError = validatePhoneFormat(
     toBackendPhoneFormat(form.companyPhone),
   );
-  if (phoneError) {
-    errors.companyPhone = phoneError;
-  }
+  if (phoneError) errors.companyPhone = phoneError;
 
   if (isBlank(form.serviceType)) {
     errors.serviceType = "Select a service type.";
+  }
+
+  return errors;
+}
+
+function validateContractorForm(form: Contractor, mode: "create" | "edit") {
+  const errors: Record<string, string> = {};
+
+  const firstNameError = validateName(form.first_name, "First name");
+  if (firstNameError) errors.first_name = firstNameError;
+
+  const lastNameError = validateName(form.last_name, "Last name");
+  if (lastNameError) errors.last_name = lastNameError;
+
+  if (!isBlank(form.middle_name)) {
+    const middleNameError = validateName(form.middle_name, "Middle name", 1);
+    if (middleNameError) errors.middle_name = middleNameError;
+  }
+
+  const emailError = validateEmailFormat(form.email);
+  if (emailError) errors.email = emailError;
+
+  if (isBlank(form.username)) {
+    errors.username = "Username is required.";
+  }
+
+  const contactNumberError = validatePhoneFormat(
+    toBackendPhoneFormat(form.contact_number || ""),
+  );
+  if (contactNumberError) errors.contact_number = contactNumberError;
+
+  if (!isBlank(form.alternate_number)) {
+    const alternateNumberError = validatePhoneFormat(
+      toBackendPhoneFormat(form.alternate_number || ""),
+    );
+    if (alternateNumberError) errors.alternate_number = alternateNumberError;
+  }
+
+  const dateOfBirthError = validateDateOfBirth(form.date_of_birth);
+  if (dateOfBirthError) errors.date_of_birth = dateOfBirthError;
+
+  const ssnLastFourError = validateSsnLastFour(form.ssn_last_four);
+  if (ssnLastFourError) errors.ssn_last_four = ssnLastFourError;
+
+  const streetError = validateAddress(form.address.street);
+  if (streetError) errors["address.street"] = streetError;
+
+  const cityError = validateCity(form.address.city);
+  if (cityError) errors["address.city"] = cityError;
+
+  const stateError = validateState(form.address.state);
+  if (stateError) errors["address.state"] = stateError;
+
+  const zipError = validateZip(form.address.zip);
+  if (zipError) errors["address.zip"] = zipError;
+
+  if (mode === "create") {
+    if (!form.password) {
+      errors.password = "Password is required.";
+    } else {
+      const checks = getPasswordChecks(form.password, {
+        username: form.username,
+        firstName: form.first_name,
+        lastName: form.last_name,
+      });
+
+      if (!Object.values(checks).every(Boolean)) {
+        errors.password =
+          "Password must be at least 12 characters long and include uppercase, lowercase, number, and special character, and must not contain more than 2 identical characters in a row or contain your username, first name, or last name.";
+      }
+    }
   }
 
   return errors;
@@ -298,6 +338,7 @@ export {
   formatPhoneNumber,
   getPasswordChecks,
   toBackendPhoneFormat,
+  validateContractorForm,
   validateUserRegisterForm,
   validateVendorRegisterForm,
 };

@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class ComplianceDocument(BaseModel):
     __tablename__ = "compliance_document"
 
-    compliance_id: Mapped[str] = mapped_column(
+    id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
         default=generate_uuid,

@@ -4,6 +4,7 @@ import LoginPage from "../features/auth/pages/LoginPage";
 import ProfileSetupPage from "../features/auth/pages/ProfileSetupPage";
 import RegisterPage from "../features/auth/pages/RegisterPage";
 import SuccessPage from "../features/auth/pages/SuccessPage";
+import ContractorCreatePage from "../features/contractors/pages/ContractorCreatePage";
 import ContractorEditPage from "../features/contractors/pages/ContractorEditPage";
 import ContractorJobsPage from "../features/contractors/pages/ContractorJobs";
 import ContractorProfilePage from "../features/contractors/pages/ContractorProfile";
@@ -48,6 +49,7 @@ export default function AppRouter() {
         <Route path="settings" element={<SettingsPage />} />
 
         {/*Contractor Pages*/}
+        <Route path="contractors/create" element={<ContractorCreatePage />} />
         <Route path="contractors/profile" element={<ContractorProfilePage />} />
         <Route path="contractors/jobs" element={<ContractorJobsPage />} />
         <Route
