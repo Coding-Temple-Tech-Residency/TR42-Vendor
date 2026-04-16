@@ -42,8 +42,6 @@ class VendorSchema(ma.SQLAlchemyAutoSchema):
     @validates("company_email")
     def validate_company_email(self, value, **kwargs):
         validate_email_format(value)
-    def validate_company_email(self, value, **kwargs):
-        validate_email_format(value)
 
     @validates("company_phone")
     def validate_company_phone(self, value, **kwargs):
