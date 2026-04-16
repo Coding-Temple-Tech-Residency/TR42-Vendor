@@ -189,7 +189,7 @@ def generate_addresses_for_users(users, assign_ratio=1.0):
                 "street": fake.street_address(),
                 "city": fake.city(),
                 "state": fake.state(),
-                "zipcode": fake.zipcode(),
+                "zip": fake.zipcode(),
                 "country": "US",
                 "created_at": generate_time_span(),
                 "updated_at": now(),
@@ -249,7 +249,7 @@ def generate_addresses_for_vendors(vendors, users):
                 "street": fake.street_address(),
                 "city": fake.city(),
                 "state": fake.state(),
-                "zipcode": fake.zipcode(),
+                "zip": fake.zipcode(),
                 "country": "US",
                 "created_at": generate_time_span(),
                 "updated_at": now(),
@@ -916,7 +916,7 @@ def generate_contractor_performance(tickets, contractors, users):
 
         performance.append(
             {
-                "rating_id": gen_id(),
+                "id": gen_id(),
                 "contractor_id": contractor_id,  
                 "ticket_id": ticket["id"],  
                 "rating": random.randint(1, 5),
@@ -1165,7 +1165,7 @@ def generate_addresses_for_clients(clients, users):
                 "street": fake.street_address(),
                 "city": fake.city(),
                 "state": fake.state(),
-                "zipcode": fake.zipcode(),
+                "zip": fake.zipcode(),
                 "country": "US",
                 "created_at": generate_time_span(),
                 "updated_at": now(),
