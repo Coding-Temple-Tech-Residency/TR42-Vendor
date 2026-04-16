@@ -145,7 +145,7 @@ def generate_users(n=20, addresses=None):
 
         users.append(
             {
-                "user_id": user_id,
+                "id": user_id,
                 "username": fake.unique.user_name(),
                 "password_hash": generate_password_hash(DEFAULT_PASSWORD),
                 "email": fake.unique.email(),
@@ -162,8 +162,8 @@ def generate_users(n=20, addresses=None):
                 "profile_photo": None,
                 "created_at": generate_time_span(),
                 "updated_at": now(),
-                "created_by_user_id": user_id,
-                "updated_by_user_id": user_id,
+                "created_by": user_id,
+                "updated_by": user_id,
                 "address_id": None,
             }
         )
@@ -185,7 +185,7 @@ def generate_addresses_for_users(users, assign_ratio=1.0):
 
         addresses.append(
             {
-                "address_id": address_id,
+                "id": address_id,
                 "street": fake.street_address(),
                 "city": fake.city(),
                 "state": fake.state(),
@@ -193,8 +193,8 @@ def generate_addresses_for_users(users, assign_ratio=1.0):
                 "country": "US",
                 "created_at": generate_time_span(),
                 "updated_at": now(),
-                "created_by_user_id": user["user_id"],
-                "updated_by_user_id": user["user_id"],
+                "created_by": user["id"],
+                "updated_by": user["id"],
             }
         )
 
@@ -207,12 +207,12 @@ def generate_vendors(n=10, users=[]):
     vendors = []
 
     for _ in range(n):
-        creator = random.choice(users)["user_id"]
-        updater = random.choice(users)["user_id"]
+        creator = random.choice(users)["id"]
+        updater = random.choice(users)["id"]
 
         vendors.append(
             {
-                "vendor_id": gen_id(),
+                "id": gen_id(),
                 "company_name": fake.unique.company(),
                 "company_code": fake.bothify(text="??-####"),
                 "start_date": fake.date_time_between(start_date="-2y", end_date="-1y"),
@@ -228,8 +228,8 @@ def generate_vendors(n=10, users=[]):
                 "description": fake.text(max_nb_chars=100),
                 "created_at": generate_time_span(),
                 "updated_at": now(),
-                "created_by_user_id": creator,
-                "updated_by_user_id": updater,
+                "created_by": creator,
+                "updated_by": updater,
                 "address_id": None,
             }
         )
@@ -240,13 +240,13 @@ def generate_addresses_for_vendors(vendors, users):
     addresses = []
 
     for vendor in vendors:
-        creator = random.choice(users)["user_id"]
-        updater = random.choice(users)["user_id"]
+        creator = random.choice(users)["id"]
+        updater = random.choice(users)["id"]
         address_id = gen_id()
 
         addresses.append(
             {
-                "address_id": address_id,
+                "id": address_id,
                 "street": fake.street_address(),
                 "city": fake.city(),
                 "state": fake.state(),
@@ -254,8 +254,8 @@ def generate_addresses_for_vendors(vendors, users):
                 "country": "US",
                 "created_at": generate_time_span(),
                 "updated_at": now(),
-                "created_by_user_id": creator,
-                "updated_by_user_id": updater,
+                "created_by": creator,
+                "updated_by": updater,
             }
         )
 
@@ -273,8 +273,8 @@ def generate_vendor_users(users, vendors, max_ratio=0.6):
     selected_users = random.sample(users, num_vendor_users)
 
     for user in selected_users:
-        creator = random.choice(users)["user_id"]
-        updater = random.choice(users)["user_id"]
+        creator = random.choice(users)["id"]
+        updater = random.choice(users)["id"]
         vendor = random.choice(vendors)
 
         # keep base user subtype aligned with membership table
@@ -283,13 +283,13 @@ def generate_vendor_users(users, vendors, max_ratio=0.6):
         vendor_users.append(
             {
                 "id": gen_id(),
-                "user_id": user["user_id"],
-                "vendor_id": vendor["vendor_id"],
+                "user_id": user["id"],
+                "vendor_id": vendor["id"],
                 "vendor_user_role": random.choices(ROLE_OPTIONS, weights=[80, 15, 5])[0],
                 "created_at": generate_time_span(),
                 "updated_at": now(),
-                "created_by_user_id": creator,
-                "updated_by_user_id": updater,
+                "created_by": creator,
+                "updated_by": updater,
             }
         )
 
@@ -300,7 +300,7 @@ def generate_contractors(n, vendors, users, vendor_users):
     contractors = []
 
     used_user_ids = {vu["user_id"] for vu in vendor_users}
-    available_users = [u for u in users if u["user_id"] not in used_user_ids]
+    available_users = [u for u in users if u["id"] not in used_user_ids]
 
     if len(available_users) < n:
         raise ValueError("Not enough unique users to assign to contractors")
@@ -311,7 +311,7 @@ def generate_contractors(n, vendors, users, vendor_users):
         if vu["vendor_id"] is not None:
             vendor_user_by_vendor.setdefault(vu["vendor_id"], []).append(vu)
 
-    valid_vendors = [v for v in vendors if v["vendor_id"] in vendor_user_by_vendor]
+    valid_vendors = [v for v in vendors if v["id"] in vendor_user_by_vendor]
     if not valid_vendors:
         raise ValueError(
             "No vendors have vendor_user records. Contractors need a vendor_manager_id "
@@ -321,21 +321,21 @@ def generate_contractors(n, vendors, users, vendor_users):
     selected_users = random.sample(available_users, n)
 
     for user in selected_users:
-        creator = random.choice(users)["user_id"]
-        updater = random.choice(users)["user_id"]
+        creator = random.choice(users)["id"]
+        updater = random.choice(users)["id"]
 
         vendor = random.choice(valid_vendors)
-        manager = random.choice(vendor_user_by_vendor[vendor["vendor_id"]])
+        manager = random.choice(vendor_user_by_vendor[vendor["id"]])
 
         # keep base user subtype aligned with membership table
         user["user_type"] = "CONTRACTOR"
 
         contractors.append(
             {
-                "contractor_id": gen_id(),
+                "id": gen_id(),
                 "employee_number": fake.unique.bothify("EMP####"),
-                "user_id": user["user_id"],
-                "vendor_id": vendor["vendor_id"],
+                "user_id": user["id"],
+                "vendor_id": vendor["id"],
                 "vendor_manager_id": manager["id"],  # FK -> vendor_user.id
                 "role": random.choice(ROLE_OPTIONS),
                 "status": random.choice(CONTRACTOR_STATUS),
@@ -364,7 +364,7 @@ def generate_contractors(n, vendors, users, vendor_users):
 
 def update_contractor_ticket_counts(contractors, tickets):
     counts = {
-        c["contractor_id"]: {"tickets_completed": 0, "tickets_open": 0}
+        c["id"]: {"tickets_completed": 0, "tickets_open": 0}
         for c in contractors
     }
 
@@ -379,7 +379,7 @@ def update_contractor_ticket_counts(contractors, tickets):
             counts[contractor_id]["tickets_open"] += 1
 
     for contractor in contractors:
-        cid = contractor["contractor_id"]
+        cid = contractor["id"]
         contractor["tickets_completed"] = counts[cid]["tickets_completed"]
         contractor["tickets_open"] = counts[cid]["tickets_open"]
 
@@ -393,14 +393,14 @@ def generate_work_orders(n, vendor_wells, users, wells, vendor_services):
         vendor_service_map.setdefault(vs["vendor_id"], []).append(vs["service_id"])
 
     for _ in range(n):
-        creator = random.choice(users)["user_id"]
-        updater = random.choice(users)["user_id"]
+        creator = random.choice(users)["id"]
+        updater = random.choice(users)["id"]
         well = random.choice(wells)
 
         valid_vendor_ids = [
             vw["vendor_id"]
             for vw in vendor_wells
-            if vw["well_id"] == well["well_id"]
+            if vw["well_id"] == well["id"]
         ]
         if not valid_vendor_ids:
             continue
@@ -509,7 +509,7 @@ def generate_work_orders(n, vendor_wells, users, wells, vendor_services):
 
         work_orders.append(
             {
-                "work_order_id": gen_id(),
+                "id": gen_id(),
                 "assigned_vendor": assigned_vendor,
                 "client_id": well["client_id"],
                 "assigned_at": assigned_at,
@@ -527,7 +527,7 @@ def generate_work_orders(n, vendor_wells, users, wells, vendor_services):
                 "estimated_cost": round(random.uniform(500, 50000), 2),
                 "estimated_duration": timedelta(days=random.randint(1, 3)),
                 "priority": random.choice(PRIORITY),
-                "well_id": well["well_id"],
+                "well_id": well["id"],
                 "service_type": service_type,
                 "estimated_quantity": round(random.uniform(1, 100), 2),
                 "units": random.choice(["hours", "gallons", "loads", "visits", "days"]),
@@ -552,8 +552,8 @@ def generate_tickets(n, work_orders, contractors, users):
     tickets = []
 
     for _ in range(n):
-        creator = random.choice(users)["user_id"]
-        updater = random.choice(users)["user_id"]
+        creator = random.choice(users)["id"]
+        updater = random.choice(users)["id"]
         wo = random.choice(work_orders)
 
         valid_contractors = [
@@ -573,7 +573,7 @@ def generate_tickets(n, work_orders, contractors, users):
                 continue
 
             contractor = random.choice(valid_contractors)
-            contractor_id = contractor["contractor_id"]
+            contractor_id = contractor["id"]
 
             if wo["current_status"] in ["COMPLETED", "CLOSED"]:
                 status = "COMPLETED"
@@ -638,8 +638,8 @@ def generate_tickets(n, work_orders, contractors, users):
 
         tickets.append(
             {
-                "ticket_id": gen_id(),
-                "work_order_id": wo["work_order_id"],
+                "id": gen_id(),
+                "work_order_id": wo["id"],
                 "invoice_id": None,  # nullable FK -> invoice.invoice_id
                 "description": wo["description"],
                 "assigned_contractor": contractor_id,
@@ -683,7 +683,7 @@ def generate_tickets(n, work_orders, contractors, users):
 def generate_invoices(n, work_orders, tickets, users):
     invoices = []
 
-    work_order_lookup = {wo["work_order_id"]: wo for wo in work_orders}
+    work_order_lookup = {wo["id"]: wo for wo in work_orders}
 
     eligible_tickets = [
         t for t in tickets
@@ -698,8 +698,8 @@ def generate_invoices(n, work_orders, tickets, users):
     selected_tickets = random.sample(eligible_tickets, min(n, len(eligible_tickets)))
 
     for ticket in selected_tickets:
-        creator = random.choice(users)["user_id"]
-        updater = random.choice(users)["user_id"]
+        creator = random.choice(users)["id"]
+        updater = random.choice(users)["id"]
         work_order = work_order_lookup[ticket["work_order_id"]]
 
         base_time = ticket["completed_at"] or ticket["created_at"] or now()
@@ -723,7 +723,7 @@ def generate_invoices(n, work_orders, tickets, users):
 
         invoices.append(
             {
-                "invoice_id": invoice_id,
+                "id": invoice_id,
                 "work_order_id": ticket["work_order_id"],
                 "vendor_id": ticket["vendor_id"],
                 "client_id": work_order["client_id"],
@@ -757,8 +757,8 @@ def generate_line_items(invoices, users):
         total = 0
 
         for _ in range(num_items):
-            creator = random.choice(users)["user_id"]
-            updater = random.choice(users)["user_id"]
+            creator = random.choice(users)["id"]
+            updater = random.choice(users)["id"]
 
             quantity = random.randint(1, 20)
             rate = round(random.uniform(50, 500), 2)
@@ -768,8 +768,8 @@ def generate_line_items(invoices, users):
 
             line_items.append(
                 {
-                    "line_item_id": gen_id(),
-                    "invoice_id": invoice["invoice_id"],
+                    "id": gen_id(),
+                    "invoice_id": invoice["id"],
                     "quantity": quantity,
                     "rate": rate,
                     "amount": amount,
@@ -791,8 +791,8 @@ def generate_wells(n, users, clients):
     wells = []
 
     for _ in range(n):
-        creator = random.choice(users)["user_id"]
-        updater = random.choice(users)["user_id"]
+        creator = random.choice(users)["id"]
+        updater = random.choice(users)["id"]
         client = random.choice(clients)
 
         spud_date = fake.date_time_between(start_date="-10y", end_date="-1y")
@@ -800,10 +800,10 @@ def generate_wells(n, users, clients):
 
         wells.append(
             {
-                "well_id": gen_id(),
+                "id": gen_id(),
                 "api_number": fake.bothify("##-###-#####"),
                 "well_name": f"{fake.last_name()} {fake.random_letter()}-{random.randint(1, 99)}",
-                "client_id": client["client_id"],
+                "client_id": client["id"],
                 "status": random.choice(WELL_STATUS),
                 "type": random.choice(WELL_TYPE),
                 "range": fake.bothify("##"),
@@ -828,8 +828,8 @@ def generate_well_locations(wells, users):
     locations = []
 
     for well in wells:
-        creator = random.choice(users)["user_id"]
-        updater = random.choice(users)["user_id"]
+        creator = random.choice(users)["id"]
+        updater = random.choice(users)["id"]
 
         surface_lat = float(fake.latitude())
         surface_lon = float(fake.longitude())
@@ -840,8 +840,8 @@ def generate_well_locations(wells, users):
 
         locations.append(
             {
-                "well_location_id": gen_id(),
-                "well_id": well["well_id"],
+                "id": gen_id(),
+                "well_id": well["id"],
                 "surface_latitude": surface_lat,
                 "surface_longitude": surface_lon,
                 "bottom_latitude": bottom_lat,
@@ -870,18 +870,18 @@ def generate_vendor_wells(vendors, wells, users):
         selected_vendors = random.sample(vendors, num_vendors)
 
         for vendor in selected_vendors:
-            key = (vendor["vendor_id"], well["well_id"])
+            key = (vendor["id"], well["id"])
             if key in seen:
                 continue
 
-            creator = random.choice(users)["user_id"]
-            updater = random.choice(users)["user_id"]
+            creator = random.choice(users)["id"]
+            updater = random.choice(users)["id"]
 
             vendor_wells.append(
                 {
                     "id": gen_id(),
-                    "vendor_id": vendor["vendor_id"],
-                    "well_id": well["well_id"],
+                    "vendor_id": vendor["id"],
+                    "well_id": well["id"],
                     "created_at": generate_time_span(),
                     "updated_at": now(),
                     "created_by": creator,
@@ -898,7 +898,7 @@ def generate_contractor_performance(tickets, contractors, users):
     performance = []
 
     # optional: quick lookup for contractors
-    contractor_lookup = {c["contractor_id"]: c for c in contractors}
+    contractor_lookup = {c["id"]: c for c in contractors}
 
     for ticket in tickets:
         
@@ -911,14 +911,14 @@ def generate_contractor_performance(tickets, contractors, users):
         if contractor_id not in contractor_lookup:
             continue
 
-        creator = random.choice(users)["user_id"]
-        updater = random.choice(users)["user_id"]
+        creator = random.choice(users)["id"]
+        updater = random.choice(users)["id"]
 
         performance.append(
             {
                 "rating_id": gen_id(),
                 "contractor_id": contractor_id,  
-                "ticket_id": ticket["ticket_id"],  
+                "ticket_id": ticket["id"],  
                 "rating": random.randint(1, 5),
                 "comments": fake.sentence(),
                 "created_at": now(),
@@ -935,14 +935,14 @@ def generate_background_checks(contractors, users):
     checks = []
 
     for contractor in contractors:
-        creator = random.choice(users)["user_id"]
-        updater = random.choice(users)["user_id"]
+        creator = random.choice(users)["id"]
+        updater = random.choice(users)["id"]
 
         check_id = gen_id()
 
         checks.append(
             {
-                "background_check_id": check_id,
+                "id": check_id,
                 "background_check_passed": random.choice([True, False]),
                 "background_check_date": fake.date_between(
                     start_date="-2y", end_date="today"
@@ -965,14 +965,14 @@ def generate_drug_tests(contractors, users):
     tests = []
 
     for contractor in contractors:
-        creator = random.choice(users)["user_id"]
-        updater = random.choice(users)["user_id"]
+        creator = random.choice(users)["id"]
+        updater = random.choice(users)["id"]
 
         test_id = gen_id()
 
         tests.append(
             {
-                "drug_test_id": test_id,
+                "id": test_id,
                 "drug_test_passed": random.choice([True, False]),
                 "drug_test_date": fake.date_between(start_date="-1y", end_date="today"),
                 "created_at": now(),
@@ -995,15 +995,15 @@ def generate_licenses(contractors, vendors, users):
         num_licenses = random.randint(0, 3)
 
         for _ in range(num_licenses):
-            creator = random.choice(users)["user_id"]
-            updater = random.choice(users)["user_id"]
+            creator = random.choice(users)["id"]
+            updater = random.choice(users)["id"]
 
             verified = random.choice([True, False])
 
             licenses.append(
                 {
-                    "license_id": gen_id(),
-                    "contractor_id": contractor["contractor_id"],
+                    "id": gen_id(),
+                    "contractor_id": contractor["id"],
                     "license_type": random.choice(
                         ["Electrical", "Plumbing", "HVAC", "General"]
                     ),
@@ -1015,7 +1015,7 @@ def generate_licenses(contractors, vendors, users):
                     "license_document_url": fake.url(),
                     "license_verified": verified,
                     "license_verified_by": (
-                        random.choice(vendors)["vendor_id"] if verified else None
+                        random.choice(vendors)["id"] if verified else None
                     ),
                     "license_verified_at": (
                         fake.date_between(start_date="-1y", end_date="today")
@@ -1039,15 +1039,15 @@ def generate_certifications(contractors, users):
         num_certs = random.randint(0, 3)
 
         for _ in range(num_certs):
-            creator = random.choice(users)["user_id"]
-            updater = random.choice(users)["user_id"]
+            creator = random.choice(users)["id"]
+            updater = random.choice(users)["id"]
 
             issue_date = fake.date_time_between(start_date="-5y", end_date="-1y")
 
             certs.append(
                 {
-                    "certification_id": gen_id(),
-                    "contractor_id": contractor["contractor_id"],
+                    "id": gen_id(),
+                    "contractor_id": contractor["id"],
                     "certification_name": random.choice(
                         ["OSHA 10", "OSHA 30", "First Aid", "Confined Space"]
                     ),
@@ -1076,15 +1076,15 @@ def generate_insurance(contractors, users):
         num_policies = random.randint(0, 2)
 
         for _ in range(num_policies):
-            creator = random.choice(users)["user_id"]
-            updater = random.choice(users)["user_id"]
+            creator = random.choice(users)["id"]
+            updater = random.choice(users)["id"]
 
             effective_date = fake.date_between(start_date="-2y", end_date="-1y")
 
             insurance_records.append(
                 {
-                    "insurance_id": gen_id(),
-                    "contractor_id": contractor["contractor_id"],
+                    "id": gen_id(),
+                    "contractor_id": contractor["id"],
                     "insurance_type": random.choice(
                         ["General Liability", "Workers Comp", "Auto"]
                     ),
@@ -1114,11 +1114,11 @@ def generate_services(users):
     services = []
 
     for service_name in SERVICE_TYPES:
-        creator = random.choice(users)["user_id"]
-        updater = random.choice(users)["user_id"]
+        creator = random.choice(users)["id"]
+        updater = random.choice(users)["id"]
 
         services.append({
-            "service_id": gen_id(),
+            "id": gen_id(),
             "service": service_name,
             "created_at": generate_time_span(),
             "updated_at": now(),
@@ -1132,11 +1132,11 @@ def generate_clients(n, users):
     clients = []
 
     for _ in range(n):
-        creator = random.choice(users)["user_id"]
-        updater = random.choice(users)["user_id"]
+        creator = random.choice(users)["id"]
+        updater = random.choice(users)["id"]
 
         clients.append({
-            "client_id": gen_id(),
+            "id": gen_id(),
             "client_name": fake.unique.company(),
             "client_code": fake.unique.bothify(text="CL-####"),
             "primary_contact_name": fake.name(),
@@ -1155,13 +1155,13 @@ def generate_addresses_for_clients(clients, users):
     addresses = []
 
     for client in clients:
-        creator = random.choice(users)["user_id"]
-        updater = random.choice(users)["user_id"]
+        creator = random.choice(users)["id"]
+        updater = random.choice(users)["id"]
         address_id = gen_id()
 
         addresses.append(
             {
-                "address_id": address_id,
+                "id": address_id,
                 "street": fake.street_address(),
                 "city": fake.city(),
                 "state": fake.state(),
@@ -1169,8 +1169,8 @@ def generate_addresses_for_clients(clients, users):
                 "country": "US",
                 "created_at": generate_time_span(),
                 "updated_at": now(),
-                "created_by_user_id": creator,
-                "updated_by_user_id": updater,
+                "created_by": creator,
+                "updated_by": updater,
             }
         )
 
@@ -1185,7 +1185,7 @@ def generate_client_users(users, clients, vendor_users, contractors, max_ratio=0
     contractor_user_ids = {c["user_id"] for c in contractors}
     unavailable_user_ids = vendor_user_ids | contractor_user_ids
 
-    available_users = [u for u in users if u["user_id"] not in unavailable_user_ids]
+    available_users = [u for u in users if u["id"] not in unavailable_user_ids]
 
     if not available_users or not clients:
         return client_users
@@ -1197,8 +1197,8 @@ def generate_client_users(users, clients, vendor_users, contractors, max_ratio=0
     selected_users = random.sample(available_users, num_client_users)
 
     for user in selected_users:
-        creator = random.choice(users)["user_id"]
-        updater = random.choice(users)["user_id"]
+        creator = random.choice(users)["id"]
+        updater = random.choice(users)["id"]
 
         # client-side users line up best with operator in your current enum
         user["user_type"] = "OPERATOR"
@@ -1206,8 +1206,8 @@ def generate_client_users(users, clients, vendor_users, contractors, max_ratio=0
         client_users.append(
             {
                 "id": gen_id(),
-                "user_id": user["user_id"],
-                "client_id": random.choice(clients)["client_id"],
+                "user_id": user["id"],
+                "client_id": random.choice(clients)["id"],
                 "role": random.choice(ROLE_OPTIONS),
                 "created_at": generate_time_span(),
                 "updated_at": now(),
@@ -1227,17 +1227,17 @@ def generate_client_vendors(clients, vendors, users):
         selected_vendors = random.sample(vendors, num_vendors)
 
         for vendor in selected_vendors:
-            key = (client["client_id"], vendor["vendor_id"])
+            key = (client["id"], vendor["id"])
             if key in seen:
                 continue
 
-            creator = random.choice(users)["user_id"]
-            updater = random.choice(users)["user_id"]
+            creator = random.choice(users)["id"]
+            updater = random.choice(users)["id"]
 
             client_vendors.append({
-                "client_vendor_id": gen_id(),
-                "client_id": client["client_id"],
-                "vendor_id": vendor["vendor_id"],
+                "id": gen_id(),
+                "client_id": client["id"],
+                "vendor_id": vendor["id"],
                 "created_at": generate_time_span(),
                 "updated_at": now(),
                 "created_by": creator,
@@ -1255,14 +1255,14 @@ def generate_compliance_documents(vendors, users):
         num_docs = random.randint(1, 3)
 
         for _ in range(num_docs):
-            creator = random.choice(users)["user_id"]
-            updater = random.choice(users)["user_id"]
+            creator = random.choice(users)["id"]
+            updater = random.choice(users)["id"]
 
             is_compliant = random.choice([True, True, True, False])
 
             compliance_docs.append({
-                "compliance_id": gen_id(),
-                "vendor_id": vendor["vendor_id"],
+                "id": gen_id(),
+                "vendor_id": vendor["id"],
                 "compliance_document": None,  # blob placeholder
                 "compliance_status": is_compliant,
                 "expiration_date": fake.date_between(start_date="today", end_date="+3y") if is_compliant else fake.date_between(start_date="-1y", end_date="+6m"),
@@ -1283,9 +1283,9 @@ def generate_msas(vendors, users):
         base_date = fake.date_between(start_date="-5y", end_date="-1y")
 
         for version_num in range(1, num_versions + 1):
-            creator = random.choice(users)["user_id"]
-            updater = random.choice(users)["user_id"]
-            uploader = random.choice(users)["user_id"]
+            creator = random.choice(users)["id"]
+            updater = random.choice(users)["id"]
+            uploader = random.choice(users)["id"]
 
             effective_date = base_date + timedelta(days=(version_num - 1) * 365)
             expiration_date = effective_date + timedelta(days=365)
@@ -1293,8 +1293,8 @@ def generate_msas(vendors, users):
             status = "active" if version_num == num_versions else random.choice(["expired", "terminated"])
 
             msas.append({
-                "msa_id": gen_id(),
-                "vendor_id": vendor["vendor_id"],
+                "id": gen_id(),
+                "vendor_id": vendor["id"],
                 "version": f"v{version_num}.0",
                 "effective_date": effective_date,
                 "expiration_date": expiration_date,
@@ -1318,12 +1318,12 @@ def generate_msa_requirements(msas, users):
         num_requirements = random.randint(3, 8)
 
         for _ in range(num_requirements):
-            creator = random.choice(users)["user_id"]
-            updater = random.choice(users)["user_id"]
+            creator = random.choice(users)["id"]
+            updater = random.choice(users)["id"]
 
             requirements.append({
                 "id": gen_id(),
-                "msa_id": msa["msa_id"],
+                "msa_id": msa["id"],
                 "category": random.choice(requirement_categories),
                 "rule_type": random.choice(rule_types),
                 "description": fake.sentence(),
@@ -1390,17 +1390,17 @@ def generate_vendor_services(vendors, services, users):
         selected_services = random.sample(services, num_services)
 
         for service in selected_services:
-            key = (vendor["vendor_id"], service["service_id"])
+            key = (vendor["id"], service["id"])
             if key in seen:
                 continue
 
-            creator = random.choice(users)["user_id"]
-            updater = random.choice(users)["user_id"]
+            creator = random.choice(users)["id"]
+            updater = random.choice(users)["id"]
 
             vendor_services.append({
                 "id": gen_id(),
-                "vendor_id": vendor["vendor_id"],
-                "service_id": service["service_id"],
+                "vendor_id": vendor["id"],
+                "service_id": service["id"],
                 "created_at": generate_time_span(),
                 "updated_at": now(),
                 "created_by": creator,
