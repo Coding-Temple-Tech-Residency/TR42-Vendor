@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import SectionCard from "../components/UI/SectionCard";
 import EmptyState from "../components/UI/EmptyState";
 
-export default function WorkOrdersPage() {
+export default function WorkOrdersDashboardPage() {
   return (
     <AppLayout
       sidebar={<Sidebar />}

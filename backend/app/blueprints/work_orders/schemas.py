@@ -40,7 +40,6 @@ class WorkOrderSchema(ma.SQLAlchemyAutoSchema):
         model = WorkOrder
         load_instance = True
         include_fk = True
-        exclude = ("created_by", "updated_by")
 
     current_status = EnumField(OrderStatus, data_key='current_status')
     priority = EnumField(PriorityStatus, data_key='priority')

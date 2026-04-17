@@ -169,19 +169,19 @@ def vendor_membership_required(f):
             VendorUserRepository,
         )
 
-        vendor_id = kwargs.get("vendor_id")
+        vendor_id = kwargs.get("vendor_id") or kwargs.get("id")
 
         if not vendor_id:
             vendor_id = kwargs.get(
                 "id"
-            )  # fallback to 'id' if 'vendor_id' is not present
+            ) 
 
         if not vendor_id:
-            vendor_id = request.args.get("vendor_id")
+            vendor_id = request.args.get("id")
 
         if not vendor_id:
             body = request.get_json(silent=True) or {}
-            vendor_id = body.get("vendor_id")
+            vendor_id = body.get("id")
 
         if not vendor_id:
             vendor_id = getattr(g, "active_vendor_id", None)
@@ -197,9 +197,8 @@ def vendor_membership_required(f):
         if not vendor_link:
             return jsonify({"message": "User is not part of this vendor"}), 403
 
-        kwargs["vendor_id"] = (
-            vendor_id  # ensure vendor_id is in kwargs for downstream use
-        )
+        kwargs.pop("id", None)
+        kwargs["vendor_id"] = vendor_id
         return f(current_user, vendor_link, *args, **kwargs)
 
     return decorated

@@ -16,7 +16,7 @@ import MessagesPage from "../features/pages/MessagesDashboardPage";
 import ReportsPage from "../features/pages/ReportsDashboardPage";
 import SettingsPage from "../features/pages/SettingsDashboardPage";
 import TicketsPage from "../features/pages/TicketsDashboardPage";
-import WorkOrdersPage from "../features/pages/WorkOrdersDashboardPage";
+import WorkOrdersPage from "../features/pages/WorkOrdersPage";
 import EditWorkOrderPage from "../features/work orders/pages/EditWorkOrders";
 import WorkOrderOverviewPage from "../features/work orders/pages/WorkOrdersOverView";
 import CreateTicketPage from "../features/tickets/page/CreateTicketPage";
