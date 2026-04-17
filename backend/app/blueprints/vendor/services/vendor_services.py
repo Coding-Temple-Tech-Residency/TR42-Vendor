@@ -153,6 +153,9 @@ class VendorService:
             db.session.refresh(existing_vendor)
             return existing_vendor
 
+        except ValidationError:
+            db.session.rollback()
+            raise
         except Exception:
             db.session.rollback()
             logger.exception("Failed to update vendor in service layer")

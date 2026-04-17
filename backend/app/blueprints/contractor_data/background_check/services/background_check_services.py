@@ -101,20 +101,8 @@ class BackgroundCheckService:
             if not background_check:
                 return None
 
-            if "background_check_passed" in validated_data:
-                background_check.background_check_passed = validated_data[
-                    "background_check_passed"
-                ]
-
-            if "background_check_date" in validated_data:
-                background_check.background_check_date = validated_data.get(
-                    "background_check_date"
-                )
-
-            if "background_check_provider" in validated_data:
-                background_check.background_check_provider = validated_data.get(
-                    "background_check_provider"
-                )
+            for key, value in validated_data.items():
+                setattr(background_check, key, value)
 
             background_check.updated_by = updated_by
 
