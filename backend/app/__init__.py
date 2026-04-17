@@ -62,6 +62,12 @@ def create_app(config_object=None):
     from app.blueprints.invoices.controller.invoice_routes import invoice_bp
     from app.blueprints.invoices.controller.lineitem_routes import lineItem_bp
     from app.blueprints.contractor.controller.contractor_routes import contractor_bp
+    from app.blueprints.contractor_data.background_check.controller.background_check_routes import (
+        background_check_bp,
+    )
+    from app.blueprints.contractor_data.biometric_data.controller.biometric_data_routes import (
+        biometric_data_bp,
+    )
 
     app.register_blueprint(user_bp, url_prefix="/api/users")
     app.register_blueprint(address_bp, url_prefix="/api/addresses")
@@ -72,5 +78,7 @@ def create_app(config_object=None):
     app.register_blueprint(invoice_bp, url_prefix="/api/invoices")
     app.register_blueprint(lineItem_bp, url_prefix="/api/line_items")
     app.register_blueprint(contractor_bp, url_prefix="/api/contractors")
+    app.register_blueprint(background_check_bp, url_prefix="/api")
+    app.register_blueprint(biometric_data_bp, url_prefix="/api")
 
     return app

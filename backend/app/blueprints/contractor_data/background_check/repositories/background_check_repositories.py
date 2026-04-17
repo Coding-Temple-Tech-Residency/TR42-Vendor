@@ -20,6 +20,16 @@ class BackgroundCheckRepository:
             raise
 
     @staticmethod
+    def update(background_check: BackgroundCheck):
+        try:
+            logger.debug("Updating background check")
+            db.session.add(background_check)
+            return background_check
+        except Exception:
+            logger.exception("Failed to update background check")
+            raise
+
+    @staticmethod
     def get_by_contractor(contractor_id: str):
         try:
             logger.debug("Fetching background checks by contractor_id")

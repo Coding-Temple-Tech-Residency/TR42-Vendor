@@ -89,6 +89,52 @@ class BackgroundCheckService:
             raise
 
     @staticmethod
+    def update_background_check(
+        background_check_id: str,
+        validated_data: dict,
+        updated_by: str | None,
+    ):
+        try:
+            logger.debug("Updating background check")
+
+            background_check = BackgroundCheckRepository.get_by_id(background_check_id)
+            if not background_check:
+                return None
+
+            if "background_check_passed" in validated_data:
+                background_check.background_check_passed = validated_data[
+                    "background_check_passed"
+                ]
+
+            if "background_check_date" in validated_data:
+                background_check.background_check_date = validated_data.get(
+                    "background_check_date"
+                )
+
+            if "background_check_provider" in validated_data:
+                background_check.background_check_provider = validated_data.get(
+                    "background_check_provider"
+                )
+
+            background_check.updated_by = updated_by
+
+            BackgroundCheckRepository.update(background_check)
+
+            db.session.commit()
+            db.session.refresh(background_check)
+
+            logger.info("Background check updated successfully")
+            return background_check
+
+        except ValidationError:
+            db.session.rollback()
+            raise
+        except Exception:
+            db.session.rollback()
+            logger.exception("Failed to update background check")
+            raise
+
+    @staticmethod
     def delete_background_check(background_check_id: str):
         try:
             logger.debug("Deleting background check")

@@ -8,7 +8,7 @@ from app.auth.tokens import (
     vendor_roles_required,
 )
 from app.blueprints.vendor_user.model import VendorUserRole
-from backend.app.blueprints.contractor_data.background_check.schemas import (
+from app.blueprints.contractor_data.background_check.schemas import (
     background_check_schema,
     background_check_create_schema,
     background_checks_schema,
@@ -80,6 +80,50 @@ def get_background_checks(current_user, vendor_link, vendor_id, contractor_id):
     except Exception:
         logger.exception("Error fetching background checks")
         return {"error": "An error occurred while fetching background checks"}, 500
+
+
+@background_check_bp.put("/background-checks/<string:background_check_id>")
+@token_required
+@vendor_membership_required
+@vendor_roles_required([VendorUserRole.ADMIN, VendorUserRole.MANAGER])
+def update_background_check(current_user, vendor_link, vendor_id, background_check_id):
+    try:
+        background_check_data = request.get_json(silent=True)
+        logger.debug("Updating background check")
+
+        if not background_check_data:
+            logger.debug("No input data provided for background check update")
+            return {"error": "No input data provided"}, 400
+
+        validated_data = background_check_create_schema.load(
+            background_check_data,
+            partial=True,
+        )
+
+        if not isinstance(validated_data, dict):
+            logger.warning("Validated background check data is not a dictionary")
+            return {"error": "Invalid background check data"}, 400
+
+        updated_background_check = BackgroundCheckService.update_background_check(
+            background_check_id=background_check_id,
+            validated_data=validated_data,
+            updated_by=current_user.id,
+        )
+
+        if not updated_background_check:
+            return {"error": "Background check not found"}, 404
+
+        logger.info("Background check updated successfully")
+        return jsonify(background_check_schema.dump(updated_background_check)), 200
+
+    except ValidationError as err:
+        logger.warning(
+            f"Validation error while updating background check: {err.messages}"
+        )
+        return {"error": "Validation error", "messages": err.messages}, 400
+    except Exception:
+        logger.exception("Error updating background check")
+        return {"error": "An error occurred while updating the background check"}, 500
 
 
 @background_check_bp.delete("/background-checks/<string:background_check_id>")
