@@ -49,11 +49,13 @@ class VendorService:
         try:
             logger.info("Creating vendor in service layer")
 
+            company_email = validated_data["company_email"].strip().lower()
+
             if VendorRepository.get_by_company_name(validated_data["company_name"]):
                 raise ValidationError(
                     {"company_name": ["Company name already exists."]}
                 )
-            if VendorRepository.get_by_company_email(validated_data["company_email"]):
+            if VendorRepository.get_by_company_email_normalized(company_email):
                 raise ValidationError(
                     {"company_email": ["Company email already exists."]}
                 )
@@ -65,8 +67,8 @@ class VendorService:
                 city=address_data["city"],
                 state=address_data["state"],
                 zipcode=address_data["zipcode"],
-                created_by_user_id=user_id,
-                updated_by_user_id=user_id,
+                created_by=user_id,
+                updated_by=user_id,
             )
             AddressRepository.create(address)
             db.session.flush()
@@ -76,24 +78,24 @@ class VendorService:
             vendor = Vendor(
                 vendor_id=vendor_id,
                 company_name=validated_data["company_name"],
-                company_email=validated_data["company_email"],
+                company_email=validated_data["company_email"].strip().lower(),
                 company_phone=validated_data["company_phone"],
                 primary_contact_name=validated_data["primary_contact_name"],
                 service_type=validated_data["service_type"],
                 vendor_code=f"Vendor-{vendor_id[:8].upper()}",
-                address_id=address.address_id,
-                created_by_user_id=user_id,
-                updated_by_user_id=user_id,
+                address_id=address.id,
+                created_by=user_id,
+                updated_by=user_id,
             )
             VendorRepository.create(vendor)
             db.session.flush()
 
             vendor_user = VendorUser(
-                vendor_id=vendor.vendor_id,
+                vendor_id=vendor.id,
                 user_id=user_id,
                 vendor_user_role=VendorUserRole.ADMIN,
-                created_by_user_id=user_id,
-                updated_by_user_id=user_id,
+                created_by=user_id,
+                updated_by=user_id,
             )
             VendorUserRepository.create(vendor_user)
             db.session.flush()
@@ -135,6 +137,17 @@ class VendorService:
 
             for key, value in validated_data.items():
                 setattr(existing_vendor, key, value)
+
+            if "company_email" in validated_data:
+                normalized_email = validated_data["company_email"].strip().lower()
+                existing_email_vendor = VendorRepository.get_by_company_email_normalized(
+                normalized_email
+            )
+            if existing_email_vendor and existing_email_vendor.id != existing_vendor.id:
+                raise ValidationError(
+                {"company_email": ["Company email already exists."]}
+            )
+            validated_data["company_email"] = normalized_email
 
             if address_data is not None:
                 if existing_vendor.address:

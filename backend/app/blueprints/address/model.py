@@ -1,6 +1,6 @@
 from datetime import datetime
 from app.functions import generate_uuid, utc_now
-from sqlalchemy import DateTime, String
+from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.extensions import db
 from typing import TYPE_CHECKING
@@ -8,6 +8,7 @@ from app.base import BaseModel
 
 if TYPE_CHECKING:
     from app.blueprints.vendor.model import Vendor
+    from app.blueprints.user.model import User
 
 
 class Address(BaseModel):
@@ -22,5 +23,10 @@ class Address(BaseModel):
     zipcode: Mapped[str] = mapped_column(String(255), nullable=False)
     country: Mapped[str] = mapped_column(String(255), nullable=False, default="USA")
 
+    created_by: Mapped[str | None] = mapped_column(ForeignKey("user.id"), nullable=True)
+    updated_by: Mapped[str | None] = mapped_column(ForeignKey("user.id"), nullable=True)
+
+
     # relationships
     vendor: Mapped["Vendor"] = relationship(back_populates="address")
+

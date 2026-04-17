@@ -67,8 +67,8 @@ class RegistrationService:
                 city=address_data["city"],
                 state=address_data["state"],
                 zipcode=address_data["zipcode"],
-                created_by_user_id=user.id,
-                updated_by_user_id=user.id,
+                created_by=user.id,
+                updated_by=user.id,
             )
             AddressRepository.create(address)
             db.session.flush()
@@ -78,14 +78,14 @@ class RegistrationService:
             vendor = Vendor(
                 id=vendor_id,
                 company_name=vendor_data["company_name"],
-                company_email=vendor_data["company_email"],
+                company_email=vendor_data["company_email"].strip().lower(),
                 company_phone=vendor_data["company_phone"],
                 primary_contact_name=vendor_data["primary_contact_name"],
                 service_type=vendor_data["service_type"],
                 vendor_code=f"Vendor-{vendor_id[:8].upper()}",
                 address_id=address.id,
-                created_by_user_id=user.id,
-                updated_by_user_id=user.id,
+                created_by=user.id,
+                updated_by=user.id,
             )
             VendorRepository.create(vendor)
             db.session.flush()
@@ -94,13 +94,13 @@ class RegistrationService:
                 vendor_id=vendor.id,
                 user_id=user.id,
                 vendor_user_role=VendorUserRole.ADMIN,
-                created_by_user_id=user.id,
-                updated_by_user_id=user.id,
+                created_by=user.id,
+                updated_by=user.id,
             )
             VendorUserRepository.create(vendor_user)
             db.session.flush()
 
-            vendor.vendor_code = f"Vendor-{vendor.vendor_id[:8].upper()}"
+            vendor.vendor_code = f"Vendor-{vendor.id[:8].upper()}"
 
             db.session.commit()
 

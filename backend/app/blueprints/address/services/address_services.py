@@ -19,8 +19,8 @@ class AddressService:
                 state=data["state"],
                 zipcode=data["zipcode"],
                 country=data.get("country", "USA"),
-                created_by_user_id=data["created_by_user_id"],
-                updated_by_user_id=data.get("updated_by_user_id"),
+                created_by=data["created_by"],
+                updated_by=data.get("updated_by"),
             )
 
             AddressRepository.create(address)

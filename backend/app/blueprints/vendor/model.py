@@ -58,7 +58,8 @@ class Vendor(BaseModel):
         nullable=True,
     )
 
-    company_email: Mapped[str] = mapped_column(String, nullable=False)
+    company_email: Mapped[str] = mapped_column(String, nullable=False, #unique=True
+    )
     company_phone: Mapped[str] = mapped_column(String, nullable=False)
 
     service_type: Mapped[str] = mapped_column(String, nullable=False)

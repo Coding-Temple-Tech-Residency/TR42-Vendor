@@ -1,5 +1,5 @@
 import logging
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from app.extensions import db
 from app.blueprints.vendor.model import Vendor
@@ -45,11 +45,22 @@ class VendorRepository:
             raise
 
     @staticmethod
+    def get_by_company_email_normalized(company_email: str):
+        try:
+            logger.debug("Fetching vendor by company name")
+            return db.session.scalar(
+                select(Vendor).where(func.lower(Vendor.company_email) == company_email.lower().strip())
+            )
+        except Exception:
+            logger.exception("Failed to fetch vendor by email")
+            raise
+
+    @staticmethod
     def get_by_id(vendor_id: str):
         try:
-            logger.debug("Fetching vendor by vendor_id")
+            logger.debug("Fetching vendor by id")
             return db.session.scalar(
-                select(Vendor).where(Vendor.vendor_id == vendor_id)
+                select(Vendor).where(Vendor.id == vendor_id)
             )
         except Exception:
             logger.exception("Failed to fetch vendor by id")

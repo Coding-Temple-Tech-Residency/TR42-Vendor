@@ -16,7 +16,7 @@ from app.blueprints.address.schemas import AddressSchema
 
 class VendorSchema(ma.SQLAlchemyAutoSchema):
 
-    address = fields.Nested(AddressSchema, exclude=("address_id",))
+    address = fields.Nested(AddressSchema, exclude=("id",))
 
     class Meta:
         model = Vendor

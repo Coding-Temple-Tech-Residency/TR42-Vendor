@@ -24,12 +24,15 @@ class VendorUserService:
         try:
             logger.debug("Creating vendor user in service layer with data: %s", data)
 
+            created_by = data.get("created_by") or data.get("created_by_user_id")
+            updated_by = data.get("updated_by") or data.get("updated_by_user_id")
+
             vendor_user = VendorUser(
                 user_id=data["user_id"],
                 vendor_id=data["vendor_id"],
                 vendor_user_role=VendorUserRole(data["vendor_user_role"]),
-                created_by_user_id=data["created_by_user_id"],
-                updated_by_user_id=data.get("updated_by_user_id"),
+                created_by=created_by,
+                updated_by=updated_by,
             )
 
             VendorUserRepository.create(vendor_user)
