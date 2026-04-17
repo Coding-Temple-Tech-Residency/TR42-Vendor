@@ -109,8 +109,8 @@ def token_required(f):
 
         token = request.cookies.get("access_token")
 
-        # still has auth_header logic here
         if not token:
+            # still has auth_header logic here
             auth_header = request.headers.get("Authorization", "")
             parts = auth_header.split()
 

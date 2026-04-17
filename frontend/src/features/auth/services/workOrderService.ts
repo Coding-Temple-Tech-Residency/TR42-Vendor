@@ -1,5 +1,3 @@
-import { getAuthHeaders } from "../utils/authTokenUtils";
-
 export type WorkOrderRow = {
   id: string;
   clientId: string;
@@ -183,10 +181,11 @@ export async function getVendorWorkOrders(
 
   const response = await fetch(`${endpoint}?${query.toString()}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      ...getAuthHeaders(),
-    },
+    credentials: "include",
+    // headers: {
+    //   "Content-Type": "application/json",
+    //   ...getAuthHeaders(),
+    // },
   });
 
   if (!response.ok) {
