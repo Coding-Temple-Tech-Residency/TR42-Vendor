@@ -19,6 +19,15 @@ class VendorUserRepository:
             raise
 
     @staticmethod
+    def get_by_id(id: str) -> VendorUser | None:
+        try:
+            logger.debug("Fetching vendor user by id=%s", id)
+            return VendorUser.query.get(id)
+        except Exception:
+            logger.exception("Failed to fetch vendor user by id")
+            raise
+
+    @staticmethod
     def get_by_user_and_vendor(user_id: str, vendor_id: str) -> VendorUser | None:
         try:
             logger.debug(
@@ -59,4 +68,13 @@ class VendorUserRepository:
             return vendor_user
         except Exception:
             logger.exception("Failed to create vendor user")
+            raise
+
+    @staticmethod
+    def delete(vendor_user: VendorUser):
+        try:
+            logger.debug("Deleting vendor user id=%s", vendor_user.id)
+            db.session.delete(vendor_user)
+        except Exception:
+            logger.exception("Failed to delete vendor user")
             raise

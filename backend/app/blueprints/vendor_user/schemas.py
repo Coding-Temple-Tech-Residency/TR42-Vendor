@@ -21,6 +21,12 @@ class VendorUserSchema(ma.SQLAlchemyAutoSchema):
         exclude=("vendor_links",),
     )
 
+    role_ref = fields.Nested(
+        "RoleSchema",
+        dump_only=True,
+        exclude=("vendor_users",),
+    )
+
 
 vendor_user_schema = VendorUserSchema()
 vendor_users_schema = VendorUserSchema(many=True)

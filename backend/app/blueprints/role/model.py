@@ -1,14 +1,38 @@
-from app.extensions import db
-from app.models.base import BaseModel
+from typing import TYPE_CHECKING
+from sqlalchemy import String, Text, Enum, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from app.base import BaseModel
+from app.functions import generate_uuid
+import enum
+
+if TYPE_CHECKING:
+    from app.blueprints.vendor_user.model import VendorUser
+
+
+class RoleOptions(enum.Enum):
+    USER = "USER"
+    MANAGER = "MANAGER"
+    ADMIN = "ADMIN"
+
 
 class Role(BaseModel):
-    __tablename__ = 'role'
+    __tablename__ = "role"
 
-    id = db.Column(db.String, primary_key=True)
+    role_id: Mapped[str] = mapped_column(
+        String(36), primary_key=True, nullable=False, default=generate_uuid
+    )
 
-    role_name = db.Column(db.String(100))
-    description = db.Column(db.Text)
+    role_name: Mapped[str] = mapped_column(String(100), nullable=False)
 
-    role_options = db.Column(
-        db.Enum('user', 'manager', 'admin', name='role_options')
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    role_options: Mapped[RoleOptions] = mapped_column(
+        Enum(RoleOptions, name="role_options"),
+        nullable=False,
+    )
+
+    # relationships
+    vendor_users: Mapped[list["VendorUser"]] = relationship(
+        back_populates="role_ref",
+        cascade="all, delete-orphan",
     )

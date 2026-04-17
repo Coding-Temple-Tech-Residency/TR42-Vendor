@@ -9,14 +9,16 @@ from app.extensions import db
 from app.functions import generate_uuid, utc_now
 from app.base import BaseModel
 
+
 if TYPE_CHECKING:
     from app.blueprints.user.model import User
     from app.blueprints.vendor.model import Vendor
+    from app.blueprints.role.model import Role
 
 class VendorUserRole(enum.Enum):
-    ADMIN = "admin"
-    MANAGER = "manager"
-    USER = "user"
+    USER = "USER"
+    MANAGER = "MANAGER"
+    ADMIN = "ADMIN"
 
 
 class VendorUser(BaseModel):
@@ -37,12 +39,13 @@ class VendorUser(BaseModel):
     )
 
     vendor_id: Mapped[str] = mapped_column(
-        ForeignKey("vendor.id"),
+        ForeignKey("vendor.vendor.id"),
         nullable=False,
     )
 
-    vendor_user_role: Mapped[VendorUserRole] = mapped_column(
+    role: Mapped[VendorUserRole] = mapped_column(
         Enum(VendorUserRole, name="vendor_user_role"),
+        ForeignKey("role.role_id"),
         nullable=False,
     )
 
@@ -55,4 +58,10 @@ class VendorUser(BaseModel):
     vendor: Mapped["Vendor"] = relationship(
         "Vendor",
         back_populates="vendor_links",
+    )
+
+    
+    role_ref: Mapped["Role"] = relationship(
+        "Role",
+        back_populates="vendor_users",
     )

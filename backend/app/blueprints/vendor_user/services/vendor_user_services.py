@@ -27,9 +27,10 @@ class VendorUserService:
             vendor_user = VendorUser(
                 user_id=data["user_id"],
                 vendor_id=data["vendor_id"],
-                vendor_user_role=VendorUserRole(data["vendor_user_role"]),
+                role=VendorUserRole(data["role"]),
                 created_by_user_id=data["created_by_user_id"],
-                updated_by_user_id=data.get("updated_by_user_id"),
+                updated_by_user_id=data["updated_by_user_id"]
+
             )
 
             VendorUserRepository.create(vendor_user)
@@ -42,3 +43,43 @@ class VendorUserService:
             db.session.rollback()
             logger.exception("Failed to create vendor user in service layer")
             raise
+    
+    @staticmethod
+    def get_all_by_user(user_id: str):
+        try:
+            logger.debug("Service: fetching vendor users for user_id=%s", user_id)
+            return VendorUserRepository.get_all_by_user(user_id)
+        except Exception:
+            logger.exception("Service failed to fetch vendor users for user_id=%s", user_id)
+            raise
+
+
+
+    @staticmethod
+    def get_by_user_and_vendor(user_id: str, vendor_id: str):
+        try:
+            logger.debug(
+                "Service: fetching vendor user link for user_id=%s and vendor_id=%s",
+                user_id,
+                vendor_id,
+            )
+            return VendorUserRepository.get_by_user_and_vendor(user_id, vendor_id)
+        except Exception:
+            logger.exception("Service failed to fetch vendor user link")
+            raise
+
+
+    @staticmethod
+    def get_by_id(id: str):
+        logger.debug("Retrieving vendor user by id=%s", id)
+        return VendorUserRepository.get_by_id(id)
+    
+    @staticmethod
+    def delete(id: str):
+        vendor_user = VendorUserRepository.get_by_id(id)
+        if not vendor_user:
+            return None
+
+        VendorUserRepository.delete(vendor_user)
+        db.session.commit()
+        return True

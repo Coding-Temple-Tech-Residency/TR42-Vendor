@@ -6,3 +6,4 @@ from app.blueprints.services.model import Service, VendorService
 from app.blueprints.work_orders.model import WorkOrder
 from app.blueprints.well.model import Well
 from app.blueprints.invoices.model import Invoice, LineItem
+from app.blueprints.role.model import Role

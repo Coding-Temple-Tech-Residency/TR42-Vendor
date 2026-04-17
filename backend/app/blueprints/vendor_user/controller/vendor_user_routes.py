@@ -44,3 +44,31 @@ def create_vendor_user():
     except Exception as e:
         logger.exception(f"Error creating vendor user: {str(e)}")
         return jsonify({"error": "An error occurred while creating the user"}), 500
+    
+@vendor_user_bp.get("/user/<user_id>/vendor/<vendor_id>")
+def get_vendor_user_by_user_and_vendor(user_id, vendor_id):
+    result = VendorUserService.get_by_user_and_vendor(user_id, vendor_id)
+    if not result:
+        return {"error": "Vendor user link not found"}, 404
+    return vendor_user_schema.dump(result), 200
+
+
+@vendor_user_bp.get("/user/<user_id>")
+def get_vendor_users_by_user(user_id):
+    users = VendorUserService.get_all_by_user(user_id)
+    return vendor_users_schema.dump(users), 200
+
+
+@vendor_user_bp.get("/<id>")
+def get_vendor_user(id):
+    user = VendorUserService.get_by_id(id)
+    if not user:
+        return {"error": "Vendor user not found"}, 404
+    return vendor_user_schema.dump(user), 200
+
+@vendor_user_bp.delete("/<id>")
+def delete_vendor_user(id):
+    deleted = VendorUserService.delete(id)
+    if not deleted:
+        return {"error": "Vendor user not found"}, 404
+    return {"message": "Vendor user deleted"}, 200
