@@ -48,9 +48,7 @@ class VendorRepository:
     def get_by_id(vendor_id: str):
         try:
             logger.debug("Fetching vendor by vendor_id")
-            return db.session.scalar(
-                select(Vendor).where(Vendor.vendor_id == vendor_id)
-            )
+            return db.session.scalar(select(Vendor).where(Vendor.id == vendor_id))
         except Exception:
             logger.exception("Failed to fetch vendor by id")
             raise

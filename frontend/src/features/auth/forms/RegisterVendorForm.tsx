@@ -105,7 +105,7 @@ function RegisterVendorForm() {
           street: form.address,
           city: form.city,
           state: form.state,
-          zipcode: form.zip,
+          zip: form.zip,
         },
       },
     };

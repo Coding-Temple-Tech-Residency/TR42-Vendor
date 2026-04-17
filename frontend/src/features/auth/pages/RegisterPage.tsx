@@ -14,6 +14,7 @@ function RegisterPage() {
         />
 
         <RegisterUserForm />
+       
 
         {/* Footer Link */}
         <AuthFooterLink
