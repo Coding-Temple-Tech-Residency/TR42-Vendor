@@ -76,7 +76,9 @@ class User(db.Model):
 
     ssn_last_four: Mapped[str | None] = mapped_column(String(4), nullable=True)
 
-    address_id: Mapped[str] = mapped_column(ForeignKey("address.id"), unique=True)
+    address_id: Mapped[str] = mapped_column(
+        ForeignKey("address.id"), nullable=True, unique=True
+    )
 
     # Relationships
 
