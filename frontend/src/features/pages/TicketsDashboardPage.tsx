@@ -5,6 +5,7 @@ import PageHeader from "../components/UI/PageHeader";
 import SectionCard from "../components/UI/SectionCard";
 import EmptyState from "../components/UI/EmptyState";
 import KpiCard from "../components/UI/KPICard";
+import { Link } from "react-router-dom";
 
 function TicketsPage() {
   return (
@@ -12,10 +13,26 @@ function TicketsPage() {
       sidebar={<Sidebar />}
       topbar={<Topbar title="Vendor Dashboard" userName="Katty" />}
     >
-      <PageHeader
-        title="Tickets"
-        description="Monitor contractor tickets and job activity."
-      />
+
+      <div className="space-y-6">
+        <PageHeader
+          title="Tickets"
+          description="Monitor contractor tickets and job activity."
+        />
+        <Link
+          to="/vendor/tickets/details"
+          className="inline-block rounded-lg bg-[#2F4F75] px-4 py-2 text-sm font-medium text-white hover:bg-[#1E3A5F]"
+          >
+            Ticket Details
+        </Link>
+
+        <Link
+          to="/vendor/tickets/create"
+          className="inline-block rounded-lg bg-[#2F4F75] px-4 py-2 text-sm font-medium text-white hover:bg-[#1E3A5F]"
+          >
+            Create Ticket
+        </Link>
+     </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-6">
         <KpiCard

@@ -82,7 +82,7 @@ class RegistrationService:
                 company_phone=vendor_data["company_phone"],
                 primary_contact_name=vendor_data["primary_contact_name"],
                 service_type=vendor_data["service_type"],
-                vendor_code=f"Vendor-{vendor_id[:8].upper()},
+                vendor_code=f"Vendor-{vendor_id[:8].upper()}",
                 address_id=address.id,
                 created_by_user_id=user.id,
                 updated_by_user_id=user.id,

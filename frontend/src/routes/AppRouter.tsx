@@ -19,6 +19,7 @@ import TicketsPage from "../features/pages/TicketsDashboardPage";
 import WorkOrdersPage from "../features/pages/WorkOrdersDashboardPage";
 import EditWorkOrderPage from "../features/work orders/pages/EditWorkOrders";
 import WorkOrderOverviewPage from "../features/work orders/pages/WorkOrdersOverView";
+import CreateTicketPage from "../features/tickets/page/CreateTicketPage";
 
 function VendorLayout() {
   return <Outlet />;
@@ -56,11 +57,12 @@ export default function AppRouter() {
         />
 
         {/*Work Orders Pages*/}
-        <Route
-          path="work-orders/overview"
-          element={<WorkOrderOverviewPage />}
-        />
+        <Route path="work-orders/overview" element={<WorkOrderOverviewPage />} />
         <Route path="work-orders/edit" element={<EditWorkOrderPage />} />
+
+        {/* Ticket Pages*/}
+        <Route path="work-orders/:workOrderId/create-ticket" element={<CreateTicketPage />} />
+        <Route path="tickets/:ticketId" element={<TicketsPage />} />
       </Route>
     </Routes>
   );
