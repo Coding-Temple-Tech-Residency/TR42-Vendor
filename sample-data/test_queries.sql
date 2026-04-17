@@ -286,7 +286,7 @@
 -- select * from work_orders
 -- where assigned_vendor = '11c653b3-219e-4d98-9b42-7d6f683ea5c6'
 
-select vendor_id, company_name from vendor;
+-- select vendor_id, company_name from vendor;
 
 -- 4b9a1a60-fd1c-443b-970b-ff91a08130bb	Stevens, Green and Boone
 -- c609a610-2264-4e0c-aaec-07a369ad2e0e	Taylor-Jacobs
@@ -298,3 +298,9 @@ select vendor_id, company_name from vendor;
 -- bcdef8e6-fc16-400b-9af6-5be254ff54d1	Ruiz Inc
 -- 33307c4d-f438-4b31-9ea5-afb33960f7cc	Fernandez-Hicks
 -- 7bb8bceb-272a-41ee-bcaa-4a35623ee3eb	Cox LLC
+
+select vc.vendor_id, vc.contractor_id, avg(cp.rating)
+from vendor_contractor vc
+join contractor_performance cp
+on vc.contractor_id = cp.contractor_id
+group by vc.vendor_id, vc.contractor_id;

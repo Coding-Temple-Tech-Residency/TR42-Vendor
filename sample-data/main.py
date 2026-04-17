@@ -133,6 +133,8 @@ SERVICE_TYPES = [
     "WELL_INTERVENTION",
 ]
 
+VENDOR_CONTRACTOR_ROLES = ["DRIVER", "WORKER", "PRIVATE_CONTRACTOR"]
+
 DEFAULT_PASSWORD = "password"
 
 def generate_users(n=20, addresses=None):
@@ -295,7 +297,7 @@ def generate_vendor_users(users, vendors, max_ratio=0.6):
     return vendor_users
 
 
-def generate_contractors(n, vendors, users, vendor_users):
+def generate_contractors(n, users, vendor_users):
     contractors = []
 
     used_user_ids = {vu["user_id"] for vu in vendor_users}
@@ -304,29 +306,12 @@ def generate_contractors(n, vendors, users, vendor_users):
     if len(available_users) < n:
         raise ValueError("Not enough unique users to assign to contractors")
 
-    # group vendor users by vendor so contractor.vendor_manager_id can point to vendor_user.id
-    vendor_user_by_vendor = {}
-    for vu in vendor_users:
-        if vu["vendor_id"] is not None:
-            vendor_user_by_vendor.setdefault(vu["vendor_id"], []).append(vu)
-
-    valid_vendors = [v for v in vendors if v["id"] in vendor_user_by_vendor]
-    if not valid_vendors:
-        raise ValueError(
-            "No vendors have vendor_user records. Contractors need a vendor_manager_id "
-            "that references vendor_user.id."
-        )
-
     selected_users = random.sample(available_users, n)
 
     for user in selected_users:
         creator = random.choice(users)["id"]
         updater = random.choice(users)["id"]
 
-        vendor = random.choice(valid_vendors)
-        manager = random.choice(vendor_user_by_vendor[vendor["id"]])
-
-        # keep base user subtype aligned with membership table
         user["user_type"] = "CONTRACTOR"
 
         contractors.append(
@@ -334,8 +319,6 @@ def generate_contractors(n, vendors, users, vendor_users):
                 "id": gen_id(),
                 "employee_number": fake.unique.bothify("EMP####"),
                 "user_id": user["id"],
-                "vendor_id": vendor["id"],
-                "vendor_manager_id": manager["id"],  # FK -> vendor_user.id
                 "role": random.choice(ROLE_OPTIONS),
                 "status": random.choice(CONTRACTOR_STATUS),
                 "tickets_completed": 0,
@@ -349,9 +332,7 @@ def generate_contractors(n, vendors, users, vendor_users):
                 "is_certified": random.choice([True, False]),
                 "average_rating": round(random.uniform(1, 5), 2),
                 "years_experience": random.randint(0, 40),
-                "background_check_id": None,
                 "preferred_job_types": json.dumps([fake.job(), fake.job()]),
-                "drug_test_id": None,
                 "created_at": generate_time_span(),
                 "updated_at": now(),
                 "created_by": creator,
@@ -382,6 +363,54 @@ def update_contractor_ticket_counts(contractors, tickets):
         contractor["tickets_completed"] = counts[cid]["tickets_completed"]
         contractor["tickets_open"] = counts[cid]["tickets_open"]
 
+
+def generate_vendor_contractors(contractors, vendors, vendor_users):
+    vendor_contractors = []
+    seen = set()
+
+    if not contractors or not vendors or not vendor_users:
+        return vendor_contractors
+
+    vendor_user_by_vendor = {}
+    for vu in vendor_users:
+        vendor_id = vu.get("vendor_id")
+        if vendor_id:
+            vendor_user_by_vendor.setdefault(vendor_id, []).append(vu)
+
+    valid_vendors = [v for v in vendors if v["id"] in vendor_user_by_vendor]
+    if not valid_vendors:
+        raise ValueError(
+            "No vendors have vendor_user records. vendor_contractor.manager_id "
+            "must reference vendor_user.id."
+        )
+
+    users_lookup = {vu["user_id"]: vu for vu in vendor_users}
+    all_user_ids = list(users_lookup.keys())
+
+    for contractor in contractors:
+        num_vendors = random.randint(1, min(3, len(valid_vendors)))
+        selected_vendors = random.sample(valid_vendors, num_vendors)
+
+        for vendor in selected_vendors:
+            key = (contractor["id"], vendor["id"])
+            if key in seen:
+                continue
+
+            manager = random.choice(vendor_user_by_vendor[vendor["id"]])
+
+            vendor_contractors.append(
+                {
+                    "id": gen_id(),
+                    "contractor_id": contractor["id"],
+                    "vendor_id": vendor["id"],
+                    "manager_id": manager["id"],
+                    "vendor_contractor_role": random.choice(VENDOR_CONTRACTOR_ROLES),
+                }
+            )
+
+            seen.add(key)
+
+    return vendor_contractors
 
 
 def generate_work_orders(n, vendor_wells, users, wells, vendor_services):
@@ -547,16 +576,26 @@ def generate_work_orders(n, vendor_wells, users, wells, vendor_services):
 # TODO:
 # continue working on making tickets realistic.
 # - Add business hour limits for creation, assignment, and completion.
-def generate_tickets(n, work_orders, contractors, users):
+def generate_tickets(n, work_orders, contractors, vendor_contractors, users):
     tickets = []
+
+    contractor_lookup = {c["id"]: c for c in contractors}
+
+    contractor_ids_by_vendor = {}
+    for vc in vendor_contractors:
+        contractor_ids_by_vendor.setdefault(vc["vendor_id"], []).append(vc["contractor_id"])
 
     for _ in range(n):
         creator = random.choice(users)["id"]
         updater = random.choice(users)["id"]
         wo = random.choice(work_orders)
 
+        vendor_id = wo["assigned_vendor"]
+        valid_contractor_ids = contractor_ids_by_vendor.get(vendor_id, [])
         valid_contractors = [
-            c for c in contractors if c["vendor_id"] == wo["assigned_vendor"]
+            contractor_lookup[cid]
+            for cid in valid_contractor_ids
+            if cid in contractor_lookup
         ]
 
         created_at = wo["created_at"]
@@ -580,11 +619,7 @@ def generate_tickets(n, work_orders, contractors, users):
                 status = random.choice(["ASSIGNED", "IN_PROGRESS"])
             elif wo["current_status"] == "ASSIGNED":
                 status = "ASSIGNED"
-            elif wo["current_status"] == "UNASSIGNED":
-                status = "UNASSIGNED"
             else:
-                # For HALTED / REJECTED / CANCELLED on work order,
-                # keep ticket in a valid ticket enum state.
                 status = random.choice(["ASSIGNED", "IN_PROGRESS"])
 
             if wo["assigned_at"] is not None:
@@ -639,12 +674,12 @@ def generate_tickets(n, work_orders, contractors, users):
             {
                 "id": gen_id(),
                 "work_order_id": wo["id"],
-                "invoice_id": None,  # nullable FK -> invoice.invoice_id
+                "invoice_id": None,
                 "description": wo["description"],
                 "assigned_contractor": contractor_id,
                 "priority": wo["priority"],
                 "status": status,
-                "vendor_id": wo["assigned_vendor"],
+                "vendor_id": vendor_id,
                 "start_time": start_time,
                 "due_date": wo["estimated_end_date"],
                 "assigned_at": assigned_at,
@@ -673,7 +708,7 @@ def generate_tickets(n, work_orders, contractors, users):
                         "has_photo": random.choice([True, False]),
                     }
                 ),
-                "route": fake.paragraph(nb_sentences=3)
+                "route": fake.paragraph(nb_sentences=3),
             }
         )
 
@@ -935,28 +970,27 @@ def generate_background_checks(contractors, users):
     checks = []
 
     for contractor in contractors:
-        creator = random.choice(users)["id"]
-        updater = random.choice(users)["id"]
+        num_checks = random.randint(1, 3)
 
-        check_id = gen_id()
+        for _ in range(num_checks):
+            creator = random.choice(users)["id"]
+            updater = random.choice(users)["id"]
 
-        checks.append(
-            {
-                "id": check_id,
-                "background_check_passed": random.choice([True, False]),
-                "background_check_date": fake.date_between(
-                    start_date="-2y", end_date="today"
-                ),
-                "background_check_provider": fake.company(),
-                "created_at": now(),
-                "updated_at": now(),
-                "created_by": creator,
-                "updated_by": updater,
-            }
-        )
-
-        
-        contractor["background_check_id"] = check_id
+            checks.append(
+                {
+                    "id": gen_id(),
+                    "contractor_id": contractor["id"],
+                    "background_check_passed": random.choice([True, False]),
+                    "background_check_date": fake.date_between(
+                        start_date="-2y", end_date="today"
+                    ),
+                    "background_check_provider": fake.company(),
+                    "created_at": now(),
+                    "updated_at": now(),
+                    "created_by": creator,
+                    "updated_by": updater,
+                }
+            )
 
     return checks
 
@@ -965,25 +999,26 @@ def generate_drug_tests(contractors, users):
     tests = []
 
     for contractor in contractors:
-        creator = random.choice(users)["id"]
-        updater = random.choice(users)["id"]
+        num_tests = random.randint(1, 3)
 
-        test_id = gen_id()
+        for _ in range(num_tests):
+            creator = random.choice(users)["id"]
+            updater = random.choice(users)["id"]
 
-        tests.append(
-            {
-                "id": test_id,
-                "drug_test_passed": random.choice([True, False]),
-                "drug_test_date": fake.date_between(start_date="-1y", end_date="today"),
-                "created_at": now(),
-                "updated_at": now(),
-                "created_by": creator,
-                "updated_by": updater,
-            }
-        )
-
-       
-        contractor["drug_test_id"] = test_id
+            tests.append(
+                {
+                    "id": gen_id(),
+                    "contractor_id": contractor["id"],
+                    "drug_test_passed": random.choice([True, False]),
+                    "drug_test_date": fake.date_between(
+                        start_date="-1y", end_date="today"
+                    ),
+                    "created_at": now(),
+                    "updated_at": now(),
+                    "created_by": creator,
+                    "updated_by": updater,
+                }
+            )
 
     return tests
 
@@ -1438,7 +1473,6 @@ def export_to_csv(data_dict, folder="data"):
 
 
 def main():
-    
     users = generate_users(500)
 
     user_addresses = generate_addresses_for_users(users, assign_ratio=0.7)
@@ -1458,8 +1492,13 @@ def main():
 
     contractors = generate_contractors(
         n=100,
-        vendors=vendors,
         users=users,
+        vendor_users=vendor_users,
+    )
+
+    vendor_contractors = generate_vendor_contractors(
+        contractors=contractors,
+        vendors=vendors,
         vendor_users=vendor_users,
     )
 
@@ -1475,7 +1514,9 @@ def main():
     work_orders = generate_work_orders(
         1000, vendor_wells, users, wells, vendor_services
     )
-    tickets = generate_tickets(5000, work_orders, contractors, users)
+    tickets = generate_tickets(
+        5000, work_orders, contractors, vendor_contractors, users
+    )
 
     update_contractor_ticket_counts(contractors, tickets)
 
@@ -1506,6 +1547,7 @@ def main():
         "vendor_user": vendor_users,
         "client_vendor": client_vendors,
         "contractors": contractors,
+        "vendor_contractor": vendor_contractors,
         "background_check": background_checks,
         "drug_test": drug_tests,
         "licenses": licenses,
