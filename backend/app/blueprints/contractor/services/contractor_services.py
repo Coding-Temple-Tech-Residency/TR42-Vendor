@@ -94,13 +94,18 @@ class ContractorService:
                     {"invite_token": ["Invalid or expired invite token."]}
                 )
 
+            if not invite.vendor_manager_id:
+                raise ValidationError(
+                    {"invite": ["Invite missing manager assignment."]}
+                )
+
             if validated_data["email"].lower() != invite.email.lower():
                 raise ValidationError({"email": ["This invite is not for this email."]})
 
             contractor = ContractorService._create_contractor_records(
                 validated_data=validated_data,
                 vendor_id=invite.vendor_id,
-                vendor_manager_id=getattr(invite, "vendor_manager_id"),
+                manager_id=invite.vendor_manager_id,
                 created_by=None,
                 updated_by=None,
             )

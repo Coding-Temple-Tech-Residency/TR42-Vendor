@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import date, datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String
+from sqlalchemy import Boolean, Date, DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.base import BaseModel
@@ -23,7 +23,6 @@ class BackgroundCheck(BaseModel):
     contractor_id: Mapped[str] = mapped_column(
         ForeignKey("contractor.id"),
         nullable=False,
-        unique=True,
     )
 
     background_check_passed: Mapped[bool] = mapped_column(
@@ -32,8 +31,8 @@ class BackgroundCheck(BaseModel):
         default=False,
     )
 
-    background_check_date: Mapped[datetime | None] = mapped_column(
-        DateTime,
+    background_check_date: Mapped[date | None] = mapped_column(
+        Date,
         nullable=True,
     )
 
@@ -44,5 +43,5 @@ class BackgroundCheck(BaseModel):
 
     contractor: Mapped["Contractor"] = relationship(
         "Contractor",
-        back_populates="background_check",
+        back_populates="background_checks",
     )

@@ -75,12 +75,10 @@ class Contractor(BaseModel):
         cascade="all, delete-orphan",
     )
 
-    background_check: Mapped["BackgroundCheck | None"] = relationship(
+    background_checks: Mapped[list["BackgroundCheck"]] = relationship(
         "BackgroundCheck",
         back_populates="contractor",
-        uselist=False,
         cascade="all, delete-orphan",
-        single_parent=True,
     )
 
     drug_tests: Mapped[list["DrugTest"]] = relationship(
