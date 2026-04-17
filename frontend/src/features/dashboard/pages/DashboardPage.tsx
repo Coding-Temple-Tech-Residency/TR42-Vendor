@@ -23,7 +23,7 @@ import FraudReviewTable from "../components/FraudReviewTable";
 import LineChart from "../../components/UI/LineChart";
 
 //Reusable hooks
-import { useWorkOrders } from "../../hooks/useWorkOrders";
+import { useWorkOrders } from "../../work orders/hooks/useWorkOrders";
 
 function DashboardPage() {
   const {

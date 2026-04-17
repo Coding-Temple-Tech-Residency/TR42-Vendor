@@ -48,7 +48,7 @@ export const useFilteredWorkOrders = ({
     if (trimmedSearch) {
       results = results.filter((workOrder) => {
         const searchableValues = [
-          workOrder.work_order_id,
+          workOrder.id,
           workOrder.description,
           workOrder.comments,
           workOrder.location,

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   getVendorWorkOrders,
   type WorkOrderRow,
-} from "../../features/auth/services/workOrderService";
+} from "../../auth/services/workOrderService";
 
 type UseWorkOrdersOptions = {
   page?: number;

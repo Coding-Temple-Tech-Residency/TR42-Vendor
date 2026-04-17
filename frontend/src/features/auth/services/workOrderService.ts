@@ -207,3 +207,34 @@ export async function getVendorWorkOrders(
     mapWorkOrder(wo),
   );
 }
+
+export async function getWorkOrderById(id: string): Promise<WorkOrderRow> {
+  const response = await fetch(`/api/work_orders/${encodeURIComponent(id)}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders(),
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error("Session expired. Please log in again.");
+    }
+    if (response.status === 403) {
+      throw new Error("You do not have permission to view this resource.");
+    }
+    if (response.status === 404) {
+      throw new Error("Work order not found.");
+    }
+    if (response.status === 500) {
+      throw new Error(
+        "Server error while fetching work order details. Please try again later.",
+      );
+    }
+    throw new Error(`Failed to fetch work order (${response.status})`);
+  }
+
+  const data: WorkOrderApiResponse = await response.json();
+  return mapWorkOrder(data);
+}

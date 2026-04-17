@@ -10,7 +10,7 @@ import DonutChart from "../components/UI/DonutChart";
 
 import OpenWorkOrdersTable from "../dashboard/components/OpenWorkOrdersTable";
 import CompletedWorkOrdersTable from "../components/misc/CompletedWorkOrderTable";
-import { useWorkOrders } from "../hooks/useWorkOrders";
+import { useWorkOrders } from "../work orders/hooks/useWorkOrders";
 
 type StatusChartPoint = {
   name: string;
@@ -140,7 +140,7 @@ export default function WorkOrdersPage() {
           <KPICard
             title="Completed"
             value={completedInWeekCount}
-            subtitle= "This Week"
+            subtitle="This Week"
             colorVariant="green"
             badge={{
               type: "trend",

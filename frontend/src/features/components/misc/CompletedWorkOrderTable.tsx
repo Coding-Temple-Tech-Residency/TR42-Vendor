@@ -19,9 +19,10 @@ function CompletedWorkOrdersTable({ data }: Props) {
   ];
 
   const handleRowClick = (row: WorkOrderRow) => {
-    navigate(`/vendor/work-orders/${row.id}`);
+    const params = new URLSearchParams({ openWorkOrderId: row.id });
+    navigate(`/vendor/work-orders/overview?${params.toString()}`);
   };
-  
+
   return (
     <div className="w-full">
       <DataTable

@@ -18,7 +18,7 @@ export interface WellSummary {
 }
 
 export interface WorkOrder {
-    work_order_id: string;
+    id: string;
     assigned_vendor: string | null;
     completed_at: string | null;
     description: string | null;

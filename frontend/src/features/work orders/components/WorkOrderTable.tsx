@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { WorkOrder } from "../types/workOrder.types";
 import WorkOrderDetailsModal from "./WorkOrderDetailsModal";
 
 interface WorkOrdersTableProps {
   workOrders?: WorkOrder[];
+  initialOpenWorkOrderId?: string | null;
+  onInitialOpenHandled?: () => void;
 }
 
 const formatDate = (value?: string | null) => {
@@ -70,7 +72,11 @@ const getPriorityBadgeStyles = (priority: WorkOrder["priority"]) => {
   }
 };
 
-export const WorkOrdersTable = ({ workOrders }: WorkOrdersTableProps) => {
+export const WorkOrdersTable = ({
+  workOrders,
+  initialOpenWorkOrderId,
+  onInitialOpenHandled,
+}: WorkOrdersTableProps) => {
   const data = workOrders ?? [];
 
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<WorkOrder | null>(null);
@@ -85,6 +91,17 @@ export const WorkOrdersTable = ({ workOrders }: WorkOrdersTableProps) => {
     setSelectedWorkOrder(null);
     setIsModalOpen(false);
   };
+
+  useEffect(() => {
+    if (!initialOpenWorkOrderId || data.length === 0) return;
+
+    const match = data.find((workOrder) => workOrder.id === initialOpenWorkOrderId);
+    if (!match) return;
+
+    setSelectedWorkOrder(match);
+    setIsModalOpen(true);
+    onInitialOpenHandled?.();
+  }, [data, initialOpenWorkOrderId, onInitialOpenHandled]);
 
   if (data.length === 0) {
     return (
@@ -138,7 +155,7 @@ export const WorkOrdersTable = ({ workOrders }: WorkOrdersTableProps) => {
             <tbody>
               {data.map((workOrder, index) => (
                 <tr
-                  key={workOrder.work_order_id}
+                  key={workOrder.id}
                   className={
                     index % 2 === 0
                       ? "border-t border-[#C9D8E6] bg-white"
@@ -147,7 +164,7 @@ export const WorkOrdersTable = ({ workOrders }: WorkOrdersTableProps) => {
                 >
                   <td className="px-4 py-4">
                     <div className="font-semibold text-[#2F4F75]">
-                      {workOrder.work_order_id}
+                      {workOrder.id}
                     </div>
                     <div className="mt-1 max-w-xs text-xs text-[#4A6C8A]">
                       {workOrder.description || "No description provided"}
