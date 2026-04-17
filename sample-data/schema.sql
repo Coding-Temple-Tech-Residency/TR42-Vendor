@@ -134,7 +134,7 @@ CREATE TYPE "core"."user_type" AS ENUM (
 );
 
 CREATE TABLE "client" (
-  "id" text PRIMARY KEY,
+  "id" uuid PRIMARY KEY,
   "client_name" text NOT NULL,
   "client_code" text NOT NULL,
   "primary_contact_name" text NOT NULL,
@@ -142,13 +142,13 @@ CREATE TABLE "client" (
   "contact_phone" text NOT NULL,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL,
-  "address_id" text
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL,
+  "address_id" uuid
 );
 
 CREATE TABLE "vendor" (
-  "id" text PRIMARY KEY,
+  "id" uuid PRIMARY KEY,
   "company_name" varchar(80) UNIQUE NOT NULL,
   "company_code" text,
   "start_date" timestamptz,
@@ -163,13 +163,13 @@ CREATE TABLE "vendor" (
   "description" text,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text,
-  "updated_by" text,
-  "address_id" text
+  "created_by" uuid,
+  "updated_by" uuid,
+  "address_id" uuid
 );
 
 CREATE TABLE "address" (
-  "id" text PRIMARY KEY,
+  "id" uuid PRIMARY KEY,
   "street" text,
   "city" text,
   "state" varchar(20),
@@ -177,26 +177,26 @@ CREATE TABLE "address" (
   "country" varchar(100),
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "client_vendor" (
-  "id" text PRIMARY KEY,
-  "client_id" text NOT NULL,
-  "vendor_id" text NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "client_id" uuid NOT NULL,
+  "vendor_id" uuid NOT NULL,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "contractors" (
-  "id" text PRIMARY KEY,
+  "id" uuid PRIMARY KEY,
   "employee_number" text NOT NULL,
-  "user_id" text NOT NULL,
-  "vendor_id" text NOT NULL,
-  "vendor_manager_id" text NOT NULL,
+  "user_id" uuid NOT NULL,
+  "vendor_id" uuid NOT NULL,
+  "vendor_manager_id" uuid NOT NULL,
   "role" core.role_options NOT NULL,
   "status" core.contractor_status,
   "tickets_completed" integer,
@@ -210,66 +210,66 @@ CREATE TABLE "contractors" (
   "is_certified" bool,
   "average_rating" decimal(3,2),
   "years_experience" integer,
-  "background_check_id" text,
+  "background_check_id" uuid,
   "preferred_job_types" json,
-  "drug_test_id" text,
+  "drug_test_id" uuid,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "background_check" (
-  "id" text PRIMARY KEY,
+  "id" uuid PRIMARY KEY,
   "background_check_passed" bool,
   "background_check_date" date,
   "background_check_provider" text,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "drug_test" (
-  "id" text PRIMARY KEY,
+  "id" uuid PRIMARY KEY,
   "drug_test_passed" bool,
   "drug_test_date" date,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "biometric_data" (
-  "id" text PRIMARY KEY,
-  "contractor_id" text NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "contractor_id" uuid NOT NULL,
   "biometric_enrollment_data" bytea,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "licenses" (
-  "id" text PRIMARY KEY,
-  "contractor_id" text NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "contractor_id" uuid NOT NULL,
   "license_type" varchar(100) NOT NULL,
   "license_number" varchar(100) NOT NULL,
   "license_state" char(2) NOT NULL,
   "license_expiration_date" date NOT NULL,
   "license_document_url" varchar(100),
   "license_verified" bool,
-  "license_verified_by" text,
+  "license_verified_by" uuid,
   "license_verified_at" date,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "certifications" (
-  "id" text PRIMARY KEY,
-  "contractor_id" text NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "contractor_id" uuid NOT NULL,
   "certification_name" text,
   "certifying_body" text,
   "certification_number" integer NOT NULL,
@@ -279,13 +279,13 @@ CREATE TABLE "certifications" (
   "certification_verified" bool,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "insurance" (
-  "id" text PRIMARY KEY,
-  "contractor_id" text,
+  "id" uuid PRIMARY KEY,
+  "contractor_id" uuid,
   "insurance_type" text NOT NULL,
   "policy_number" integer NOT NULL,
   "provider_name" text NOT NULL,
@@ -300,39 +300,39 @@ CREATE TABLE "insurance" (
   "additional_insured_certificate_url" varchar(100),
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "compliance_document" (
-  "id" text PRIMARY KEY,
-  "vendor_id" text NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "vendor_id" uuid NOT NULL,
   "compliance_document" bytea,
   "compliance_status" bool NOT NULL DEFAULT (false),
   "expiration_date" date,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "msa" (
-  "id" text PRIMARY KEY,
-  "vendor_id" text NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "vendor_id" uuid NOT NULL,
   "version" varchar(10),
   "effective_date" date,
   "expiration_date" date,
   "status" varchar(15),
-  "uploaded_by" text,
+  "uploaded_by" uuid,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "msa_requirements" (
-  "id" text PRIMARY KEY,
-  "msa_id" text NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "msa_id" uuid NOT NULL,
   "category" varchar(50),
   "rule_type" varchar(50),
   "description" text,
@@ -345,14 +345,14 @@ CREATE TABLE "msa_requirements" (
   "metadata" json,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "work_orders" (
-  "id" text PRIMARY KEY,
-  "assigned_vendor" text,
-  "client_id" text NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "assigned_vendor" uuid,
+  "client_id" uuid NOT NULL,
   "assigned_at" timestamptz,
   "completed_at" timestamptz,
   "description" text,
@@ -368,8 +368,8 @@ CREATE TABLE "work_orders" (
   "estimated_cost" decimal,
   "estimated_duration" interval,
   "priority" core.priority_status NOT NULL,
-  "well_id" text,
-  "service_type" text NOT NULL,
+  "well_id" uuid,
+  "service_type" uuid NOT NULL,
   "estimated_quantity" float,
   "units" varchar(15),
   "is_recurring" boolean,
@@ -378,25 +378,25 @@ CREATE TABLE "work_orders" (
   "cancellation_reason" text,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "ticket" (
-  "id" text PRIMARY KEY,
-  "work_order_id" text NOT NULL,
-  "invoice_id" text,
+  "id" uuid PRIMARY KEY,
+  "work_order_id" uuid NOT NULL,
+  "invoice_id" uuid,
   "description" text NOT NULL,
-  "assigned_contractor" text,
+  "assigned_contractor" uuid,
   "priority" core.priority_status,
   "status" core.ticket_status,
-  "vendor_id" text,
+  "vendor_id" uuid,
   "start_time" timestamptz,
   "due_date" timestamptz NOT NULL,
   "assigned_at" timestamptz,
   "completed_at" timestamptz,
   "estimated_duration" interval,
-  "service_type" text NOT NULL,
+  "service_type" uuid NOT NULL,
   "notes" text,
   "contractor_start_location" text,
   "contractor_end_location" text,
@@ -407,29 +407,29 @@ CREATE TABLE "ticket" (
   "anomaly_reason" text,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL,
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL,
   "additional_information" json,
   "route" text
 );
 
 CREATE TABLE "contractor_performance" (
-  "id" text PRIMARY KEY,
-  "contractor_id" text NOT NULL,
-  "ticket_id" text UNIQUE NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "contractor_id" uuid NOT NULL,
+  "ticket_id" uuid UNIQUE NOT NULL,
   "rating" integer,
   "comments" text,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "ticket_session" (
-  "id" text PRIMARY KEY,
-  "contractor_id" text,
-  "ticket_id" text,
-  "device_id" text,
+  "id" uuid PRIMARY KEY,
+  "contractor_id" uuid,
+  "ticket_id" uuid,
+  "device_id" uuid,
   "check_in_time" timestamptz,
   "check_out_time" timestamptz,
   "ticket_accepted" bool,
@@ -440,13 +440,13 @@ CREATE TABLE "ticket_session" (
   "duration" interval,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "delivery" (
-  "id" text PRIMARY KEY,
-  "session_id" text NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "session_id" uuid NOT NULL,
   "delivery_ticket_number" varchar(50),
   "delivery_date" date,
   "delivery_time" time,
@@ -456,25 +456,25 @@ CREATE TABLE "delivery" (
   "delivery_condition" varchar(20),
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "submission" (
-  "id" text PRIMARY KEY,
-  "session_id" text NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "session_id" uuid NOT NULL,
   "submitted_at" timestamptz,
   "submission_status" varchar(50),
   "submission_package_url" text,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "field_note" (
-  "id" text PRIMARY KEY,
-  "session_id" text NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "session_id" uuid NOT NULL,
   "note_text" text,
   "note_timestamp" timestamptz,
   "note_latitude" numeric,
@@ -482,26 +482,26 @@ CREATE TABLE "field_note" (
   "note_category" core.note_categories,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "issue" (
-  "id" text PRIMARY KEY,
-  "session_id" text NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "session_id" uuid NOT NULL,
   "issue_title" varchar(100),
   "issue_description" text,
   "issue_category" core.issue_categories,
   "issue_severity" core.issue_severities,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "registered_devices" (
-  "id" text PRIMARY KEY,
-  "contractor_id" text NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "contractor_id" uuid NOT NULL,
   "device_name" varchar(100),
   "device_type" core.device_types,
   "first_registered_at" timestamptz,
@@ -511,28 +511,28 @@ CREATE TABLE "registered_devices" (
   "is_active" bool,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "ticket_photos" (
-  "id" text PRIMARY KEY,
-  "ticket_id" text NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "ticket_id" uuid NOT NULL,
   "photo_content" bytea NOT NULL,
   "latitude" numeric,
   "longitude" numeric,
-  "uploaded_by" text NOT NULL,
+  "uploaded_by" uuid NOT NULL,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "invoice" (
-  "id" text PRIMARY KEY,
-  "work_order_id" text NOT NULL,
-  "vendor_id" text NOT NULL,
-  "client_id" text NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "work_order_id" uuid NOT NULL,
+  "vendor_id" uuid NOT NULL,
+  "client_id" uuid NOT NULL,
   "invoice_date" timestamptz NOT NULL,
   "due_date" timestamptz NOT NULL,
   "period_start" timestamptz,
@@ -544,25 +544,25 @@ CREATE TABLE "invoice" (
   "rejected_at" timestamptz,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "line_item" (
-  "id" text PRIMARY KEY,
-  "invoice_id" text NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "invoice_id" uuid NOT NULL,
   "quantity" integer,
   "rate" decimal,
   "amount" decimal,
   "description" text,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "user" (
-  "id" text PRIMARY KEY,
+  "id" uuid PRIMARY KEY,
   "username" varchar(40) UNIQUE NOT NULL,
   "password_hash" varchar(400) NOT NULL,
   "email" varchar(100) UNIQUE NOT NULL,
@@ -573,8 +573,8 @@ CREATE TABLE "user" (
   "profile_photo" bytea,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text DEFAULT 'system',
-  "updated_by" text DEFAULT 'system',
+  "created_by" uuid,
+  "updated_by" uuid,
   "first_name" varchar(80),
   "last_name" varchar(80),
   "middle_name" varchar(80),
@@ -582,66 +582,66 @@ CREATE TABLE "user" (
   "alternate_number" varchar(30),
   "date_of_birth" date,
   "ssn_last_four" char(4),
-  "address_id" text
+  "address_id" uuid
 );
 
 CREATE TABLE "client_user" (
-  "id" text PRIMARY KEY,
-  "user_id" text UNIQUE NOT NULL,
-  "client_id" text NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "user_id" uuid UNIQUE NOT NULL,
+  "client_id" uuid NOT NULL,
   "role" core.role_options NOT NULL,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "vendor_user" (
-  "id" text PRIMARY KEY,
-  "user_id" text UNIQUE NOT NULL,
-  "vendor_id" text,
+  "id" uuid PRIMARY KEY,
+  "user_id" uuid UNIQUE NOT NULL,
+  "vendor_id" uuid,
   "vendor_user_role" core.role_options,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "sessions" (
-  "id" text PRIMARY KEY,
-  "user_id" text NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "user_id" uuid NOT NULL,
   "last_activity" timestamptz,
   "user_agent" text,
   "is_active" bool,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "notification" (
-  "id" text PRIMARY KEY,
+  "id" uuid PRIMARY KEY,
   "message" text,
-  "recipient" text,
+  "recipient" uuid,
   "level" core.notification_level,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "role" (
-  "id" text PRIMARY KEY,
+  "id" uuid PRIMARY KEY,
   "role_name" varchar(100),
   "description" text,
   "role_options" core.role_options
 );
 
 CREATE TABLE "well" (
-  "id" text PRIMARY KEY,
+  "id" uuid PRIMARY KEY,
   "api_number" text NOT NULL,
   "well_name" text NOT NULL,
-  "client_id" text,
+  "client_id" uuid,
   "status" core.well_status,
   "type" core.well_type,
   "range" char(2),
@@ -655,13 +655,13 @@ CREATE TABLE "well" (
   "safety_notes" text,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "well_location" (
-  "id" text PRIMARY KEY,
-  "well_id" text NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "well_id" uuid NOT NULL,
   "surface_latitude" numeric,
   "surface_longitude" numeric,
   "bottom_latitude" numeric,
@@ -673,72 +673,72 @@ CREATE TABLE "well_location" (
   "township" char(2),
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "vendor_well" (
-  "id" text PRIMARY KEY,
-  "vendor_id" text NOT NULL,
-  "well_id" text NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "vendor_id" uuid NOT NULL,
+  "well_id" uuid NOT NULL,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "services" (
-  "id" text PRIMARY KEY,
+  "id" uuid PRIMARY KEY,
   "service" text,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "vendor_services" (
-  "id" text PRIMARY KEY,
-  "vendor_id" text,
-  "service_id" text,
+  "id" uuid PRIMARY KEY,
+  "vendor_id" uuid,
+  "service_id" uuid,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "fraud_alerts" (
-  "id" text PRIMARY KEY,
-  "work_order_id" text,
-  "ticket_id" text,
+  "id" uuid PRIMARY KEY,
+  "work_order_id" uuid,
+  "ticket_id" uuid,
   "severity" varchar(100),
   "description" text,
   "status" text,
   "flagged_at" timestamptz,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "chat" (
-  "id" text PRIMARY KEY,
+  "id" uuid PRIMARY KEY,
   "messages" text,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 CREATE TABLE "messages" (
-  "id" text PRIMARY KEY,
-  "sender" text,
-  "recipient" text,
-  "chat_id" text NOT NULL,
+  "id" uuid PRIMARY KEY,
+  "sender" uuid,
+  "recipient" uuid,
+  "chat_id" uuid NOT NULL,
   "message" text,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz,
-  "created_by" text NOT NULL,
-  "updated_by" text NOT NULL
+  "created_by" uuid NOT NULL,
+  "updated_by" uuid NOT NULL
 );
 
 ALTER TABLE "address" ADD CONSTRAINT "address_created_by" FOREIGN KEY ("created_by") REFERENCES "user" ("id") DEFERRABLE INITIALLY IMMEDIATE;
