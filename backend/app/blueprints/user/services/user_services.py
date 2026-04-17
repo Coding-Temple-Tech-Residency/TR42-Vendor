@@ -127,16 +127,6 @@ class UserService:
             raise ValueError("Username already exists")
 
         try:
-            address_data = data["address"]
-
-            user_address = Address(
-                street=address_data["street"],
-                city=address_data["city"],
-                state=address_data["state"],
-                zip=address_data["zip"],
-            )
-            AddressRepository.create(user_address)
-            db.session.flush()
 
             user = User(
                 first_name=data["first_name"],
@@ -148,7 +138,6 @@ class UserService:
                 alternate_number=data.get("alternate_number"),
                 date_of_birth=data.get("date_of_birth"),
                 ssn_last_four=data.get("ssn_last_four"),
-                address_id=user_address.id,
                 user_type=data["user_type"],
                 is_active=True,
                 is_admin=False,
@@ -159,8 +148,23 @@ class UserService:
             UserRepository.create(user)
             db.session.flush()
 
-            user_address.created_by = user.id
-            user_address.updated_by = user.id
+            user_address_data = data["address"]
+
+            user_address = Address(
+                street=user_address_data["street"],
+                city=user_address_data["city"],
+                state=user_address_data["state"],
+                zip=user_address_data["zip"],
+                created_by=user.id,
+                updated_by=user.id,
+            )
+
+            AddressRepository.create(user_address)
+            db.session.flush()
+
+            user.address_id = user_address.id
+            db.session.flush()
+
             db.session.commit()
 
             return user

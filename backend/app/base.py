@@ -26,10 +26,10 @@ class BaseModel(db.Model):
 
     created_by: Mapped[str] = mapped_column(
         ForeignKey("user.id"),
-        nullable=True,
+        nullable=False,
     )
 
     updated_by: Mapped[str | None] = mapped_column(
         ForeignKey("user.id"),
-        nullable=True,
+        nullable=False,
     )

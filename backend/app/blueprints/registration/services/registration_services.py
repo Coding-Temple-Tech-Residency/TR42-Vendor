@@ -47,18 +47,6 @@ class RegistrationService:
             )
 
         try:
-            user_address_data = user_data["address"]
-
-            user_address = Address(
-                street=user_address_data["street"],
-                city=user_address_data["city"],
-                state=user_address_data["state"],
-                zip=user_address_data["zip"],
-            )
-
-            AddressRepository.create(user_address)
-            db.session.flush()
-
             user = User(
                 first_name=user_data["first_name"],
                 middle_name=user_data.get("middle_name"),
@@ -69,7 +57,6 @@ class RegistrationService:
                 alternate_number=user_data["alternate_number"],
                 date_of_birth=user_data["date_of_birth"],
                 ssn_last_four=user_data["ssn_last_four"],
-                address_id=user_address.id,
                 user_type=UserType.VENDOR,
                 is_active=True,
                 is_admin=True,
@@ -79,8 +66,21 @@ class RegistrationService:
             UserRepository.create(user)
             db.session.flush()
 
-            user_address.created_by = user.id
-            user_address.updated_by = user.id
+            user_address_data = user_data["address"]
+
+            user_address = Address(
+                street=user_address_data["street"],
+                city=user_address_data["city"],
+                state=user_address_data["state"],
+                zip=user_address_data["zip"],
+                created_by=user.id,
+                updated_by=user.id,
+            )
+
+            AddressRepository.create(user_address)
+            db.session.flush()
+
+            user.address_id = user_address.id
             db.session.flush()
 
             vendor_address_data = vendor_data["address"]
