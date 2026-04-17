@@ -3,37 +3,8 @@ import type { WorkOrder } from "../types/workOrder.types";
 import WorkOrderDetailsModal from "./WorkOrderDetailsModal";
 
 interface WorkOrdersTableProps {
-  workOrders?: WorkOrder[]; // make optional so mock can be used
+  workOrders?: WorkOrder[];
 }
-
-/* ---------------- MOCK DATA ---------------- */
-const mockWorkOrders: WorkOrder[] = [
-  {
-    work_order_id: "WO-1024",
-    description:
-      "Pressure drop detected at well site. Inspection and repair required.",
-    current_status: "assigned",
-    priority: "urgent",
-
-    assigned_vendor: "Atlas Field Services",
-    vendor: {
-      name: "Atlas Field Services",
-    } as any,
-
-    well_id: "W-88",
-    well: {
-      name: "Well 88-A",
-    } as any,
-
-    location: "Midland, TX",
-    due_date: "2026-04-18",
-    estimated_cost: 12500,
-
-    created_at: "2026-04-15T10:00:00",
-    updated_at: "2026-04-16T09:30:00",
-  },
-];
-/* ------------------------------------------ */
 
 const formatDate = (value?: string | null) => {
   if (!value) return "—";
@@ -59,12 +30,6 @@ const formatCurrency = (value?: number | string | null) => {
     style: "currency",
     currency: "USD",
   }).format(numericValue);
-};
-
-const getVendorDisplay = (workOrder: WorkOrder) => {
-  if (workOrder.vendor?.name) return workOrder.vendor.name;
-  if (workOrder.assigned_vendor) return workOrder.assigned_vendor;
-  return "Unassigned";
 };
 
 const getWellDisplay = (workOrder: WorkOrder) => {
@@ -106,7 +71,7 @@ const getPriorityBadgeStyles = (priority: WorkOrder["priority"]) => {
 };
 
 export const WorkOrdersTable = ({ workOrders }: WorkOrdersTableProps) => {
-  const data = workOrders && workOrders.length > 0 ? workOrders : mockWorkOrders;
+  const data = workOrders ?? [];
 
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<WorkOrder | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
