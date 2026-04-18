@@ -61,8 +61,11 @@ def create_app(config_object=None):
     from app.blueprints.work_orders.controller.work_order_routes import work_order_bp
     from app.blueprints.invoices.controller.invoice_routes import invoice_bp
     from app.blueprints.invoices.controller.lineitem_routes import lineItem_bp
+    from app.blueprints.services.controller.service_routes import services_bp
+    from app.blueprints.vendor_service.controller.vendor_service_routes import vendor_services_bp
     from app.blueprints.contractor.controller.contractor_routes import contractor_bp
 
+    
     app.register_blueprint(user_bp, url_prefix="/api/users")
     app.register_blueprint(address_bp, url_prefix="/api/addresses")
     app.register_blueprint(vendor_bp, url_prefix="/api/vendors")
@@ -71,6 +74,10 @@ def create_app(config_object=None):
     app.register_blueprint(work_order_bp, url_prefix="/api/work_orders")
     app.register_blueprint(invoice_bp, url_prefix="/api/invoices")
     app.register_blueprint(lineItem_bp, url_prefix="/api/line_items")
+    app.register_blueprint(services_bp, url_prefix="/api/services")
+    app.register_blueprint(vendor_services_bp, url_prefix="/api/vendor_services")
+
+    
     app.register_blueprint(contractor_bp, url_prefix="/api/contractors")
 
     return app
