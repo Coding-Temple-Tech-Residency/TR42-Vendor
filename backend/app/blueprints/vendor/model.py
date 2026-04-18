@@ -12,12 +12,14 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 import enum
 from app.base import BaseModel
 
+
 if TYPE_CHECKING:
     from app.blueprints.address.model import Address
     from app.blueprints.vendor_user.model import VendorUser
     from app.blueprints.vendor_contractor.model import VendorContractor
     from app.blueprints.compliance_document.model import ComplianceDocument
     from app.blueprints.invoices.model import Invoice
+    from app.blueprints.vendor_service.model import VendorService
     from app.blueprints.work_orders.model import WorkOrder
 
 
@@ -108,8 +110,14 @@ class Vendor(BaseModel):
         cascade="all, delete-orphan",
     )
 
+
     invoices: Mapped[list["Invoice"]] = relationship(
         "Invoice", back_populates="vendor", cascade="all, delete-orphan"
+    )
+
+    
+    service_links: Mapped[list["VendorService"]] = relationship(
+        back_populates="vendor",cascade="all, delete-orphan"
     )
 
     work_orders: Mapped[list["WorkOrder"]] = relationship(
