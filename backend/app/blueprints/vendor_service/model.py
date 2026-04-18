@@ -1,54 +1,24 @@
-from app.extensions import db
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, ForeignKey
+from sqlalchemy import String, ForeignKey, UniqueConstraint
 from app.functions import generate_uuid
 from app.base import BaseModel
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-   
     from app.blueprints.user.model import User
 
 
-class VendorService(db.Model):
+class VendorService(BaseModel):
     __tablename__ = "vendor_service"
-
-    id: Mapped[str] = mapped_column(
-        String(36),
-        primary_key=True,
-        default=generate_uuid
+    __table_args__ = (
+        UniqueConstraint("vendor_id", "service_id", name="uq_vendor_service_pair"),
     )
 
-    vendor_id: Mapped[str] = mapped_column(
-        ForeignKey("vendor.vendor_id"),
-        nullable=False
-    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=generate_uuid)
 
-    service_id: Mapped[str] = mapped_column(
-        ForeignKey("services.service_id"),
-        nullable=False
-    )
+    vendor_id: Mapped[str] = mapped_column(ForeignKey("vendor.id"), nullable=False)
 
-    created_by: Mapped[str] = mapped_column(
-        ForeignKey("user.user_id"),
-        nullable=False,
-    )
-
-    updated_by: Mapped[str] = mapped_column(
-        ForeignKey("user.user_id"),
-        nullable=False,
-    )
-
-    # Relationships
-    created_by_user: Mapped["User"] = relationship(
-        "User",
-        foreign_keys=[created_by]
-    )
-
-    updated_by_user: Mapped["User"] = relationship(
-        "User",
-        foreign_keys=[updated_by]
-    )
+    service_id: Mapped[str] = mapped_column(ForeignKey("service.id"), nullable=False)
 
     vendor = relationship("Vendor", back_populates="service_links")
     service = relationship("Service", back_populates="vendor_links")

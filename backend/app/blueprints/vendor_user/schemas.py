@@ -12,13 +12,12 @@ class VendorUserSchema(ma.SQLAlchemyAutoSchema):
     vendor = fields.Nested(
         "VendorSchema",
         dump_only=True,
-        exclude=("users", "address"),
+        exclude=("address",),
     )
 
     user = fields.Nested(
         "UserSchema",
         dump_only=True,
-        exclude=("vendor_links",),
     )
 
 
