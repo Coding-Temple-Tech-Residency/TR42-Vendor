@@ -1,8 +1,7 @@
-import logging
 from sqlalchemy import select
-
 from app.extensions import db
 from app.blueprints.vendor_user.model import VendorUser
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +40,17 @@ class VendorUserRepository:
             raise
 
     @staticmethod
+    def get_all_by_user(user_id: str):
+        try:
+            logger.debug("Fetching vendor links for user_id=%s", user_id)
+            return db.session.scalars(
+                select(VendorUser).where(VendorUser.user_id == user_id)
+            ).all()
+        except Exception:
+            logger.exception("Failed to fetch vendor links for user_id=%s", user_id)
+            raise
+
+    @staticmethod
     def get_by_id(vendor_user_id: str):
         try:
             logger.debug("Fetching vendor_user by ID: %s", vendor_user_id)
@@ -57,7 +67,9 @@ class VendorUserRepository:
                 select(VendorUser).where(VendorUser.vendor_id == vendor_id)
             ).all()
         except Exception:
-            logger.exception("Failed to fetch vendor_users for vendor_id: %s", vendor_id)
+            logger.exception(
+                "Failed to fetch vendor_users for vendor_id: %s", vendor_id
+            )
             raise
 
     @staticmethod
