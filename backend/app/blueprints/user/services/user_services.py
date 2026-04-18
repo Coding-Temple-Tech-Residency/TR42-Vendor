@@ -25,8 +25,7 @@ class UserService:
 
     @staticmethod
     def login(data: dict):
-
-        identifier = data.get("identifier")
+        identifier = data.get("identifier", "").strip().lower()
         password = data.get("password")
 
         logger.info("Login attempt received")
@@ -35,7 +34,7 @@ class UserService:
             logger.warning("Login failed: missing email or password")
             raise BadRequest("Email/username and password are required")
 
-        user = UserRepository.get_by_email_or_username(identifier)
+        user = UserRepository.get_by_email_or_username_normalized(identifier)
         if not user:
             logger.warning("Authentication failed")
             raise BadRequest("Invalid credentials")
@@ -111,14 +110,14 @@ class UserService:
             data.get("email"),
         )
 
-        existing_email = UserRepository.get_by_email(data["email"])
+        existing_email = UserRepository.get_by_email_normalized(data["email"])
         if existing_email:
             logger.warning(
                 "User creation failed: Email already exists: %s", data["email"]
             )
             raise ValueError("Email already exists")
 
-        existing_username = UserRepository.get_by_username(data["username"])
+        existing_username = UserRepository.get_by_username_normalized(data["username"])
         if existing_username:
             logger.warning(
                 "User creation failed: Username already exists: %s",
@@ -132,8 +131,8 @@ class UserService:
                 first_name=data["first_name"],
                 middle_name=data.get("middle_name"),
                 last_name=data["last_name"],
-                email=data["email"],
-                username=data["username"],
+                email=data["email"].lower(),
+                username=data["username"].lower(),
                 contact_number=data["contact_number"],
                 alternate_number=data.get("alternate_number"),
                 date_of_birth=data.get("date_of_birth"),
