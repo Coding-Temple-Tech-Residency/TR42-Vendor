@@ -10,6 +10,16 @@ logger = getLogger(__name__)
 class UserRepository:
 
     @staticmethod
+    def get_by_email_or_username_normalized(identifier: str) -> User | None:
+        normalized = identifier.strip().lower()
+        return db.session.scalar(
+            select(User).where(
+                (func.lower(User.email) == normalized)
+                | (func.lower(User.username) == normalized)
+            )
+        )
+
+    @staticmethod
     def get_by_email_or_username(identifier: str):
         return db.session.execute(
             select(User).where(

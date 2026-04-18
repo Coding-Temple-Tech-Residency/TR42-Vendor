@@ -25,8 +25,7 @@ class UserService:
 
     @staticmethod
     def login(data: dict):
-
-        identifier = data.get("identifier")
+        identifier = data.get("identifier", "").strip().lower()
         password = data.get("password")
 
         logger.info("Login attempt received")
@@ -35,7 +34,7 @@ class UserService:
             logger.warning("Login failed: missing email or password")
             raise BadRequest("Email/username and password are required")
 
-        user = UserRepository.get_by_email_or_username(identifier)
+        user = UserRepository.get_by_email_or_username_normalized(identifier)
         if not user:
             logger.warning("Authentication failed")
             raise BadRequest("Invalid credentials")
