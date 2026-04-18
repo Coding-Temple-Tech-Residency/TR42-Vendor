@@ -74,7 +74,6 @@ class VendorService:
             vendor_id = generate_uuid()
 
             vendor = Vendor(
-                id=vendor_id,
                 company_name=validated_data["company_name"],
                 company_email=validated_data["company_email"],
                 company_phone=validated_data["company_phone"],
@@ -105,6 +104,10 @@ class VendorService:
             db.session.rollback()
             raise ValueError("Vendor creation failed due to a database constraint")
 
+        except ValidationError:
+            db.session.rollback()
+            raise
+
         except Exception:
             db.session.rollback()
             logger.exception("Failed to create vendor in service layer")
@@ -125,11 +128,11 @@ class VendorService:
         try:
             existing_vendor = VendorRepository.get_by_id(vendor_id)
             if not existing_vendor:
-                logger.warning(f"Vendor with id not found for update")
+                logger.warning("Vendor with id not found for update")
                 return None
 
             validated_data = vendor_schema.load(vendor_data, partial=True)
-            logger.debug(f"Vendor data validated successfully for vendor id")
+            logger.debug(f"Vendor data validated successfully")
 
             address_data = validated_data.pop("address", None)
 

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthButton from "../components/AuthButton";
-import TextInput from "../components/TextInput";
-import type { User, Vendor } from "../types/types";
+import type { User, Vendor } from "../../../types/models";
 import {
   formatPhoneNumber,
   toBackendPhoneFormat,
-  validateVenderRegisterForm,
-} from "../utils/authValidation";
+  validateVendorRegisterForm,
+} from "../../../utils/validation";
+import AuthButton from "../components/AuthButton";
+import TextInput from "../components/TextInput";
 
 function RegisterVendorForm() {
   const navigate = useNavigate();
@@ -18,8 +18,8 @@ function RegisterVendorForm() {
   // Form state
   const [form, setForm] = useState<Vendor>({
     companyName: "",
-    address: "",
     primaryContactName: "",
+    address: "",
     city: "",
     state: "",
     zip: "",
@@ -54,8 +54,7 @@ function RegisterVendorForm() {
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) {
-    const name = e.target.name;
-    const value = e.target.value;
+    const { name, value } = e.target;
 
     // Format phone number
     setForm((prev) => ({
@@ -74,7 +73,7 @@ function RegisterVendorForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const newErrors = validateVenderRegisterForm(form);
+    const newErrors = validateVendorRegisterForm(form);
 
     // Stop if there are errors
     if (Object.keys(newErrors).length > 0) {
@@ -90,10 +89,23 @@ function RegisterVendorForm() {
     const payload = {
       user: {
         first_name: userData.firstName,
+        middle_name: userData.middleName || null,
         last_name: userData.lastName,
         email: userData.email,
         username: userData.username,
         password: userData.password,
+        contact_number: toBackendPhoneFormat(userData.contactNumber),
+        alternate_number: userData.alternateNumber
+          ? toBackendPhoneFormat(userData.alternateNumber)
+          : null,
+        date_of_birth: userData.dateOfBirth || null,
+        ssn_last_four: userData.ssnLastFour || null,
+        address: {
+          street: userData.address,
+          city: userData.city,
+          state: userData.state,
+          zip: userData.zip,
+        },
       },
       vendor: {
         company_name: form.companyName,

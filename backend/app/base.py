@@ -31,5 +31,5 @@ class BaseModel(db.Model):
 
     updated_by: Mapped[str | None] = mapped_column(
         ForeignKey("user.id"),
-        nullable=True,
+        nullable=False,
     )
