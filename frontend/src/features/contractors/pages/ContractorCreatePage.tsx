@@ -6,7 +6,7 @@ import AppLayout from "../../components/layout/AppLayout";
 import Sidebar from "../../components/layout/Sidebar";
 import Topbar from "../../components/layout/Topbar";
 import PageHeader from "../../components/UI/PageHeader";
-import ContractorForm from "../components/ContractorForm";
+import ContractorForm from "./CreateContractorFlow/Forms/ContractorForm";
 
 export default function ContractorCreatePage() {
   const navigate = useNavigate();

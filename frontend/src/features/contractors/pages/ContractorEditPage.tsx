@@ -3,7 +3,6 @@ import AppLayout from "../../components/layout/AppLayout";
 import Sidebar from "../../components/layout/Sidebar";
 import Topbar from "../../components/layout/Topbar";
 import PageHeader from "../../components/UI/PageHeader";
-import ContractorForm from "../components/ContractorForm";
 
 export default function ContractorEditPage() {
   const contractor = {

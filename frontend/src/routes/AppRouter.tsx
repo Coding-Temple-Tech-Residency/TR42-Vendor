@@ -4,10 +4,18 @@ import LoginPage from "../features/auth/pages/LoginPage";
 import ProfileSetupPage from "../features/auth/pages/ProfileSetupPage";
 import RegisterPage from "../features/auth/pages/RegisterPage";
 import SuccessPage from "../features/auth/pages/SuccessPage";
-import ContractorCreatePage from "../features/contractors/pages/ContractorCreatePage";
 import ContractorEditPage from "../features/contractors/pages/ContractorEditPage";
 import ContractorJobsPage from "../features/contractors/pages/ContractorJobs";
 import ContractorProfilePage from "../features/contractors/pages/ContractorProfile";
+import { CreateContractorFlow } from "../features/contractors/pages/CreateContractorFlow/CreateContractorFlow";
+import { AddressStep } from "../features/contractors/pages/CreateContractorFlow/steps/AddressStep";
+import { BackgroundStep } from "../features/contractors/pages/CreateContractorFlow/steps/BackgroundStep";
+import { BasicInfoStep } from "../features/contractors/pages/CreateContractorFlow/steps/BasicInfoStep";
+import { CertificationStep } from "../features/contractors/pages/CreateContractorFlow/steps/CertificationStep";
+import { DrugTestStep } from "../features/contractors/pages/CreateContractorFlow/steps/DrugTestStep";
+import { InsuranceStep } from "../features/contractors/pages/CreateContractorFlow/steps/InsuranceStep";
+import { LicenseStep } from "../features/contractors/pages/CreateContractorFlow/steps/LicenseStep";
+import { ReviewStep } from "../features/contractors/pages/CreateContractorFlow/steps/ReviewStep";
 import DashboardPage from "../features/dashboard/pages/DashboardPage";
 import AdminPage from "../features/pages/AdminDashboardPage";
 import ContractorsPage from "../features/pages/ContractorDashboardPage";
@@ -35,7 +43,6 @@ export default function AppRouter() {
         <Route path="success" element={<SuccessPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="forgot-password" element={<ForgotPasswordPage />} />
-
         {/*App Dashboards*/}
         <Route path="dashboard" element={<DashboardPage />} />
         <Route path="work-orders" element={<WorkOrdersPage />} />
@@ -47,16 +54,23 @@ export default function AppRouter() {
         <Route path="messages" element={<MessagesPage />} />
         <Route path="admin" element={<AdminPage />} />
         <Route path="settings" element={<SettingsPage />} />
-
         {/*Contractor Pages*/}
-        <Route path="contractors/create" element={<ContractorCreatePage />} />
+        <Route path="contractors/create" element={<CreateContractorFlow />}>
+          <Route index element={<BasicInfoStep />} />
+          <Route path="address" element={<AddressStep />} />
+          <Route path="background-check" element={<BackgroundStep />} />{" "}
+          <Route path="certification" element={<CertificationStep />} />
+          <Route path="drug-test" element={<DrugTestStep />} />
+          <Route path="insurance" element={<InsuranceStep />} />
+          <Route path="license" element={<LicenseStep />} />
+          <Route path="review" element={<ReviewStep />} />
+        </Route>
         <Route path="contractors/profile" element={<ContractorProfilePage />} />
         <Route path="contractors/jobs" element={<ContractorJobsPage />} />
         <Route
           path="contractors/profile/edit"
           element={<ContractorEditPage />}
         />
-
         {/*Work Orders Pages*/}
         <Route
           path="work-orders/overview"

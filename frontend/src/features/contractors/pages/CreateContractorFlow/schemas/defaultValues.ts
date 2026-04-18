@@ -1,0 +1,57 @@
+const defaultValues = {
+  first_name: "",
+  last_name: "",
+  middle_name: "",
+  date_of_birth: "",
+  ssn_last_four: "",
+  email: "",
+  contact_number: "",
+  alternate_number: "",
+  username: "",
+  password: "",
+  address: {
+    street: "",
+    city: "",
+    state: "",
+    zip: "",
+  },
+
+  background_check_passed: false,
+  background_check_date: "",
+  background_check_provider: "",
+
+  certification_name: "",
+  certifying_body: "",
+  certification_number: "",
+  issue_date: "",
+  certification_expiration_date: "",
+  certification_document_url: "",
+  certification_verified: false,
+
+  drug_test_passed: false,
+  drug_test_date: "",
+
+  insurance_type: "",
+  policy_number: "",
+  provider_name: "",
+  provider_phone: "",
+  coverage_amount: "",
+  deductible: "",
+  effective_date: "",
+  insurance_expiration_date: "",
+  insurance_document_url: "",
+  insurance_verified: false,
+  additional_insurance_required: false,
+  additional_insured_certificate_url: "",
+
+  license_type: "",
+  license_number: "",
+  license_state: "",
+  license_expiration_date: "",
+  license_document_url: "",
+  license_verified: false,
+  license_verified_by: "",
+  license_verified_at: "",
+};
+
+export { defaultValues };
