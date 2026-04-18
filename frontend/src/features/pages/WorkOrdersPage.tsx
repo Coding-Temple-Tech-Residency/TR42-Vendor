@@ -1,8 +1,8 @@
 import AppLayout from "../components/layout/AppLayout";
-import Sidebar from "../components/layout/SideBar";
+import Sidebar from "../components/layout/Sidebar";
 import Topbar from "../components/layout/Topbar";
 import PageHeader from "../components/UI/PageHeader";
-import KPICard from "../components/UI/KPICard";
+import KPICard from "../components/UI/KpiCard";
 import { Link } from "react-router-dom";
 import SectionCard from "../components/UI/SectionCard";
 import EmptyState from "../components/UI/EmptyState";
@@ -140,7 +140,7 @@ export default function WorkOrdersPage() {
           <KPICard
             title="Completed"
             value={completedInWeekCount}
-            subtitle= "This Week"
+            subtitle="This Week"
             colorVariant="green"
             badge={{
               type: "trend",
