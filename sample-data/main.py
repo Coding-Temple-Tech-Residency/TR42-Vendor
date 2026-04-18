@@ -154,6 +154,7 @@ def generate_users(n=20, addresses=None):
                 "first_name": fake.first_name(),
                 "last_name": fake.last_name(),
                 "middle_name": fake.first_name(),
+                "token_version": 0,
                 "contact_number": fake.phone_number(),
                 "alternate_number": fake.phone_number(),
                 "date_of_birth": fake.date_of_birth(minimum_age=18, maximum_age=65),
@@ -1087,7 +1088,7 @@ def generate_certifications(contractors, users):
                         ["OSHA 10", "OSHA 30", "First Aid", "Confined Space"]
                     ),
                     "certifying_body": fake.company(),
-                    "certification_number": random.randint(10000, 99999),
+                    "certification_number": fake.bothify("CERT-#####"),
                     "issue_date": issue_date,
                     "expiration_date": fake.date_time_between(
                         start_date="now", end_date="+3y"
@@ -1123,7 +1124,7 @@ def generate_insurance(contractors, users):
                     "insurance_type": random.choice(
                         ["General Liability", "Workers Comp", "Auto"]
                     ),
-                    "policy_number": random.randint(100000, 999999),
+                    "policy_number": fake.bothify("INS-#####"),
                     "provider_name": fake.company(),
                     "provider_phone": fake.phone_number(),
                     "coverage_amount": round(random.uniform(10000, 1000000), 2),
