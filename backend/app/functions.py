@@ -22,11 +22,14 @@ STATE_REGEX = re.compile(r"^[A-Z]{2}$")
 ZIP_REGEX = re.compile(r"^\d{5}(-\d{4})?$")
 
 
-def strip_strings(data):
-    for key, value in data.items():
-        if isinstance(value, str):
-            data[key] = value.strip()
-    return data
+def strip_strings(value):
+    if isinstance(value, dict):
+        return {k: strip_strings(v) for k, v in value.items()}
+    elif isinstance(value, list):
+        return [strip_strings(item) for item in value]
+    elif isinstance(value, str):
+        return value.strip()
+    return value
 
 
 def strip_input(data, **kwargs):
@@ -81,6 +84,26 @@ def validate_state(value):
 def validate_zipcode(value):
     if not ZIP_REGEX.fullmatch(value.strip()):
         raise ValidationError("Enter a valid ZIP code.")
+
+
+def validate_password_content(data):
+    password = data.get("password", "")
+    username = data.get("username", "")
+    first_name = data.get("first_name", "")
+    last_name = data.get("last_name", "")
+
+    password_lower = password.lower()
+
+    for label, field_value in {
+        "username": username,
+        "first name": first_name,
+        "last name": last_name,
+    }.items():
+        cleaned = (field_value or "").strip().lower()
+        if len(cleaned) >= 4 and cleaned in password_lower:
+            raise ValidationError(
+                {"password": [f"Password must not contain the user's {label}."]}
+            )
 
 
 def utc_now():

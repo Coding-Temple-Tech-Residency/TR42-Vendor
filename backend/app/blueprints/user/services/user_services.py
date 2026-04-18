@@ -11,6 +11,9 @@ from app.auth.tokens import encode_token
 from app.blueprints.vendor_user.repositories.vendor_user_repositories import (
     VendorUserRepository,
 )
+from app.blueprints.address.model import Address
+from app.blueprints.address.repositories.address_repositories import AddressRepository
+from app.blueprints.user.model import User, UserType
 
 from logging import getLogger
 
@@ -22,8 +25,7 @@ class UserService:
 
     @staticmethod
     def login(data: dict):
-
-        identifier = data.get("identifier")
+        identifier = data.get("identifier", "").strip().lower()
         password = data.get("password")
 
         logger.info("Login attempt received")
@@ -32,7 +34,7 @@ class UserService:
             logger.warning("Login failed: missing email or password")
             raise BadRequest("Email/username and password are required")
 
-        user = UserRepository.get_by_email_or_username(identifier)
+        user = UserRepository.get_by_email_or_username_normalized(identifier)
         if not user:
             logger.warning("Authentication failed")
             raise BadRequest("Invalid credentials")
@@ -108,14 +110,14 @@ class UserService:
             data.get("email"),
         )
 
-        existing_email = UserRepository.get_by_email(data["email"])
+        existing_email = UserRepository.get_by_email_normalized(data["email"])
         if existing_email:
             logger.warning(
                 "User creation failed: Email already exists: %s", data["email"]
             )
             raise ValueError("Email already exists")
 
-        existing_username = UserRepository.get_by_username(data["username"])
+        existing_username = UserRepository.get_by_username_normalized(data["username"])
         if existing_username:
             logger.warning(
                 "User creation failed: Username already exists: %s",
@@ -123,26 +125,46 @@ class UserService:
             )
             raise ValueError("Username already exists")
 
-        user = User(
-            first_name=data["first_name"],
-            last_name=data["last_name"],
-            email=data["email"],
-            username=data["username"],
-            user_type=data["user_type"],
-            is_active=True,
-            is_admin=False,
-            profile_photo=data.get("profile_photo"),
-        )
-
-        logger.debug("Setting password for user: %s", data["username"])
-        user.set_password(data["password"])
-
         try:
+
+            user = User(
+                first_name=data["first_name"],
+                middle_name=data.get("middle_name"),
+                last_name=data["last_name"],
+                email=data["email"].lower(),
+                username=data["username"].lower(),
+                contact_number=data["contact_number"],
+                alternate_number=data.get("alternate_number"),
+                date_of_birth=data.get("date_of_birth"),
+                ssn_last_four=data.get("ssn_last_four"),
+                user_type=data["user_type"],
+                is_active=True,
+                is_admin=False,
+                profile_photo=data.get("profile_photo"),
+            )
+
+            user.set_password(data["password"])
             UserRepository.create(user)
-            logger.debug("User added to session: %s", user.username)
+            db.session.flush()
+
+            user_address_data = data["address"]
+
+            user_address = Address(
+                street=user_address_data["street"],
+                city=user_address_data["city"],
+                state=user_address_data["state"],
+                zip=user_address_data["zip"],
+                created_by=user.id,
+                updated_by=user.id,
+            )
+
+            AddressRepository.create(user_address)
+            db.session.flush()
+
+            user.address_id = user_address.id
+            db.session.flush()
 
             db.session.commit()
-            logger.info("User created successfully: %s", user.id)
 
             return user
 

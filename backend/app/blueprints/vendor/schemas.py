@@ -1,22 +1,20 @@
 from app.extensions import ma
 from marshmallow import ValidationError, fields, pre_load, validates
+from marshmallow import ValidationError, fields, pre_load, validates
 from app.blueprints.vendor.model import Vendor
 from app.functions import (
     strip_input,
-    validate_city,
     validate_name,
     validate_email_format,
     validate_phone_format,
-    validate_state,
-    validate_street,
-    validate_zipcode,
 )
 from app.blueprints.address.schemas import AddressSchema
+from app.blueprints.user.schemas import UserSchema
 
 
 class VendorSchema(ma.SQLAlchemyAutoSchema):
 
-    address = fields.Nested(AddressSchema, exclude=("address_id",))
+    address = fields.Nested(AddressSchema, exclude=("id",))
 
     class Meta:
         model = Vendor
