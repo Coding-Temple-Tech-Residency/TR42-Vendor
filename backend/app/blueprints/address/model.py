@@ -8,6 +8,7 @@ from app.base import BaseModel
 
 if TYPE_CHECKING:
     from app.blueprints.vendor.model import Vendor
+    from app.blueprints.user.model import User
 
 
 class Address(BaseModel):
@@ -19,8 +20,17 @@ class Address(BaseModel):
     street: Mapped[str] = mapped_column(String(255), nullable=False)
     city: Mapped[str] = mapped_column(String(255), nullable=False)
     state: Mapped[str] = mapped_column(String(255), nullable=False)
-    zipcode: Mapped[str] = mapped_column(String(255), nullable=False)
+    zip: Mapped[str] = mapped_column(String(255), nullable=False)
     country: Mapped[str] = mapped_column(String(255), nullable=False, default="USA")
 
     # relationships
-    vendor: Mapped["Vendor"] = relationship(back_populates="address")
+    vendor: Mapped["Vendor"] = relationship(
+        "Vendor",
+        back_populates="address",
+        foreign_keys="Vendor.address_id",
+        uselist=False,
+    )
+
+    user: Mapped["User"] = relationship(
+        "User", back_populates="address", foreign_keys="User.address_id", uselist=False
+    )

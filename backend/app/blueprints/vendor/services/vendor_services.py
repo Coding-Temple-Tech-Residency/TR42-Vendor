@@ -45,7 +45,7 @@ class VendorService:
         }
 
     @staticmethod
-    def create_vendor(validated_data: dict, user_id: str):
+    def create_vendor(validated_data: dict, id: str):
         try:
             logger.info("Creating vendor in service layer")
 
@@ -64,9 +64,9 @@ class VendorService:
                 street=address_data["street"],
                 city=address_data["city"],
                 state=address_data["state"],
-                zipcode=address_data["zipcode"],
-                created_by_user_id=user_id,
-                updated_by_user_id=user_id,
+                zip=address_data["zip"],
+                created_by=id,
+                updated_by=id,
             )
             AddressRepository.create(address)
             db.session.flush()
@@ -74,26 +74,25 @@ class VendorService:
             vendor_id = generate_uuid()
 
             vendor = Vendor(
-                vendor_id=vendor_id,
                 company_name=validated_data["company_name"],
                 company_email=validated_data["company_email"],
                 company_phone=validated_data["company_phone"],
                 primary_contact_name=validated_data["primary_contact_name"],
                 service_type=validated_data["service_type"],
                 vendor_code=f"Vendor-{vendor_id[:8].upper()}",
-                address_id=address.address_id,
-                created_by_user_id=user_id,
-                updated_by_user_id=user_id,
+                address_id=address.id,
+                created_by=id,
+                updated_by=id,
             )
             VendorRepository.create(vendor)
             db.session.flush()
 
             vendor_user = VendorUser(
-                vendor_id=vendor.vendor_id,
-                user_id=user_id,
+                vendor_id=vendor.id,
+                user_id=id,
                 vendor_user_role=VendorUserRole.ADMIN,
-                created_by_user_id=user_id,
-                updated_by_user_id=user_id,
+                created_by=id,
+                updated_by=id,
             )
             VendorUserRepository.create(vendor_user)
             db.session.flush()
@@ -104,6 +103,10 @@ class VendorService:
         except IntegrityError:
             db.session.rollback()
             raise ValueError("Vendor creation failed due to a database constraint")
+
+        except ValidationError:
+            db.session.rollback()
+            raise
 
         except Exception:
             db.session.rollback()
@@ -125,11 +128,11 @@ class VendorService:
         try:
             existing_vendor = VendorRepository.get_by_id(vendor_id)
             if not existing_vendor:
-                logger.warning(f"Vendor with id not found for update")
+                logger.warning("Vendor with id not found for update")
                 return None
 
             validated_data = vendor_schema.load(vendor_data, partial=True)
-            logger.debug(f"Vendor data validated successfully for vendor id")
+            logger.debug(f"Vendor data validated successfully")
 
             address_data = validated_data.pop("address", None)
 

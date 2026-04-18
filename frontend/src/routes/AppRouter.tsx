@@ -4,6 +4,7 @@ import LoginPage from "../features/auth/pages/LoginPage";
 import ProfileSetupPage from "../features/auth/pages/ProfileSetupPage";
 import RegisterPage from "../features/auth/pages/RegisterPage";
 import SuccessPage from "../features/auth/pages/SuccessPage";
+import ContractorCreatePage from "../features/contractors/pages/ContractorCreatePage";
 import ContractorEditPage from "../features/contractors/pages/ContractorEditPage";
 import ContractorJobsPage from "../features/contractors/pages/ContractorJobs";
 import ContractorProfilePage from "../features/contractors/pages/ContractorProfile";
@@ -19,6 +20,7 @@ import TicketsPage from "../features/pages/TicketsDashboardPage";
 import WorkOrdersPage from "../features/pages/WorkOrdersDashboardPage";
 import EditWorkOrderPage from "../features/work orders/pages/EditWorkOrders";
 import WorkOrderOverviewPage from "../features/work orders/pages/WorkOrdersOverView";
+import CreateTicketPage from "../features/tickets/page/CreateTicketPage";
 
 function VendorLayout() {
   return <Outlet />;
@@ -48,6 +50,7 @@ export default function AppRouter() {
         <Route path="settings" element={<SettingsPage />} />
 
         {/*Contractor Pages*/}
+        <Route path="contractors/create" element={<ContractorCreatePage />} />
         <Route path="contractors/profile" element={<ContractorProfilePage />} />
         <Route path="contractors/jobs" element={<ContractorJobsPage />} />
         <Route
@@ -56,11 +59,12 @@ export default function AppRouter() {
         />
 
         {/*Work Orders Pages*/}
-        <Route
-          path="work-orders/overview"
-          element={<WorkOrderOverviewPage />}
-        />
+        <Route path="work-orders/overview" element={<WorkOrderOverviewPage />} />
         <Route path="work-orders/edit" element={<EditWorkOrderPage />} />
+
+        {/* Ticket Pages*/}
+        <Route path="work-orders/:workOrderId/create-ticket" element={<CreateTicketPage />} />
+        <Route path="tickets/:ticketId" element={<TicketsPage />} />
       </Route>
     </Routes>
   );

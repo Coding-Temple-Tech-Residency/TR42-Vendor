@@ -1,11 +1,11 @@
+import { Link } from "react-router-dom";
 import AppLayout from "../components/layout/AppLayout";
 import Sidebar from "../components/layout/SideBar";
 import Topbar from "../components/layout/Topbar";
-import PageHeader from "../components/UI/PageHeader";
-import { Link } from "react-router-dom";
-import SectionCard from "../components/UI/SectionCard";
 import EmptyState from "../components/UI/EmptyState";
 import KpiCard from "../components/UI/KPICard";
+import PageHeader from "../components/UI/PageHeader";
+import SectionCard from "../components/UI/SectionCard";
 
 function ContractorsPage() {
   return (
@@ -20,12 +20,17 @@ function ContractorsPage() {
         />
 
         <Link
+          to="/vendor/contractors/create"
+          className="inline-block rounded-lg bg-[#2F4F75] mr-2 px-4 py-2 text-sm font-medium text-white hover:bg-[#1E3A5F]"
+        >
+          Create Contractor
+        </Link>
+        <Link
           to="/vendor/contractors/profile"
           className="inline-block rounded-lg bg-[#2F4F75] px-4 py-2 text-sm font-medium text-white hover:bg-[#1E3A5F]"
-          >
-            View Profile
+        >
+          View Profile
         </Link>
-
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-6">
@@ -34,7 +39,7 @@ function ContractorsPage() {
             value={32}
             subtitle="Currently Available"
             colorVariant="orange"
-            badge={{ type: "text", value: "Active in system"}}
+            badge={{ type: "text", value: "Active in system" }}
           />
 
           <KpiCard
@@ -57,7 +62,11 @@ function ContractorsPage() {
             value={45}
             subtitle="Month"
             colorVariant="green"
-            badge={{ type: "trend", value: "12% from last month", trendDirection: "up", }}
+            badge={{
+              type: "trend",
+              value: "12% from last month",
+              trendDirection: "up",
+            }}
           />
 
           <KpiCard
@@ -73,15 +82,16 @@ function ContractorsPage() {
             value="93%"
             subtitle="Across All Contractors"
             colorVariant="purple"
-            badge={{ type: "trend", value: "0.5% from last month", trendDirection: "up", }}
+            badge={{
+              type: "trend",
+              value: "0.5% from last month",
+              trendDirection: "up",
+            }}
           />
         </div>
 
-
-
         {/* Charts Section (side-by-side) */}
         <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
-
           {/* On-Time Completion Chart */}
           <SectionCard title="On-Time Completion">
             <EmptyState
@@ -111,7 +121,6 @@ function ContractorsPage() {
 
         {/* Bottom Row: Map + Accounts Payable (side-by-side) */}
         <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
-
           {/* Map Section */}
           <SectionCard title="Map for Current Contractor Location">
             <EmptyState
@@ -128,7 +137,6 @@ function ContractorsPage() {
             />
           </SectionCard>
         </div>
-
       </div>
     </AppLayout>
   );
