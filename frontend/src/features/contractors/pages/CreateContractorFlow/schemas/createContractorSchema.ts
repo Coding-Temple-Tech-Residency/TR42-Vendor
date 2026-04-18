@@ -8,12 +8,12 @@ import { insuranceSchema } from "./insuranceSchema";
 import { licenseSchema } from "./licenseSchema";
 
 const createContractorSchema = basicInfoSchema
-  .extend(addressSchema.shape)
-  .extend(backgroundCheckSchema.shape)
-  .extend(certificationSchema.shape)
-  .extend(drugTestSchema.shape)
-  .extend(insuranceSchema.shape)
-  .extend(licenseSchema.shape);
+  .and(addressSchema)
+  .and(backgroundCheckSchema)
+  .and(certificationSchema)
+  .and(drugTestSchema)
+  .and(insuranceSchema)
+  .and(licenseSchema);
 
 type CreateContractorFormValues = z.infer<typeof createContractorSchema>;
 
