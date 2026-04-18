@@ -1,7 +1,7 @@
-import AuthLayout from "../components/AuthLayout";
 import AuthCard from "../components/AuthCard";
 import AuthHeader from "../components/AuthHeader";
-import RegisterForm from "../forms/RegisterForm";
+import AuthLayout from "../components/AuthLayout";
+import RegisterUserForm from "../forms/RegisterUserForm";
 import AuthFooterLink from "../components/AuthFooterLink";
 
 function RegisterPage() {
@@ -13,7 +13,8 @@ function RegisterPage() {
           subtitle="Enter your personal details to get started."
         />
 
-        <RegisterForm />
+        <RegisterUserForm />
+       
 
         {/* Footer Link */}
         <AuthFooterLink

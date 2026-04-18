@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class Service(BaseModel):
     __tablename__ = "services"
 
-    service_id: Mapped[str] = mapped_column(
+    id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
         nullable=False,

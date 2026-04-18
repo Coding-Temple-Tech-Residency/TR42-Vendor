@@ -6,8 +6,8 @@ class VendorUser(BaseModel):
 
     id = db.Column(db.String, primary_key=True)
 
-    user_id = db.Column(db.String, db.ForeignKey('user.user_id'), unique=True)
-    vendor_id = db.Column(db.String, db.ForeignKey('vendor.vendor_id'))
+    user_id = db.Column(db.String, db.ForeignKey('user.id'), unique=True)
+    vendor_id = db.Column(db.String, db.ForeignKey('vendor.id'))
 
     role = db.Column(db.String)
 
@@ -19,13 +19,13 @@ class VendorService(BaseModel):
 
     vendor_id = db.Column(
         db.String,
-        db.ForeignKey('vendor.vendor_id'),
+        db.ForeignKey('vendor.id'),
         nullable=False
     )
 
     service_id = db.Column(
         db.String,
-        db.ForeignKey('services.service_id'),
+        db.ForeignKey('services.id'),
         nullable=False
     )
 

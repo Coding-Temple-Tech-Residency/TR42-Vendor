@@ -1,0 +1,43 @@
+{
+  "info": {
+    "_postman_id": "98b952dd-20b8-4c43-85c2-bb309bf6eeeb",
+    "name": "Vendor API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "26152017",
+    "_collection_link": "https://go.postman.co/collection/26152017-98b952dd-20b8-4c43-85c2-bb309bf6eeeb?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Registration",
+      "item": [
+        {
+          "name": "Registration",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user\": {\n    \"first_name\": \"Jane\",\n    \"last_name\": \"Doe\",\n    \"email\": \"jane@example.com\",\n    \"username\": \"janedoe\",\n    \"password\": \"StrongPassword123\",\n    \"confirm_password\": \"StrongPassword123\"\n  },\n  \"vendor\": {\n    \"company_name\": \"Doe Catering\",\n    \"primary_contact_name\": \"John Doe\",\n    \"company_email\": \"contact@doecatering.com\",\n    \"company_phone\": \"555-123-4567\",\n    \"address\": \"123 Main St\",\n    \"city\": \"Denver\",\n    \"state\": \"CO\",\n    \"zipcode\": \"80202\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5001/registration/register",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["registration", "register"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

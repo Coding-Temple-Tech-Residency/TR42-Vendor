@@ -1,42 +1,47 @@
-from app.extensions import db
-from app.models.base import BaseModel
+from datetime import datetime
+from typing import TYPE_CHECKING
 
-class BackgroundCheck(BaseModel):
-    __tablename__ = 'background_check'
+from sqlalchemy import Boolean, DateTime, ForeignKey, LargeBinary, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-    id = db.Column(db.String, primary_key=True)
+from app.base import BaseModel
+from app.functions import generate_uuid
 
-    background_check_passed = db.Column(db.Boolean)
-    background_check_date = db.Column(db.DateTime)
-    background_check_provider = db.Column(db.String)
-
-
-class DrugTest(BaseModel):
-    __tablename__ = 'drug_test'
-
-    id = db.Column(db.String, primary_key=True)
-
-    drug_test_passed = db.Column(db.Boolean)
-    drug_test_date = db.Column(db.DateTime)
+if TYPE_CHECKING:
+    from app.blueprints.vendor.model import Vendor
 
 
 class ComplianceDocument(BaseModel):
-    __tablename__ = 'compliance_document'
+    __tablename__ = "compliance_document"
 
-    id = db.Column(db.String, primary_key=True)
+    id: Mapped[str] = mapped_column(
+        String(36),
+        primary_key=True,
+        default=generate_uuid,
+    )
 
-    vendor_id = db.Column(db.String, db.ForeignKey('vendor.id'))
+    vendor_id: Mapped[str] = mapped_column(
+        ForeignKey("vendor.id"),
+        nullable=False,
+    )
 
-    compliance_document = db.Column(db.LargeBinary)
-    compliance_status = db.Column(db.Boolean, default=False)
-    expiration_date = db.Column(db.DateTime)
+    compliance_document: Mapped[bytes] = mapped_column(
+        LargeBinary,
+        nullable=True,
+    )
 
-    vendor = db.relationship('Vendor', backref='compliance_documents')
+    compliance_status: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=False,
+    )
 
-class DriversLicense(BaseModel):
-    __tablename__ = 'drivers_license'
+    expiration_date: Mapped[datetime] = mapped_column(
+        DateTime,
+        nullable=True,
+    )
 
-    id = db.Column(db.String, primary_key=True)
-
-    license_number = db.Column(db.String)
-    expiration_date = db.Column(db.DateTime)
+    vendor: Mapped["Vendor"] = relationship(
+        "Vendor",
+        back_populates="compliance_documents",
+    )

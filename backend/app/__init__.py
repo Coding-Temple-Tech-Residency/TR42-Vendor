@@ -7,6 +7,11 @@ from app.extensions import db, ma
 from app.config import Config
 from app.logging_config import setup_logging
 
+from flask_migrate import Migrate
+from app.extensions import db
+
+migrate = Migrate()
+
 
 def create_app(config_object=None):
     app = Flask(__name__)
@@ -23,6 +28,7 @@ def create_app(config_object=None):
     setup_logging()
 
     db.init_app(app)
+    migrate.init_app(app, db)
     ma.init_app(app)
 
     # Import all models BEFORE blueprints to ensure they're registered with SQLAlchemy
@@ -60,6 +66,7 @@ def create_app(config_object=None):
     from app.blueprints.fraud_alerts.controller.fraud_alert_routes import alerts_bp
     from app.blueprints.msa.controller.msa_routes import msa_bp
     from app.blueprints.msa_requirements.controller.msa_requirement_routes import msa_req_bp
+    from app.blueprints.contractor.controller.contractor_routes import contractor_bp
 
     
     app.register_blueprint(user_bp, url_prefix="/api/users")
@@ -76,5 +83,6 @@ def create_app(config_object=None):
     app.register_blueprint(msa_bp, url_prefix="/api/msas")
     app.register_blueprint(msa_req_bp, url_prefix="/api/msa_requirements")
     
+    app.register_blueprint(contractor_bp, url_prefix="/api/contractors")
 
     return app

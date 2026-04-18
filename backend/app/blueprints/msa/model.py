@@ -17,7 +17,7 @@ class MSA(BaseModel):
     __tablename__ = "msa"
 
     # PRIMARY KEY
-    msa_id: Mapped[str] = mapped_column(
+    id: Mapped[str] = mapped_column(
         String, primary_key=True, default=generate_uuid
     )
 

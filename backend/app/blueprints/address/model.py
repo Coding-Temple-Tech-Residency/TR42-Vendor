@@ -4,29 +4,33 @@ from sqlalchemy import DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.extensions import db
 from typing import TYPE_CHECKING
+from app.base import BaseModel
 
 if TYPE_CHECKING:
     from app.blueprints.vendor.model import Vendor
+    from app.blueprints.user.model import User
 
-class Address(db.Model):
+
+class Address(BaseModel):
     __tablename__ = "address"
 
-    address_id: Mapped[str] = mapped_column(
+    id: Mapped[str] = mapped_column(
         String(36), primary_key=True, nullable=False, default=generate_uuid
     )
     street: Mapped[str] = mapped_column(String(255), nullable=False)
     city: Mapped[str] = mapped_column(String(255), nullable=False)
     state: Mapped[str] = mapped_column(String(255), nullable=False)
-    zipcode: Mapped[str] = mapped_column(String(255), nullable=False)
+    zip: Mapped[str] = mapped_column(String(255), nullable=False)
     country: Mapped[str] = mapped_column(String(255), nullable=False, default="USA")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=utc_now,
-        onupdate=utc_now,
-    )
-    created_by_user_id: Mapped[str] = mapped_column(String, nullable=False)
-    updated_by_user_id: Mapped[str] = mapped_column(String)
 
     # relationships
-    vendor: Mapped["Vendor"] = relationship(back_populates="address")
+    vendor: Mapped["Vendor"] = relationship(
+        "Vendor",
+        back_populates="address",
+        foreign_keys="Vendor.address_id",
+        uselist=False,
+    )
+
+    user: Mapped["User"] = relationship(
+        "User", back_populates="address", foreign_keys="User.address_id", uselist=False
+    )

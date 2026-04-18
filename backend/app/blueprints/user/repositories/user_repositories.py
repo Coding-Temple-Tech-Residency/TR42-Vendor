@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import func, select
 from app.extensions import db
 from app.blueprints.user.model import User
 from logging import getLogger
@@ -10,10 +10,28 @@ logger = getLogger(__name__)
 class UserRepository:
 
     @staticmethod
+    def get_by_email_or_username_normalized(identifier: str) -> User | None:
+        normalized = identifier.strip().lower()
+        return db.session.scalar(
+            select(User).where(
+                (func.lower(User.email) == normalized)
+                | (func.lower(User.username) == normalized)
+            )
+        )
+
+    @staticmethod
+    def get_by_email_or_username(identifier: str):
+        return db.session.execute(
+            select(User).where(
+                (User.email == identifier) | (User.username == identifier)
+            )
+        ).scalar_one_or_none()
+
+    @staticmethod
     def get_by_vendor_paginated(vendor_id: str, page: int = 1, per_page: int = 10):
         stmt = (
             select(User)
-            .join(VendorUser, VendorUser.user_id == User.user_id)
+            .join(VendorUser, VendorUser.user_id == User.id)
             .where(VendorUser.vendor_id == vendor_id)
         )
         return db.paginate(stmt, page=page, per_page=per_page)
@@ -38,9 +56,23 @@ class UserRepository:
         return db.session.scalar(select(User).where(User.email == email))
 
     @staticmethod
+    def get_by_email_normalized(email: str) -> User | None:
+        logger.debug("Fetching user by email: %s", email)
+        return db.session.scalar(
+            select(User).where(func.lower(User.email) == email.lower())
+        )
+
+    @staticmethod
     def get_by_username(username: str) -> User | None:
         logger.debug("Fetching user by username: %s", username)
         return db.session.scalar(select(User).where(User.username == username))
+
+    @staticmethod
+    def get_by_username_normalized(username: str) -> User | None:
+        logger.debug("Fetching user by username: %s", username)
+        return db.session.scalar(
+            select(User).where(func.lower(User.username) == username.lower())
+        )
 
     @staticmethod
     def create(user: User) -> User:

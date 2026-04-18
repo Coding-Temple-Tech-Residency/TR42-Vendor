@@ -1,8 +1,17 @@
-from datetime import datetime
+from datetime import date, datetime
 import enum
 from app.functions import generate_uuid, utc_now
 from typing import TYPE_CHECKING
-from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Integer, LargeBinary, String
+from sqlalchemy import (
+    Boolean,
+    Date,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Integer,
+    LargeBinary,
+    String,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.auth.passwords import hash_password, verify_password
 
@@ -12,6 +21,9 @@ from app.extensions import db
 if TYPE_CHECKING:
     from app.blueprints.vendor_user.model import VendorUser
     from app.blueprints.msa.model import MSA
+    from app.blueprints.contractor.model import Contractor
+    from app.blueprints.address.model import Address
+    from app.blueprints.vendor_contractor.model import VendorContractor
 
 
 class UserType(enum.Enum):
@@ -23,7 +35,7 @@ class UserType(enum.Enum):
 class User(db.Model):
     __tablename__ = "user"
 
-    user_id: Mapped[str] = mapped_column(
+    id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
         default=generate_uuid,
@@ -31,13 +43,12 @@ class User(db.Model):
 
     username: Mapped[str] = mapped_column(String(80), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
-
-    token_version: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
 
     user_type: Mapped[UserType] = mapped_column(
         Enum(UserType, name="user_type"), nullable=False, index=True
     )
+    token_version: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
     is_active: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=True, index=True
@@ -53,15 +64,43 @@ class User(db.Model):
         DateTime, default=utc_now, nullable=False, onupdate=utc_now, index=True
     )
 
-    created_by_user_id: Mapped[str | None] = mapped_column(
-        ForeignKey("user.user_id"), nullable=True
-    )
-    updated_by_user_id: Mapped[str | None] = mapped_column(
-        ForeignKey("user.user_id"), nullable=True
-    )
+    created_by: Mapped[str | None] = mapped_column(ForeignKey("user.id"), nullable=True)
+    updated_by: Mapped[str | None] = mapped_column(ForeignKey("user.id"), nullable=True)
 
     first_name: Mapped[str] = mapped_column(String(50), nullable=False)
+    middle_name: Mapped[str] = mapped_column(String(50), nullable=True)
     last_name: Mapped[str] = mapped_column(String(50), nullable=False)
+
+    contact_number: Mapped[str] = mapped_column(String, nullable=False)
+    alternate_number: Mapped[str] = mapped_column(String, nullable=True)
+
+    date_of_birth: Mapped[date | None] = mapped_column(Date, nullable=True)
+
+    ssn_last_four: Mapped[str | None] = mapped_column(String(4), nullable=True)
+
+    address_id: Mapped[str] = mapped_column(
+        ForeignKey("address.id"), nullable=True, unique=True
+    )
+
+    # Relationships
+
+    address: Mapped["Address"] = relationship(
+        "Address",
+        back_populates="user",
+        foreign_keys=[address_id],
+    )
+
+    created_by_user: Mapped["User | None"] = relationship(
+        "User",
+        foreign_keys=[created_by],
+        remote_side=[id],
+    )
+
+    updated_by_user: Mapped["User | None"] = relationship(
+        "User",
+        foreign_keys=[updated_by],
+        remote_side=[id],
+    )
 
     vendor_links: Mapped[list["VendorUser"]] = relationship(
         "VendorUser",
@@ -70,16 +109,18 @@ class User(db.Model):
         cascade="all, delete-orphan",
     )
 
-    created_by_user: Mapped["User | None"] = relationship(
-        "User",
-        foreign_keys=[created_by_user_id],
-        remote_side=[user_id],
+    managed_contractor_links: Mapped[list["VendorContractor"]] = relationship(
+        "VendorContractor",
+        foreign_keys="VendorContractor.manager_id",
+        back_populates="manager",
     )
 
-    updated_by_user: Mapped["User | None"] = relationship(
-        "User",
-        foreign_keys=[updated_by_user_id],
-        remote_side=[user_id],
+    contractor_profile: Mapped["Contractor | None"] = relationship(
+        "Contractor",
+        back_populates="user",
+        uselist=False,
+        foreign_keys="Contractor.user_id",
+        cascade="all, delete-orphan",
     )
 
     msas_uploaded = relationship(

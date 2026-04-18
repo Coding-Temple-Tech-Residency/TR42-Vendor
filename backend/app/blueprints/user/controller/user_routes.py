@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, make_response, request
 from sqlalchemy import select
 from werkzeug.exceptions import BadRequest
 from marshmallow import ValidationError
@@ -11,7 +11,7 @@ from app.auth.tokens import (
     vendor_membership_required,
     vendor_roles_required,
 )
-from app.blueprints.user.model import User
+from app.blueprints.user.schemas import user_create_schema
 import logging
 
 
@@ -30,7 +30,18 @@ def login_user():
 
     try:
         result = UserService.login(data)
-        return jsonify(result), 200
+        token = result.pop("token")
+
+        response = make_response(jsonify(result), 200)
+        response.set_cookie(
+            "access_token",
+            token,
+            httponly=True,
+            secure=True,
+            samesite="Lax",
+            max_age=3600,
+        )
+        return response
 
     except BadRequest as err:
         return jsonify({"error": err.description}), 400
@@ -41,7 +52,10 @@ def login_user():
 
 
 @user_bp.post("/")
-def create_user():
+@token_required
+@vendor_membership_required
+@vendor_roles_required([VendorUserRole.ADMIN, VendorUserRole.MANAGER])
+def create_user(current_user, vendor_link, vendor_id):
     data = request.get_json()
     logger.debug("Creating a new user")
 
@@ -50,8 +64,12 @@ def create_user():
         return jsonify({"error": "No input data provided"}), 400
 
     try:
-        validated_data = user_schema.load(data)
+        validated_data = user_create_schema.load(data)
         logger.debug("User data validated successfully")
+
+        if not isinstance(validated_data, dict):
+            logger.warning("Validated data is not a dictionary")
+            return {"error": "Invalid vendor data"}, 400
 
         new_user = UserService.create_user(validated_data)
         logger.info(
@@ -86,7 +104,7 @@ def get_all_users(current_user):
     return jsonify(result), 200
 
 
-@user_bp.get("/vendor/<vendor_id>/users")
+@user_bp.get("/vendor/users")
 @token_required
 @vendor_membership_required
 @vendor_roles_required([VendorUserRole.ADMIN, VendorUserRole.MANAGER])
