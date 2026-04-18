@@ -35,10 +35,10 @@ class RegistrationService:
         user_data = data["user"]
         vendor_data = data["vendor"]
 
-        if UserRepository.get_by_email(user_data["email"]):
+        if UserRepository.get_by_email_normalized(user_data["email"]):
             raise ValidationError({"user": {"email": ["Email already in use."]}})
 
-        if UserRepository.get_by_username(user_data["username"]):
+        if UserRepository.get_by_username_normalized(user_data["username"]):
             raise ValidationError({"user": {"username": ["Username already in use."]}})
 
         if VendorRepository.get_by_company_name(vendor_data["company_name"]):
@@ -51,8 +51,8 @@ class RegistrationService:
                 first_name=user_data["first_name"],
                 middle_name=user_data.get("middle_name"),
                 last_name=user_data["last_name"],
-                email=user_data["email"],
-                username=user_data["username"],
+                email=user_data["email"].lower(),
+                username=user_data["username"].lower(),
                 contact_number=user_data["contact_number"],
                 alternate_number=user_data["alternate_number"],
                 date_of_birth=user_data["date_of_birth"],

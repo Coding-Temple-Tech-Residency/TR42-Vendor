@@ -22,11 +22,14 @@ STATE_REGEX = re.compile(r"^[A-Z]{2}$")
 ZIP_REGEX = re.compile(r"^\d{5}(-\d{4})?$")
 
 
-def strip_strings(data):
-    for key, value in data.items():
-        if isinstance(value, str):
-            data[key] = value.strip()
-    return data
+def strip_strings(value):
+    if isinstance(value, dict):
+        return {k: strip_strings(v) for k, v in value.items()}
+    elif isinstance(value, list):
+        return [strip_strings(item) for item in value]
+    elif isinstance(value, str):
+        return value.strip()
+    return value
 
 
 def strip_input(data, **kwargs):
