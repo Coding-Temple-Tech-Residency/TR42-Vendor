@@ -1,16 +1,17 @@
 import { useFormContext } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { ContractorStepNavigation } from "../components/ContractorStepNavigation";
+import { useContractorStepNavigation } from "../hooks/useContractorStepNavigation";
 import type { CreateContractorFormValues } from "../schemas/createContractorSchema";
-
-const fieldWrapperClassName = "rounded-xl bg-[#C9D8E6] p-4 shadow-md";
-const labelClassName =
-  "text-xs font-medium uppercase tracking-wide text-[#2F4F75]";
-const inputClassName =
-  "mt-2 w-full rounded-lg border border-[#2F4F75] bg-white px-3 py-2 text-sm text-[#2F4F75] outline-none focus:border-[#2F3B4A] focus:ring-2 focus:ring-[#2F3B4A]";
-const errorClassName = "mt-2 text-xs text-red-600";
+import {
+  errorClassName,
+  fieldWrapperClassName,
+  inputClassName,
+  labelClassName,
+} from "./stepClassNames";
 
 const AddressStep = () => {
-  const navigate = useNavigate();
+  const { next, back, isFirst } = useContractorStepNavigation();
+
   const {
     register,
     trigger,
@@ -27,9 +28,7 @@ const AddressStep = () => {
 
     if (!isValid) return;
 
-    console.log("step 2 valid");
-
-    navigate("/vendor/contractors/create/background-check");
+    next();
   };
 
   return (
@@ -76,6 +75,8 @@ const AddressStep = () => {
             id="address.state"
             {...register("address.state")}
             className={inputClassName}
+            placeholder="TX"
+            maxLength={2}
           />
           {errors.address?.state && (
             <p className={errorClassName}>{errors.address.state.message}</p>
@@ -90,29 +91,18 @@ const AddressStep = () => {
             id="address.zip"
             {...register("address.zip")}
             className={inputClassName}
+            placeholder="12345"
           />
           {errors.address?.zip && (
             <p className={errorClassName}>{errors.address.zip.message}</p>
           )}
         </div>
 
-        <div className="flex justify-between sm:col-span-2">
-          <button
-            type="button"
-            onClick={() => navigate("/vendor/contractors/create")}
-            className="rounded-lg border border-[#2F4F75] px-4 py-2 text-sm font-medium text-[#2F4F75]"
-          >
-            Back
-          </button>
-
-          <button
-            type="button"
-            onClick={handleNext}
-            className="rounded-lg bg-[#2F4F75] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#4A6C8A]"
-          >
-            Next
-          </button>
-        </div>
+        <ContractorStepNavigation
+          onNext={handleNext}
+          onBack={back}
+          isFirst={isFirst}
+        />
       </div>
     </section>
   );

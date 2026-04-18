@@ -7,6 +7,7 @@ import AppLayout from "../../../../features/components/layout/AppLayout";
 import Sidebar from "../../../../features/components/layout/SideBar";
 import Topbar from "../../../../features/components/layout/Topbar";
 
+import { ContractorStepper } from "./components/ContractorStepper";
 import {
   createContractorSchema,
   type CreateContractorFormValues,
@@ -39,6 +40,10 @@ const CreateContractorFlow = () => {
             >
               Back to Contractors
             </Link>
+          </div>
+
+          <div className="rounded-2xl border border-[#2F4F75] bg-white p-6 shadow-lg">
+            <ContractorStepper />
           </div>
 
           <div>

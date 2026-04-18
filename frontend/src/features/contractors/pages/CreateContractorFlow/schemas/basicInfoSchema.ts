@@ -15,7 +15,7 @@ function isValidDateString(value: string) {
   return !Number.isNaN(parsed.getTime());
 }
 
-const basicInfoSchema = z
+export const basicInfoSchema = z
   .object({
     first_name: z
       .string()
@@ -48,7 +48,7 @@ const basicInfoSchema = z
     ssn_last_four: z
       .string()
       .trim()
-      .refine((value) => value === "" || /^\d{4}$/.test(value), {
+      .refine((value) => value === "" || SSN_LAST_FOUR_REGEX.test(value), {
         message: "SSN last four must be exactly 4 digits.",
       }),
 
@@ -98,7 +98,3 @@ const basicInfoSchema = z
       });
     }
   });
-
-type BasicInfoFormValues = z.infer<typeof basicInfoSchema>;
-
-export { basicInfoSchema, type BasicInfoFormValues };
