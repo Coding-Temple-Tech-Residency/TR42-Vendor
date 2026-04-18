@@ -1,24 +1,27 @@
-import z from "zod";
+import { z } from "zod";
 
-const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+const isValidISODate = (value: string) => {
+  if (value === "") return true;
+
+  const parsed = z.iso.date().safeParse(value);
+  if (!parsed.success) return false;
+
+  const date = new Date(`${value}T00:00:00`);
+  return !isNaN(date.getTime());
+};
 
 export const backgroundCheckSchema = z
   .object({
     background_check_passed: z.boolean(),
 
-    background_check_date: z
-      .string()
-      .trim()
-      .refine((value) => value === "" || DATE_REGEX.test(value), {
-        message: "Date must be YYYY-MM-DD",
-      }),
+    background_check_date: z.string().trim().refine(isValidISODate, {
+      message: "Date must be a valid YYYY-MM-DD",
+    }),
 
     background_check_provider: z.string().trim(),
   })
   .superRefine((data, ctx) => {
-    const isPassed = data.background_check_passed;
-
-    if (!isPassed) return;
+    if (!data.background_check_passed) return;
 
     if (!data.background_check_provider) {
       ctx.addIssue({

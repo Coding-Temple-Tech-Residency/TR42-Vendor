@@ -1,14 +1,24 @@
 import { z } from "zod";
 
-const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+const isValidOptionalISODate = (value: string) =>
+  value === "" || z.iso.date().safeParse(value).success;
 
-export const drugTestSchema = z.object({
-  drug_test_passed: z.boolean(),
+export const drugTestSchema = z
+  .object({
+    drug_test_passed: z.boolean(),
 
-  drug_test_date: z
-    .string()
-    .trim()
-    .refine((value) => value === "" || DATE_REGEX.test(value), {
-      message: "Date must be YYYY-MM-DD",
+    drug_test_date: z.string().trim().refine(isValidOptionalISODate, {
+      message: "Date must be a valid YYYY-MM-DD",
     }),
-});
+  })
+  .superRefine((data, ctx) => {
+    if (!data.drug_test_passed) return;
+
+    if (!data.drug_test_date) {
+      ctx.addIssue({
+        path: ["drug_test_date"],
+        code: "custom",
+        message: "Date is required if drug test passed",
+      });
+    }
+  });

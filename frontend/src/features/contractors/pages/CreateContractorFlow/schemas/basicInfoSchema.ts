@@ -7,13 +7,6 @@ import {
 const PHONE_REGEX = /^\d{3}-\d{3}-\d{4}$/;
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const SSN_LAST_FOUR_REGEX = /^\d{4}$/;
-const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
-
-function isValidDateString(value: string) {
-  if (!DATE_REGEX.test(value.trim())) return false;
-  const parsed = new Date(`${value}T00:00:00`);
-  return !Number.isNaN(parsed.getTime());
-}
 
 export const basicInfoSchema = z
   .object({
@@ -31,16 +24,8 @@ export const basicInfoSchema = z
 
     middle_name: z.string().trim(),
 
-    date_of_birth: z
-      .string()
-      .trim()
-      .min(1, "Date of birth is required")
-      .refine((value) => DATE_REGEX.test(value), {
-        message: "Date of birth must be in YYYY-MM-DD format.",
-      })
-      .refine((value) => isValidDateString(value), {
-        message: "Enter a valid date of birth.",
-      })
+    date_of_birth: z.iso
+      .date("Date of birth must be YYYY-MM-DD")
       .refine((value) => new Date(`${value}T00:00:00`) <= new Date(), {
         message: "Date of birth cannot be in the future.",
       }),
@@ -72,7 +57,8 @@ export const basicInfoSchema = z
       .string()
       .trim()
       .refine(
-        (value) => value === "" || /^\d{3}-\d{3}-\d{4}$/.test(value), // or your helper format
+        (value) =>
+          value === "" || PHONE_REGEX.test(toBackendPhoneFormat(value)),
         {
           message: "Invalid phone number format (XXX-XXX-XXXX)",
         },
@@ -91,7 +77,7 @@ export const basicInfoSchema = z
 
     if (!Object.values(checks).every(Boolean)) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         path: ["password"],
         message:
           "Password must be at least 12 characters long and include uppercase, lowercase, number, and special character, and must not contain more than 2 identical characters in a row or contain your username, first name, or last name.",
