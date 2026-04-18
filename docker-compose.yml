@@ -1,53 +1,84 @@
-  services:
-    backend:
-      build: ./backend
-      ports:
-        - "5001:5001"
-      volumes:
-        - ./backend:/app
-      env_file:
-        - .env
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./backend:/app
+    env_file:
+      - .env
 
-    frontend:
-      build: ./frontend
-      ports:
-        - "5173:5173"
-      volumes:
-        - ./frontend:/app
-        - frontend_node_modules:/app/node_modules
-      stdin_open: true
-      command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+    stdin_open: true
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
 
-    db:
-      image: postgres:15
-      restart: always
-      environment:
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: postgres
-        POSTGRES_DB: vendor_db
-      ports:
-        - "5432:5432"
-      volumes:
-        - postgres_data:/var/lib/postgresql/data
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: vendor_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
-    pgadmin:
-      image: dpage/pgadmin4
-      restart: always
-      ports:
-        - "5050:80"
-      environment:
-        PGADMIN_DEFAULT_EMAIL: admin@example.com
-        PGADMIN_DEFAULT_PASSWORD: admin
-      volumes:
-        - pgadmin_data:/var/lib/pgadmin
-      depends_on:
-        - db
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - db
 
-  volumes:
-    frontend_node_modules:
-    postgres_data:
-    pgadmin_data:
+  seed:
+    build: ./sample-data
+    depends_on:
+      - db
+    volumes:
+      - ./sample-data:/app
+    working_dir: /app
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: vendor_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    command: >
+      sh -c "
+      until pg_isready -h db -p 5432 -U postgres; do
+        echo 'Waiting for Postgres...';
+        sleep 2;
+      done &&
+      psql -h db -U postgres -d vendor_db -f schema.sql &&
+      python main.py &&
+      python csv_to_postgres.py
+      "
+    profiles:
+      - seed
 
-  # docker compose down -v <- this wipes the database
-  # docker compose down <- Stops and removes containers, keeps data
-  # docker compose up --build
+volumes:
+  frontend_node_modules:
+  postgres_data:
+  pgadmin_data:
+
+# docker compose down -v <- this wipes the database
+# docker compose down <- Stops and removes containers, keeps data
+# docker compose up --build backend frontend db pgadmin
+
+# SEED DATABASE INSTRUCTIONS
+# docker compose build seed
+# docker compose up --build -d db pgadmin
+# docker compose --profile seed run --rm seed
