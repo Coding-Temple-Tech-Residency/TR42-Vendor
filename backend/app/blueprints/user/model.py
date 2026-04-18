@@ -17,8 +17,10 @@ from app.auth.passwords import hash_password, verify_password
 
 from app.extensions import db
 
+
 if TYPE_CHECKING:
     from app.blueprints.vendor_user.model import VendorUser
+    from app.blueprints.msa.model import MSA
     from app.blueprints.contractor.model import Contractor
     from app.blueprints.address.model import Address
     from app.blueprints.vendor_contractor.model import VendorContractor
@@ -120,6 +122,13 @@ class User(db.Model):
         foreign_keys="Contractor.user_id",
         cascade="all, delete-orphan",
     )
+
+    msas_uploaded = relationship(
+        "MSA",
+        back_populates="uploaded_by_user",
+        foreign_keys="MSA.uploaded_by"
+    )
+
 
     def set_password(self, raw_password: str) -> None:
         self.password_hash = hash_password(raw_password)

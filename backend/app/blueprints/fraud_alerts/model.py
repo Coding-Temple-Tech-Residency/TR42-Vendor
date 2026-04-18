@@ -1,27 +1,42 @@
-from app.extensions import db
-from app.models.base import BaseModel
+from __future__ import annotations
+from typing import TYPE_CHECKING
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import String, Text, DateTime, ForeignKey
+from app.base import BaseModel
+from app.functions import generate_uuid
+import datetime
+
+if TYPE_CHECKING:
+    from app.blueprints.work_orders.model import WorkOrder
+   
+    # from app.blueprints.ticket.model import Ticket  # if exists
+
 
 class FraudAlert(BaseModel):
-    __tablename__ = 'fraud_alerts'
+    __tablename__ = "fraud_alerts"
 
-    id = db.Column(db.String, primary_key=True)
-
-    work_order_id = db.Column(
-        db.String,
-        db.ForeignKey('work_orders.id')
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=generate_uuid
     )
 
-    ticket_id = db.Column(
-        db.String,
-        db.ForeignKey('ticket.id')
+    work_order_id: Mapped[str | None] = mapped_column(
+        ForeignKey("work_orders.work_order_id"), nullable=True
     )
 
-    severity = db.Column(db.String(100))
-    description = db.Column(db.Text)
-    status = db.Column(db.String)
-
-    flagged_at = db.Column(db.DateTime)
-
-    # relationships
-    work_order = db.relationship('WorkOrder', backref='fraud_alerts')
-    ticket = db.relationship('Ticket', backref='fraud_alerts')
+    # ticket_id: Mapped[str | None] = mapped_column(
+    #     ForeignKey("ticket.ticket_id")
+    # )
+    ticket_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    severity: Mapped[str | None] = mapped_column(String(100))
+    description: Mapped[str | None] = mapped_column(Text)
+    status: Mapped[str | None] = mapped_column(String)
+    flagged_at: Mapped[datetime.datetime | None] = mapped_column(DateTime)
+    
+    work_order: Mapped["WorkOrder"] = relationship(
+        "WorkOrder",
+        back_populates="fraud_alerts"
+    )
+    # ticket: Mapped["Ticket"] = relationship(
+    #     "Ticket",
+    #     back_populates="fraud_alerts"
+    # )

@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from app.blueprints.user.model import User
     from app.blueprints.vendor.model import Vendor
     from app.blueprints.well.model import Well
+    from app.blueprints.fraud_alerts.model import FraudAlert
 
 
 def enum_values(enum_class: type[enum.Enum]) -> list[str]:
@@ -203,6 +204,11 @@ class WorkOrder(BaseModel):
         foreign_keys=[well_id],
     )
 
+    fraud_alerts: Mapped[list["FraudAlert"]] = relationship(
+    "FraudAlert",
+    back_populates="work_order",
+    cascade="all, delete-orphan"
+)
     service: Mapped["Service | None"] = relationship(
         "Service",
         foreign_keys=[service_type],

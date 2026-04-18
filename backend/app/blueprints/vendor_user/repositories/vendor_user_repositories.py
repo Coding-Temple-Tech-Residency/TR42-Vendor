@@ -1,3 +1,4 @@
+
 from sqlalchemy import select
 from app.extensions import db
 from app.blueprints.vendor_user.model import VendorUser

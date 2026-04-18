@@ -1,60 +1,56 @@
-from app.extensions import db
+from __future__ import annotations
+from typing import TYPE_CHECKING
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import String, ForeignKey, Date, DateTime
+import datetime
+from app.functions import generate_uuid
 from app.base import BaseModel
-from sqlalchemy import JSON
+
+if TYPE_CHECKING:
+    from app.blueprints.vendor.model import Vendor
+    from app.blueprints.user.model import User
+    from app.blueprints.msa_requirements.model import MSARequirements
+   
+
 
 class MSA(BaseModel):
-    __tablename__ = 'msa'
+    __tablename__ = "msa"
 
-    id = db.Column(db.String, primary_key=True)
+    # PRIMARY KEY
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=generate_uuid
+    )
 
-    vendor_id = db.Column(
-        db.String,
-        db.ForeignKey('vendor.id'),
+    # FOREIGN KEY (NOT NULL)
+    vendor_id: Mapped[str] = mapped_column(
+        ForeignKey("vendor.vendor_id"),
         nullable=False
     )
 
-    version = db.Column(db.String(10))
+    # OPTIONAL FIELDS
+    version: Mapped[str | None] = mapped_column(String(10))
+    effective_date: Mapped[datetime.date | None] = mapped_column(Date)
+    expiration_date: Mapped[datetime.date | None] = mapped_column(Date)
+    status: Mapped[str | None] = mapped_column(String(15))
 
-    effective_date = db.Column(db.DateTime)
-    expiration_date = db.Column(db.DateTime)
-
-    status = db.Column(db.String(15))
-
-    uploaded_by = db.Column(
-        db.String,
-        db.ForeignKey('user.id')
-    )
-
-    # relationships
-    vendor = db.relationship('Vendor', backref='msas')
-    uploader = db.relationship('User', foreign_keys=[uploaded_by])
-
-
-class MSARequirement(BaseModel):
-    __tablename__ = 'msa_requirements'
-
-    id = db.Column(db.String, primary_key=True)
-
-    msa_id = db.Column(
-        db.String,
-        db.ForeignKey('msa.id'),
+    # FOREIGN KEY (NULLABLE)
+    uploaded_by: Mapped[str | None] = mapped_column(
+        ForeignKey("user.user_id"),
         nullable=False
     )
 
-    category = db.Column(db.String(50))
-    rule_type = db.Column(db.String(50))
 
-    description = db.Column(db.Text)
-    value = db.Column(db.String(100))
-    unit = db.Column(db.String(100))
+    # RELATIONSHIPS
+    vendor: Mapped["Vendor"] = relationship(back_populates="msas")
 
-    source_field_id = db.Column(db.String)
-    page_number = db.Column(db.Integer)
+    uploaded_by_user: Mapped["User"] = relationship(
+        "User",
+        foreign_keys=[uploaded_by],
+        back_populates="msas_uploaded",
+    )
 
-    extracted_text = db.Column(db.Text)
-    confidence_score = db.Column(db.Float)
-
-    metadata = db.Column(JSON)
-
-    # relationships
-    msa = db.relationship('MSA', backref='requirements')
+    requirements: Mapped[list["MSARequirements"]] = relationship(
+        "MSARequirements",
+        back_populates="msa",
+        cascade="all, delete-orphan"
+    )
