@@ -1,6 +1,5 @@
 from app.extensions import ma
 from marshmallow import ValidationError, fields, pre_load, validates
-from marshmallow import ValidationError, fields, pre_load, validates
 from app.blueprints.vendor.model import Vendor
 from app.functions import (
     strip_input,
