@@ -63,6 +63,7 @@ def create_app(config_object=None):
     from app.blueprints.invoices.controller.lineitem_routes import lineItem_bp
     from app.blueprints.services.controller.service_routes import services_bp
     from app.blueprints.vendor_service.controller.vendor_service_routes import vendor_services_bp
+    from app.blueprints.contractor.controller.contractor_routes import contractor_bp
 
     
     app.register_blueprint(user_bp, url_prefix="/api/users")
@@ -77,5 +78,6 @@ def create_app(config_object=None):
     app.register_blueprint(vendor_services_bp, url_prefix="/api/vendor_services")
 
     
+    app.register_blueprint(contractor_bp, url_prefix="/api/contractors")
 
     return app

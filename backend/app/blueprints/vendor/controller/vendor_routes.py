@@ -91,7 +91,7 @@ def create_vendor(current_user):
 def update_vendor(current_user, vendor_link, vendor_id: str):
     try:
         vendor_data = request.get_json(silent=True)
-        logger.debug("Updating vendor with id")
+        logger.debug("Updating vendor")
 
         if not vendor_data:
             logger.warning("No input data provided for vendor update")
@@ -100,7 +100,7 @@ def update_vendor(current_user, vendor_link, vendor_id: str):
         updated_vendor = VendorService.update_vendor(vendor_id, vendor_data)
 
         if not updated_vendor:
-            logger.warning(f"Vendor with id not found")
+            logger.warning("Vendor not found")
             return {"error": "Vendor not found"}, 404
 
         logger.info("Vendor updated successfully")

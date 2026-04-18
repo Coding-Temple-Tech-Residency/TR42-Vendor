@@ -1,13 +1,14 @@
-from datetime import datetime
 import enum
 
-from sqlalchemy import DateTime, Enum, ForeignKey, String, UniqueConstraint
+from sqlalchemy import Enum, ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.blueprints.user.model import User
 from app.blueprints.vendor.model import Vendor
 
 from app.extensions import db
 from app.functions import generate_uuid, utc_now
+from app.base import BaseModel
+
 
 
 class VendorUserRole(enum.Enum):
@@ -78,5 +79,5 @@ class VendorUser(db.Model):
 
     vendor: Mapped["Vendor"] = relationship(
         "Vendor",
-        back_populates="vendor_links",
+        back_populates="user_links",
     )
