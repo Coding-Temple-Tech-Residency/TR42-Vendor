@@ -104,6 +104,7 @@ CREATE TABLE
     "primary_contact_name" text NOT NULL,
     "company_email" text NOT NULL,
     "company_phone" text NOT NULL,
+    "service_type" text NOT NULL DEFAULT 'Any',
     "status" core.vendor_status NOT NULL,
     "vendor_code" text,
     "onboarding" bool NOT NULL,
