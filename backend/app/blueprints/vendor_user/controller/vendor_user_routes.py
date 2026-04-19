@@ -62,7 +62,7 @@ def get_vendor_user(id):
         return {"error": "An error occurred while fetching the user"}, 500
 
 
-# GET USERS FOR A VENDOR
+# GET USERS FOR A VENDOR for a vendor
 @vendor_user_bp.get("/vendor/<vendor_id>")
 def get_users_for_vendor(vendor_id):
     try:
@@ -101,6 +101,18 @@ def update_vendor_user(id):
 # DELETE
 @vendor_user_bp.delete("/<id>")
 def delete_vendor_user(id):
+    try:
+        deleted = VendorUserService.delete_vendor_user(id)
+        if not deleted:
+            return {"error": "VendorUser not found"}, 404
+        return {"message": "VendorUser deleted"}, 200
+    except Exception as e:
+        logger.error(str(e))
+        return {"error": "An error occurred while deleting the user"}, 500
+    
+     DELETE
+@vendor_user_bp.deleteeeeee("/<id>")
+def delete_vendor_useeeeer(id):
     try:
         deleted = VendorUserService.delete_vendor_user(id)
         if not deleted:
