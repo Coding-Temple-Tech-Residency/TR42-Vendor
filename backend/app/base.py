@@ -29,7 +29,7 @@ class BaseModel(db.Model):
         nullable=False,
     )
 
-    updated_by: Mapped[str | None] = mapped_column(
+    updated_by: Mapped[str] = mapped_column(
         ForeignKey("user.id"),
-        nullable=True,
+        nullable=False,
     )

@@ -1,0 +1,129 @@
+from app.extensions import ma
+from marshmallow import ValidationError, fields, pre_load, validates, validates_schema
+from app.blueprints.contractor.model import ContractorStatus
+from app.functions import (
+    strip_input,
+    validate_name,
+    validate_email_format,
+    validate_password,
+    validate_password_content,
+)
+from app.extensions import ma
+from marshmallow import fields
+from app.blueprints.contractor.model import Contractor
+from app.blueprints.vendor_contractor.model import VendorContractorRole
+
+
+from app.blueprints.address.schemas import AddressSchema
+from app.functions import validate_phone_format
+
+
+class ContractorCreateSchema(ma.Schema):
+    first_name = fields.String(required=True)
+    middle_name = fields.String(load_default=None)
+    last_name = fields.String(required=True)
+    email = fields.Email(required=True)
+    username = fields.String(required=True)
+    password = fields.String(required=True, load_only=True)
+    profile_photo = fields.String(allow_none=True, required=False)
+
+    contact_number = fields.String(required=True)
+    alternate_number = fields.String(load_default=None)
+    date_of_birth = fields.Date(load_default=None)
+    ssn_last_four = fields.String(load_default=None)
+    address = fields.Nested(AddressSchema, required=True)
+
+    vendor_contractor_role = fields.Enum(
+        VendorContractorRole,
+        by_value=True,
+        load_default=VendorContractorRole.WORKER,
+    )
+
+    status = fields.Enum(
+        ContractorStatus,
+        by_value=True,
+        load_default=ContractorStatus.ACTIVE,
+    )
+
+    tickets_completed = fields.Integer(load_default=0)
+    tickets_open = fields.Integer(load_default=0)
+
+    biometric_enrolled = fields.Boolean(load_default=False)
+    is_onboarded = fields.Boolean(load_default=False)
+    is_subcontractor = fields.Boolean(load_default=False)
+    is_fte = fields.Boolean(load_default=False)
+    is_licensed = fields.Boolean(load_default=False)
+    is_insured = fields.Boolean(load_default=False)
+    is_certified = fields.Boolean(load_default=False)
+
+    average_rating = fields.Float(load_default=0.0)
+    years_experience = fields.Integer(allow_none=True, load_default=None)
+
+    @pre_load
+    def preprocess(self, data, **kwargs):
+        return strip_input(data)
+
+    @validates("first_name")
+    def check_first_name(self, value, **kwargs):
+        validate_name(value, field_name="First name")
+
+    @validates("last_name")
+    def check_last_name(self, value, **kwargs):
+        validate_name(value, field_name="Last name")
+
+    @validates("email")
+    def check_email(self, value, **kwargs):
+        validate_email_format(value)
+
+    @validates("username")
+    def check_username(self, value, **kwargs):
+        if not value or not value.strip():
+            raise ValidationError("Username is required.")
+
+    @validates("password")
+    def check_password(self, value, **kwargs):
+        validate_password(value)
+
+    @validates("contact_number")
+    def check_contact_number(self, value, **kwargs):
+        validate_phone_format(value)
+
+    @validates("alternate_number")
+    def check_alternate_number(self, value, **kwargs):
+        if value:
+            validate_phone_format(value)
+
+    @validates("ssn_last_four")
+    def check_ssn_last_four(self, value, **kwargs):
+        if value and (not value.isdigit() or len(value) != 4):
+            raise ValidationError("SSN last four must be exactly 4 digits.")
+
+    @validates_schema
+    def check_password_content(self, data, **kwargs):
+        validate_password_content(data)
+
+
+class VendorContractorMiniSchema(ma.Schema):
+    id = fields.String()
+    vendor_id = fields.String()
+    manager_id = fields.String()
+    vendor_contractor_role = fields.Enum(
+        VendorContractorRole,
+        by_value=True,
+    )
+
+
+class ContractorSchema(ma.SQLAlchemyAutoSchema):
+    status = fields.Enum(ContractorStatus, by_value=True)
+    vendor_links = fields.Nested(VendorContractorMiniSchema, many=True)
+
+    class Meta:
+        model = Contractor
+        load_instance = False
+        include_fk = True
+        include_relationships = False
+
+
+contractor_create_schema = ContractorCreateSchema()
+contractor_schema = ContractorSchema()
+contractors_schema = ContractorSchema(many=True)

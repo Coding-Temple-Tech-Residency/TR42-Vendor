@@ -2,6 +2,7 @@ from marshmallow import ValidationError, fields, pre_load, validates, validates_
 from app.extensions import ma
 from app.functions import (
     strip_input,
+    validate_password_content,
     validate_street,
     validate_city,
     validate_email_format,
@@ -16,11 +17,18 @@ from app.blueprints.address.schemas import AddressSchema
 
 class UserRegistrationSchema(ma.Schema):
     first_name = fields.String(required=True)
+    middle_name = fields.String(load_default=None)
     last_name = fields.String(required=True)
     email = fields.Email(required=True)
     username = fields.String(required=True)
     password = fields.String(required=True, load_only=True)
-    # confirm_password = fields.String(required=True, load_only=True)
+
+    contact_number = fields.String(required=True)
+    alternate_number = fields.String(load_default=None)
+    date_of_birth = fields.Date(load_default=None)
+    ssn_last_four = fields.String(load_default=None)
+
+    address = fields.Nested(AddressSchema, required=True)
 
     @pre_load
     def preprocess(self, data, **kwargs):
@@ -47,30 +55,23 @@ class UserRegistrationSchema(ma.Schema):
     def check_password(self, value, **kwargs):
         validate_password(value)
 
+    @validates("contact_number")
+    def check_contact_number(self, value, **kwargs):
+        validate_phone_format(value)
+
+    @validates("alternate_number")
+    def check_alternate_number(self, value, **kwargs):
+        if value:
+            validate_phone_format(value)
+
+    @validates("ssn_last_four")
+    def check_ssn_last_four(self, value, **kwargs):
+        if value and (not value.isdigit() or len(value) != 4):
+            raise ValidationError("SSN last four must be exactly 4 digits.")
+
     @validates_schema
-    def validate_password_content(self, data, **kwargs):
-        password = data.get("password", "")
-        username = data.get("username", "")
-        first_name = data.get("first_name", "")
-        last_name = data.get("last_name", "")
-
-        password_lower = password.lower()
-
-        for label, field_value in {
-            "username": username,
-            "first name": first_name,
-            "last name": last_name,
-        }.items():
-            cleaned = (field_value or "").strip().lower()
-            if len(cleaned) >= 4 and cleaned in password_lower:
-                raise ValidationError(
-                    {"password": [f"Password must not contain the user's {label}."]}
-                )
-
-    # @validates_schema
-    # def validate_password_match(self, data, **kwargs):
-    #     if data.get("password") != data.get("confirm_password"):
-    #         raise ValidationError({"confirm_password": ["Passwords do not match."]})
+    def check_password_content(self, data, **kwargs):
+        validate_password_content(data)
 
 
 class VendorRegistrationSchema(ma.Schema):

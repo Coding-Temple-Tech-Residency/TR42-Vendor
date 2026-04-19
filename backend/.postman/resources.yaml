@@ -1,0 +1,9 @@
+# Use this workspace to collaborate
+workspace:
+  id: ""
+
+localResources:
+  collections:
+    - ../merged_postman_collection.json
+    - ../app/blueprints/registration/Vendor API.postman_collection.json
+    - ../app/blueprints/user/Vendor API.postman_collection.json

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import AppLayout from "../components/layout/AppLayout";
 import Sidebar from "../components/layout/Sidebar";
 import Topbar from "../components/layout/Topbar";
@@ -10,7 +11,6 @@ import LineChart from "../components/UI/LineChart";
 import BarChart from "../components/UI/BarChart";
 
 function ContractorsPage() {
-  // Expanded to 6 data points for the bar chart
   const jobsData = [
     { label: "4/5-4/11", value: 14 },
     { label: "4/12-4/18", value: 22 },
@@ -127,13 +127,19 @@ function ContractorsPage() {
         />
 
         <Link
+          to="/vendor/contractors/create"
+          className="inline-block rounded-lg bg-[#2F4F75] mr-2 px-4 py-2 text-sm font-medium text-white hover:bg-[#1E3A5F]"
+        >
+          Create Contractor
+        </Link>
+        <Link
           to="/vendor/contractors/profile"
-          className="inline-block rounded-lg bg-[#2F4F75] px-4 py-2 text-sm text-white hover:bg-[#1E3A5F] transition-colors"
+          className="inline-block rounded-lg bg-[#2F4F75] px-4 py-2 text-sm font-medium text-white hover:bg-[#1E3A5F]"
         >
           View Profile
         </Link>
 
-        {/* KPI Cards (Unchanged per request) */}
+        {/* KPI Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-6">
           <KpiCard
             title="Active Contractors"
@@ -189,8 +195,7 @@ function ContractorsPage() {
         {/* Interactive Charts */}
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
           <SectionCard title="On-Time Completion">
-            <div className="h-64">
-              {/* Thicker line is controlled via the strokeWidth inside the LineChart component */}
+            <div className="h-64"
               <LineChart data={onTimeData} />
             </div>
           </SectionCard>
